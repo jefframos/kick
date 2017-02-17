@@ -8,7 +8,7 @@ export default class Ball extends PIXI.Container {
         this.virtualVelocity = {x:0,y:0};
         this.velocity = {x:0,y:0};
         this.speed = {x:230,y:230};
-        this.friction = {x:100,y:100};
+        this.friction = {x:100,y:200};
         this.rotationInfluence = {x:0,y:0};
         this.rotationSpeed = 0;
         this.scaleFator = 1;
@@ -24,8 +24,8 @@ export default class Ball extends PIXI.Container {
         this.collidable = true;
 
         this.verticalVelocity = {x:0, y:0};
-        this.spriteGravityStandard = 4500;
-        this.spriteGravity = 4500;
+        this.spriteGravityStandard = 5000;
+        this.spriteGravity = 5000;
         this.shootYSpeed = -1200;
         this.spriteDirection = 1;
 
@@ -102,16 +102,24 @@ export default class Ball extends PIXI.Container {
         this.rotationSpeed = 0;
         this.shooting = false;
 
+        this.sprite.rotation = 0;
+
+        this.spriteGravity = this.spriteGravityStandard;
+
+        this.onGoal = false;
+
         this.spriteContainer.y = 0;
 
 
         this.y = config.height - 180;
 
-        if(Math.random() < 0.995){
+        if(Math.random() < 0.5){
             this.verticalVelocity = {x:0, y:0};
-            this.spriteContainer.y = 0//- Math.random() * 250;
+            this.spriteContainer.y = - Math.random() * 80;
+            // this.spriteContainer.y = 0//- Math.random() * 250;
             this.x = config.width / 2;
-            this.verticalVelocity.y = 0//this.shootYSpeed;
+            this.verticalVelocity.y = Math.random() * this.shootYSpeed;
+            // this.verticalVelocity.y = 0//this.shootYSpeed;
         }else{
             this.spriteContainer.y = - Math.random() * 250;
 
@@ -129,6 +137,7 @@ export default class Ball extends PIXI.Container {
             this.velocity.x = -this.speed.x * side;
         }
         this.spriteContainer.scale.set(1)
+        // this.sprite.scale.set(1)
 
         // console.log(this.verticalVelocity);
     }
@@ -138,7 +147,7 @@ export default class Ball extends PIXI.Container {
         this.velocity.x *=  t//force2
         this.velocity.y *=  t//force2
 
-        this.verticalVelocity.y = -this.velocity.y * force2 * force
+        this.verticalVelocity.y = -this.velocity.y * force2 * force*2
     }
     back(force, force2, forceDown) {
 
@@ -151,9 +160,9 @@ export default class Ball extends PIXI.Container {
         this.velocity.y *=  t//force2
         if(forceDown){
             this.verticalVelocity.y += 3500
-            this.velocity.y = -Math.abs(this.velocity.y) * 0.3;
+            this.velocity.y = -Math.abs(this.velocity.y) * 0.3-250;
         }else{
-            this.velocity.y += 300
+            this.velocity.y += 600
             this.verticalVelocity.y = -this.velocity.y * force2 * force
             
         }
@@ -173,8 +182,14 @@ export default class Ball extends PIXI.Container {
         // console.log('touchGround');
 
         // console.log(this.verticalVelocity.y);
-        this.verticalVelocity.y = -this.verticalVelocity.y/1.7
+        if(this.onGoal){
+            this.verticalVelocity.y = -this.verticalVelocity.y/3
+        }else{
+            this.verticalVelocity.y = -this.verticalVelocity.y/1.7
+        }
         // console.log(this.verticalVelocity.y);
+
+        this.velocity.x *= 0.5
 
         if(Math.abs(this.verticalVelocity.y) < 200){
             // console.log(this.verticalVelocity);
@@ -207,9 +222,9 @@ export default class Ball extends PIXI.Container {
         // console.log((this.spriteContainer.y / 250));
         // this.externalColisionCircle.scale.x = 1 + hScale
         // this.externalColisionCircle.scale.y = 0.5 + hScale
-        if(this.shooting && percentage == 0){
-            this.game.reset();
-        }
+        // if(this.shooting && percentage == 0){
+        //     this.game.reset();
+        // }
         // if(percentage){
             this.velocity.x += this.rotationInfluence.x * delta * percentage;
 

@@ -17,16 +17,23 @@ export default class InitScreen extends Screen{
 		this.backgroundContaier = new PIXI.Container();
 		this.addChild(this.backgroundContaier);
 
+		this.background = new PIXI.Graphics();
+		this.background.beginFill(0xababab);
+	    this.background.drawRect( 0, 0, config.width, config.height);
+		this.backgroundContaier.addChild(this.background);
+
+		this.field = new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
+		this.backgroundContaier.addChild(this.field)
+		this.field.y = 150;
+
+		this.sky = new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
+		this.backgroundContaier.addChild(this.sky)
 
 		this.gameContainer = new PIXI.Container();
 		this.addChild(this.gameContainer);
 
 		this.updateList = [];
 
-		this.background = new PIXI.Graphics();
-		this.background.beginFill(0xababab);
-	    this.background.drawRect( 0, 0, config.width, config.height);
-		this.backgroundContaier.addChild(this.background);
 
 		this.animationContainer = new PIXI.Container();
 		// this.addChild(this.animationContainer)
@@ -85,6 +92,7 @@ export default class InitScreen extends Screen{
 		this.backgroundIngameUI.alpha = 0;
 		this.ingameUIContainer.addChild(this.backgroundIngameUI)
 
+
 		this.addEvents();
 
 		this.currentTrail = false;
@@ -116,8 +124,8 @@ export default class InitScreen extends Screen{
 		this.goleira.addChild(this.trave3);
 		this.trave3.x = -w/2
 
-		this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
-		this.goleira.addChild(this.trave4);
+		// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
+		// this.goleira.addChild(this.trave4);
 
 		this.goleira.x = config.width / 2
 		this.goleira.y = 150
@@ -199,7 +207,7 @@ export default class InitScreen extends Screen{
 
 						let distPos = (ballPosition.y - interception.p1.y) / entity.getRadius();
 						if(isGoal)
-							isGoal = distPos > 0.1;
+							isGoal = distPos > 0;
 						let distance = 1//utils.distance(interception[0].x,0,interception[1].x,0) / entity.getRadius()
 						if(interception.type == 'side'){
 							distPos = (ballPosition.x - interception.p1.x) / entity.getRadius();
@@ -221,7 +229,7 @@ export default class InitScreen extends Screen{
 				}
 				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.5}
 				let www = 10
-				let hhh = 12
+				let hhh = 6
 				let rect = {
 					x:this.goleira.x - this.goleira.width/2 + www,
 					y:this.goleira.y - this.goleira.height + hhh,
@@ -230,14 +238,20 @@ export default class InitScreen extends Screen{
 
 				let onGoal = this.rectCircleColliding(circle, rect)
 				if(onGoal && this.ball.velocity.y < 0){
+					this.ball.verticalVelocity.y += 8000 / -this.ball.velocity.y
+					this.ball.velocity.y *= 0.25;
+					this.ball.onGoal = true;
 					this.textLabel.text = 'GOAL'
 				}else{
-					this.textLabel.text = 'no goal'
+					this.textLabel.text = 'NO GOAL'
+
+					this.ball.spriteGravity *= 5
+					this.ball.velocity.y *= 0.4
 				}
 				if(this.testeRect){
 					this.testeRect.parent.removeChild(this.testeRect)
 				}
-				this.testeRect = new PIXI.Graphics().beginFill(0x220000).drawRect(rect.x,rect.y, rect.w,rect.h);
+				this.testeRect = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(rect.x,rect.y, rect.w,rect.h);
 				this.addChild(this.testeRect)
 				this.testeRect.alpha = 0.2
 
@@ -246,8 +260,8 @@ export default class InitScreen extends Screen{
 					if(killStandard){
 						setTimeout(function() {this.reset();}.bind(this), 2000);
 					}else{
-						this.paused = true;
-						setTimeout(function() {this.reset();}.bind(this), 100);
+						// this.paused = true;
+						setTimeout(function() {this.reset();}.bind(this), 1500);
 					}
 				// }
 				

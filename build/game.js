@@ -38065,15 +38065,22 @@
 				this.backgroundContaier = new PIXI.Container();
 				this.addChild(this.backgroundContaier);
 	
-				this.gameContainer = new PIXI.Container();
-				this.addChild(this.gameContainer);
-	
-				this.updateList = [];
-	
 				this.background = new PIXI.Graphics();
 				this.background.beginFill(0xababab);
 				this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
 				this.backgroundContaier.addChild(this.background);
+	
+				this.field = new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0, 0, _config2.default.width, _config2.default.height);
+				this.backgroundContaier.addChild(this.field);
+				this.field.y = 150;
+	
+				this.sky = new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0, 0, _config2.default.width, 150);
+				this.backgroundContaier.addChild(this.sky);
+	
+				this.gameContainer = new PIXI.Container();
+				this.addChild(this.gameContainer);
+	
+				this.updateList = [];
 	
 				this.animationContainer = new PIXI.Container();
 				// this.addChild(this.animationContainer)
@@ -38163,8 +38170,8 @@
 				this.goleira.addChild(this.trave3);
 				this.trave3.x = -w / 2;
 	
-				this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w / 2, 0, w, tck);
-				this.goleira.addChild(this.trave4);
+				// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
+				// this.goleira.addChild(this.trave4);
 	
 				this.goleira.x = _config2.default.width / 2;
 				this.goleira.y = 150;
@@ -38249,7 +38256,7 @@
 								//this.addChild(this.testeBall);
 	
 								var distPos = (ballPosition.y - interception.p1.y) / entity.getRadius();
-								if (isGoal) isGoal = distPos > 0.1;
+								if (isGoal) isGoal = distPos > 0;
 								var distance = 1; //utils.distance(interception[0].x,0,interception[1].x,0) / entity.getRadius()
 								if (interception.type == 'side') {
 									distPos = (ballPosition.x - interception.p1.x) / entity.getRadius();
@@ -38270,7 +38277,7 @@
 						}
 						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.5 };
 						var www = 10;
-						var hhh = 12;
+						var hhh = 6;
 						var rect = {
 							x: this.goleira.x - this.goleira.width / 2 + www,
 							y: this.goleira.y - this.goleira.height + hhh,
@@ -38279,14 +38286,20 @@
 	
 						var onGoal = this.rectCircleColliding(circle, rect);
 						if (onGoal && this.ball.velocity.y < 0) {
+							this.ball.verticalVelocity.y += 8000 / -this.ball.velocity.y;
+							this.ball.velocity.y *= 0.25;
+							this.ball.onGoal = true;
 							this.textLabel.text = 'GOAL';
 						} else {
-							this.textLabel.text = 'no goal';
+							this.textLabel.text = 'NO GOAL';
+	
+							this.ball.spriteGravity *= 5;
+							this.ball.velocity.y *= 0.4;
 						}
 						if (this.testeRect) {
 							this.testeRect.parent.removeChild(this.testeRect);
 						}
-						this.testeRect = new PIXI.Graphics().beginFill(0x220000).drawRect(rect.x, rect.y, rect.w, rect.h);
+						this.testeRect = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(rect.x, rect.y, rect.w, rect.h);
 						this.addChild(this.testeRect);
 						this.testeRect.alpha = 0.2;
 	
@@ -38296,10 +38309,10 @@
 								this.reset();
 							}.bind(this), 2000);
 						} else {
-							this.paused = true;
+							// this.paused = true;
 							setTimeout(function () {
 								this.reset();
-							}.bind(this), 100);
+							}.bind(this), 1500);
 						}
 						// }
 	
@@ -46868,7 +46881,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	    value: true
+	        value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -46892,285 +46905,300 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var Ball = function (_PIXI$Container) {
-	    _inherits(Ball, _PIXI$Container);
+	        _inherits(Ball, _PIXI$Container);
 	
-	    function Ball(game) {
-	        var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+	        function Ball(game) {
+	                var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
 	
-	        _classCallCheck(this, Ball);
+	                _classCallCheck(this, Ball);
 	
-	        var _this = _possibleConstructorReturn(this, (Ball.__proto__ || Object.getPrototypeOf(Ball)).call(this));
+	                var _this = _possibleConstructorReturn(this, (Ball.__proto__ || Object.getPrototypeOf(Ball)).call(this));
 	
-	        _this.game = game;
-	        _this.virtualVelocity = { x: 0, y: 0 };
-	        _this.velocity = { x: 0, y: 0 };
-	        _this.speed = { x: 230, y: 230 };
-	        _this.friction = { x: 100, y: 100 };
-	        _this.rotationInfluence = { x: 0, y: 0 };
-	        _this.rotationSpeed = 0;
-	        _this.scaleFator = 1;
-	        _this.standardScale = 1;
-	        _this.speedScale = 1;
-	        _this.starterScale = 0.5;
-	        _this.radius = radius;
-	        _this.externalRadius = _this.radius * 1;
-	        _this.static = false;
-	        _this.side = 1;
-	        _this.maxLife = 5;
-	        _this.life = 5;
-	        _this.collidable = true;
+	                _this.game = game;
+	                _this.virtualVelocity = { x: 0, y: 0 };
+	                _this.velocity = { x: 0, y: 0 };
+	                _this.speed = { x: 230, y: 230 };
+	                _this.friction = { x: 100, y: 200 };
+	                _this.rotationInfluence = { x: 0, y: 0 };
+	                _this.rotationSpeed = 0;
+	                _this.scaleFator = 1;
+	                _this.standardScale = 1;
+	                _this.speedScale = 1;
+	                _this.starterScale = 0.5;
+	                _this.radius = radius;
+	                _this.externalRadius = _this.radius * 1;
+	                _this.static = false;
+	                _this.side = 1;
+	                _this.maxLife = 5;
+	                _this.life = 5;
+	                _this.collidable = true;
 	
-	        _this.verticalVelocity = { x: 0, y: 0 };
-	        _this.spriteGravityStandard = 4500;
-	        _this.spriteGravity = 4500;
-	        _this.shootYSpeed = -1200;
-	        _this.spriteDirection = 1;
+	                _this.verticalVelocity = { x: 0, y: 0 };
+	                _this.spriteGravityStandard = 5000;
+	                _this.spriteGravity = 5000;
+	                _this.shootYSpeed = -1200;
+	                _this.spriteDirection = 1;
 	
-	        _this.container = new PIXI.Container();
-	        _this.addChild(_this.container);
+	                _this.container = new PIXI.Container();
+	                _this.addChild(_this.container);
 	
-	        _this.externalColisionCircle = new PIXI.Graphics();
-	        _this.externalColisionCircle.beginFill(0x000000);
-	        _this.externalColisionCircle.drawCircle(0, _this.radius, _this.radius);
-	        _this.externalColisionCircle.alpha = 0.1;
-	        _this.container.addChild(_this.externalColisionCircle);
-	        _this.externalColisionCircle.scale.y = 0.5;
+	                _this.externalColisionCircle = new PIXI.Graphics();
+	                _this.externalColisionCircle.beginFill(0x000000);
+	                _this.externalColisionCircle.drawCircle(0, _this.radius, _this.radius);
+	                _this.externalColisionCircle.alpha = 0.1;
+	                _this.container.addChild(_this.externalColisionCircle);
+	                _this.externalColisionCircle.scale.y = 0.5;
 	
-	        _this.spriteContainer = new PIXI.Container();
-	        _this.container.addChild(_this.spriteContainer);
+	                _this.spriteContainer = new PIXI.Container();
+	                _this.container.addChild(_this.spriteContainer);
 	
-	        // if(this.radius > 20){
+	                // if(this.radius > 20){
 	
-	        _this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
-	        _this.spriteContainer.addChild(_this.sprite);
-	        _this.sprite.anchor.set(0.5);
-	        console.log(_this.radius, _this.sprite.width);
-	        _this.sprite.scale.set(_this.radius / 150);
-	        // }
+	                _this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
+	                _this.spriteContainer.addChild(_this.sprite);
+	                _this.sprite.anchor.set(0.5);
+	                console.log(_this.radius, _this.sprite.width);
+	                _this.sprite.scale.set(_this.radius / 150);
+	                // }
 	
-	        console.log(_this.container.skew.scope);
+	                console.log(_this.container.skew.scope);
 	
-	        _this.shooting = false;
-	        return _this;
-	    }
-	
-	    _createClass(Ball, [{
-	        key: 'shoot',
-	        value: function shoot(force, angle, angleColision) {
-	
-	            var angSpeed = angleColision;
-	            // let angSpeed = this.ball.rotation - angleColision;
-	            // this.ball.rotation += angleColision// * 0.5;
-	            // console.log(force);
-	            this.rotationSpeed = angSpeed * 0.8; // * 0.5;
-	            this.velocity.x = 0;
-	            this.velocity.y = 0;
-	            this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
-	            this.velocity.y = -this.speed.y * Math.cos(angleColision) * force;
-	
-	            this.virtualVelocity.x = 0;
-	            this.virtualVelocity.y = 0;
-	
-	            this.shooting = true;
-	            this.rotationInfluence.x = this.rotationSpeed * 850;
-	            this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
-	
-	            var force2 = force * 0.35;
-	
-	            this.verticalVelocity.y += this.shootYSpeed * force2;
-	
-	            // this.spriteGravity = this.spriteGravityStandard * force*0.5
-	
-	            console.log(this.verticalVelocity.y, force2);
-	
-	            this.spriteDirection = 1;
-	            //this.sprite.y = 0;
+	                _this.shooting = false;
+	                return _this;
 	        }
-	    }, {
-	        key: 'reset',
-	        value: function reset() {
-	            this.virtualVelocity = { x: 0, y: 0 };
-	            this.velocity = { x: 0, y: 0 };
 	
-	            this.rotationInfluence = { x: 0, y: 0 };
-	            this.rotationSpeed = 0;
-	            this.shooting = false;
+	        _createClass(Ball, [{
+	                key: 'shoot',
+	                value: function shoot(force, angle, angleColision) {
 	
-	            this.spriteContainer.y = 0;
+	                        var angSpeed = angleColision;
+	                        // let angSpeed = this.ball.rotation - angleColision;
+	                        // this.ball.rotation += angleColision// * 0.5;
+	                        // console.log(force);
+	                        this.rotationSpeed = angSpeed * 0.8; // * 0.5;
+	                        this.velocity.x = 0;
+	                        this.velocity.y = 0;
+	                        this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
+	                        this.velocity.y = -this.speed.y * Math.cos(angleColision) * force;
 	
-	            this.y = _config2.default.height - 180;
+	                        this.virtualVelocity.x = 0;
+	                        this.virtualVelocity.y = 0;
 	
-	            if (Math.random() < 0.995) {
-	                this.verticalVelocity = { x: 0, y: 0 };
-	                this.spriteContainer.y = 0; //- Math.random() * 250;
-	                this.x = _config2.default.width / 2;
-	                this.verticalVelocity.y = 0; //this.shootYSpeed;
-	            } else {
-	                this.spriteContainer.y = -Math.random() * 250;
+	                        this.shooting = true;
+	                        this.rotationInfluence.x = this.rotationSpeed * 850;
+	                        this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
 	
-	                this.verticalVelocity.y = this.shootYSpeed;
-	                // this.verticalVelocity.y = Math.abs(this.verticalVelocity.y);
+	                        var force2 = force * 0.35;
 	
-	                var side = Math.random() < 0.5 ? 1 : -1;
-	                if (side == 1) {
-	                    this.x = _config2.default.width * 1.1;
-	                } else {
-	                    this.x = -_config2.default.width * 0.1;
+	                        this.verticalVelocity.y += this.shootYSpeed * force2;
+	
+	                        // this.spriteGravity = this.spriteGravityStandard * force*0.5
+	
+	                        console.log(this.verticalVelocity.y, force2);
+	
+	                        this.spriteDirection = 1;
+	                        //this.sprite.y = 0;
 	                }
+	        }, {
+	                key: 'reset',
+	                value: function reset() {
+	                        this.virtualVelocity = { x: 0, y: 0 };
+	                        this.velocity = { x: 0, y: 0 };
 	
-	                this.virtualVelocity.x = -this.speed.x * side;
-	                this.velocity.x = -this.speed.x * side;
-	            }
-	            this.spriteContainer.scale.set(1);
+	                        this.rotationInfluence = { x: 0, y: 0 };
+	                        this.rotationSpeed = 0;
+	                        this.shooting = false;
 	
-	            // console.log(this.verticalVelocity);
-	        }
-	    }, {
-	        key: 'backSide',
-	        value: function backSide(force, force2) {
-	            var t = Math.abs(force2) - 0.5;
-	            // force2 = 1 - force2
-	            this.velocity.x *= t; //force2
-	            this.velocity.y *= t; //force2
+	                        this.sprite.rotation = 0;
 	
-	            this.verticalVelocity.y = -this.velocity.y * force2 * force;
-	        }
-	    }, {
-	        key: 'back',
-	        value: function back(force, force2, forceDown) {
+	                        this.spriteGravity = this.spriteGravityStandard;
 	
-	            // force2 > 
-	            //0 eh no meio
-	            //>0 embaixo
-	            //<acima
-	            var t = Math.abs(force2) - 0.5;
-	            // force2 = 1 - force2
-	            this.velocity.y *= t; //force2
-	            if (forceDown) {
-	                this.verticalVelocity.y += 3500;
-	                this.velocity.y = -Math.abs(this.velocity.y) * 0.3;
-	            } else {
-	                this.velocity.y += 300;
-	                this.verticalVelocity.y = -this.velocity.y * force2 * force;
-	            }
-	        }
-	    }, {
-	        key: 'getRadius',
-	        value: function getRadius() {
-	            // this.standardScale
-	            return this.scale.x * this.radius;
-	        }
-	    }, {
-	        key: 'getExternalRadius',
-	        value: function getExternalRadius() {
-	            return this.scale.x * this.externalRadius;
-	        }
-	    }, {
-	        key: 'touchGround',
-	        value: function touchGround(delta) {
+	                        this.onGoal = false;
 	
-	            // console.log('touchGround');
+	                        this.spriteContainer.y = 0;
 	
-	            // console.log(this.verticalVelocity.y);
-	            this.verticalVelocity.y = -this.verticalVelocity.y / 1.7;
-	            // console.log(this.verticalVelocity.y);
+	                        this.y = _config2.default.height - 180;
 	
-	            if (Math.abs(this.verticalVelocity.y) < 200) {
-	                // console.log(this.verticalVelocity);
-	                this.verticalVelocity.y = 0;
-	                this.spriteContainer.y = 0;
-	                // this.spriteGravity = 0;
-	            }
-	            this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
-	        }
-	    }, {
-	        key: 'update',
-	        value: function update(delta) {
-	            // delta*= 0.2
+	                        if (Math.random() < 0.5) {
+	                                this.verticalVelocity = { x: 0, y: 0 };
+	                                this.spriteContainer.y = -Math.random() * 80;
+	                                // this.spriteContainer.y = 0//- Math.random() * 250;
+	                                this.x = _config2.default.width / 2;
+	                                this.verticalVelocity.y = Math.random() * this.shootYSpeed;
+	                                // this.verticalVelocity.y = 0//this.shootYSpeed;
+	                        } else {
+	                                this.spriteContainer.y = -Math.random() * 250;
 	
-	            this.x += this.velocity.x * delta * this.scale.x;
-	            this.y += this.velocity.y * delta * this.scale.y;
+	                                this.verticalVelocity.y = this.shootYSpeed;
+	                                // this.verticalVelocity.y = Math.abs(this.verticalVelocity.y);
 	
-	            if (this.shooting) {
-	                var ang = Math.atan2(this.velocity.y, this.velocity.x);
-	                TweenLite.to(this.spriteContainer.scale, 0.5, { x: Math.sin(ang) * 0.2 + 1, y: Math.cos(ang) * 0.3 + 1 });
-	            }
-	            //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
+	                                var side = Math.random() < 0.5 ? 1 : -1;
+	                                if (side == 1) {
+	                                        this.x = _config2.default.width * 1.1;
+	                                } else {
+	                                        this.x = -_config2.default.width * 0.1;
+	                                }
 	
-	            var percentage = Math.abs((Math.abs(this.velocity.x) + Math.abs(this.velocity.y)) / (Math.abs(this.speed.x) + Math.abs(this.speed.y)));
-	            // console.log(this.rotationSpeed);
-	            this.sprite.rotation += this.rotationSpeed * percentage * 0.5;
+	                                this.virtualVelocity.x = -this.speed.x * side;
+	                                this.velocity.x = -this.speed.x * side;
+	                        }
+	                        this.spriteContainer.scale.set(1);
+	                        // this.sprite.scale.set(1)
 	
-	            this.sprite.rotation += this.velocity.x / 5000;
-	
-	            // let hScale = (this.spriteContainer.y / 250)
-	            // console.log((this.spriteContainer.y / 250));
-	            // this.externalColisionCircle.scale.x = 1 + hScale
-	            // this.externalColisionCircle.scale.y = 0.5 + hScale
-	            if (this.shooting && percentage == 0) {
-	                this.game.reset();
-	            }
-	            // if(percentage){
-	            this.velocity.x += this.rotationInfluence.x * delta * percentage;
-	
-	            // console.log(this.rotationInfluence.x);
-	            this.spriteContainer.x += this.verticalVelocity.x * delta * this.scale.x;
-	            this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.y;
-	            this.verticalVelocity.y += this.spriteGravity * delta;
-	
-	            //console.log(this.verticalVelocity.y);
-	
-	            // if(this.verticalVelocity.y < 0){
-	            // }
-	            // this.velocity.y += Math.cos(this.rotation);
-	            // }
-	
-	            if (this.spriteContainer.y > 0) {
-	
-	                this.touchGround(delta);
-	
-	                //console.log(Math.abs(this.verticalVelocity.y));
-	            }
-	
-	            if (this.rotationInfluence.x < 0) {
-	                this.rotationInfluence.x += this.friction.x * delta;
-	                if (this.rotationInfluence.x > 0) {
-	                    this.rotationInfluence.x = 0;
+	                        // console.log(this.verticalVelocity);
 	                }
-	            } else if (this.rotationInfluence.x > 0) {
-	                this.rotationInfluence.x -= this.friction.x * delta;
-	                if (this.rotationInfluence.x < 0) {
-	                    this.rotationInfluence.x = 0;
-	                }
-	            }
+	        }, {
+	                key: 'backSide',
+	                value: function backSide(force, force2) {
+	                        var t = Math.abs(force2) - 0.5;
+	                        // force2 = 1 - force2
+	                        this.velocity.x *= t; //force2
+	                        this.velocity.y *= t; //force2
 	
-	            if (this.velocity.x < this.virtualVelocity.x) {
-	                this.velocity.x += this.friction.x * delta;
-	                if (this.velocity.x > this.virtualVelocity.x) {
-	                    this.velocity.x = this.virtualVelocity.x;
+	                        this.verticalVelocity.y = -this.velocity.y * force2 * force * 2;
 	                }
-	            } else if (this.velocity.x > this.virtualVelocity.x) {
-	                this.velocity.x -= this.friction.x * delta;
-	                if (this.velocity.x < this.virtualVelocity.x) {
-	                    this.velocity.x = this.virtualVelocity.x;
-	                }
-	            }
+	        }, {
+	                key: 'back',
+	                value: function back(force, force2, forceDown) {
 	
-	            if (this.velocity.y < this.virtualVelocity.y) {
-	                this.velocity.y += this.friction.y * delta;
-	                if (this.velocity.y > this.virtualVelocity.y) {
-	                    this.velocity.y = this.virtualVelocity.y;
+	                        // force2 > 
+	                        //0 eh no meio
+	                        //>0 embaixo
+	                        //<acima
+	                        var t = Math.abs(force2) - 0.5;
+	                        // force2 = 1 - force2
+	                        this.velocity.y *= t; //force2
+	                        if (forceDown) {
+	                                this.verticalVelocity.y += 3500;
+	                                this.velocity.y = -Math.abs(this.velocity.y) * 0.3 - 250;
+	                        } else {
+	                                this.velocity.y += 600;
+	                                this.verticalVelocity.y = -this.velocity.y * force2 * force;
+	                        }
 	                }
-	            } else if (this.velocity.y > this.virtualVelocity.y) {
-	                this.velocity.y -= this.friction.y * delta;
-	                if (this.velocity.y < this.virtualVelocity.y) {
-	                    this.velocity.y = this.virtualVelocity.y;
+	        }, {
+	                key: 'getRadius',
+	                value: function getRadius() {
+	                        // this.standardScale
+	                        return this.scale.x * this.radius;
 	                }
-	            }
-	        }
-	    }]);
+	        }, {
+	                key: 'getExternalRadius',
+	                value: function getExternalRadius() {
+	                        return this.scale.x * this.externalRadius;
+	                }
+	        }, {
+	                key: 'touchGround',
+	                value: function touchGround(delta) {
 	
-	    return Ball;
+	                        // console.log('touchGround');
+	
+	                        // console.log(this.verticalVelocity.y);
+	                        if (this.onGoal) {
+	                                this.verticalVelocity.y = -this.verticalVelocity.y / 3;
+	                        } else {
+	                                this.verticalVelocity.y = -this.verticalVelocity.y / 1.7;
+	                        }
+	                        // console.log(this.verticalVelocity.y);
+	
+	                        this.velocity.x *= 0.5;
+	
+	                        if (Math.abs(this.verticalVelocity.y) < 200) {
+	                                // console.log(this.verticalVelocity);
+	                                this.verticalVelocity.y = 0;
+	                                this.spriteContainer.y = 0;
+	                                // this.spriteGravity = 0;
+	                        }
+	                        this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
+	                }
+	        }, {
+	                key: 'update',
+	                value: function update(delta) {
+	                        // delta*= 0.2
+	
+	                        this.x += this.velocity.x * delta * this.scale.x;
+	                        this.y += this.velocity.y * delta * this.scale.y;
+	
+	                        if (this.shooting) {
+	                                var ang = Math.atan2(this.velocity.y, this.velocity.x);
+	                                TweenLite.to(this.spriteContainer.scale, 0.5, { x: Math.sin(ang) * 0.2 + 1, y: Math.cos(ang) * 0.3 + 1 });
+	                        }
+	                        //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
+	
+	                        var percentage = Math.abs((Math.abs(this.velocity.x) + Math.abs(this.velocity.y)) / (Math.abs(this.speed.x) + Math.abs(this.speed.y)));
+	                        // console.log(this.rotationSpeed);
+	                        this.sprite.rotation += this.rotationSpeed * percentage * 0.5;
+	
+	                        this.sprite.rotation += this.velocity.x / 5000;
+	
+	                        // let hScale = (this.spriteContainer.y / 250)
+	                        // console.log((this.spriteContainer.y / 250));
+	                        // this.externalColisionCircle.scale.x = 1 + hScale
+	                        // this.externalColisionCircle.scale.y = 0.5 + hScale
+	                        // if(this.shooting && percentage == 0){
+	                        //     this.game.reset();
+	                        // }
+	                        // if(percentage){
+	                        this.velocity.x += this.rotationInfluence.x * delta * percentage;
+	
+	                        // console.log(this.rotationInfluence.x);
+	                        this.spriteContainer.x += this.verticalVelocity.x * delta * this.scale.x;
+	                        this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.y;
+	                        this.verticalVelocity.y += this.spriteGravity * delta;
+	
+	                        //console.log(this.verticalVelocity.y);
+	
+	                        // if(this.verticalVelocity.y < 0){
+	                        // }
+	                        // this.velocity.y += Math.cos(this.rotation);
+	                        // }
+	
+	                        if (this.spriteContainer.y > 0) {
+	
+	                                this.touchGround(delta);
+	
+	                                //console.log(Math.abs(this.verticalVelocity.y));
+	                        }
+	
+	                        if (this.rotationInfluence.x < 0) {
+	                                this.rotationInfluence.x += this.friction.x * delta;
+	                                if (this.rotationInfluence.x > 0) {
+	                                        this.rotationInfluence.x = 0;
+	                                }
+	                        } else if (this.rotationInfluence.x > 0) {
+	                                this.rotationInfluence.x -= this.friction.x * delta;
+	                                if (this.rotationInfluence.x < 0) {
+	                                        this.rotationInfluence.x = 0;
+	                                }
+	                        }
+	
+	                        if (this.velocity.x < this.virtualVelocity.x) {
+	                                this.velocity.x += this.friction.x * delta;
+	                                if (this.velocity.x > this.virtualVelocity.x) {
+	                                        this.velocity.x = this.virtualVelocity.x;
+	                                }
+	                        } else if (this.velocity.x > this.virtualVelocity.x) {
+	                                this.velocity.x -= this.friction.x * delta;
+	                                if (this.velocity.x < this.virtualVelocity.x) {
+	                                        this.velocity.x = this.virtualVelocity.x;
+	                                }
+	                        }
+	
+	                        if (this.velocity.y < this.virtualVelocity.y) {
+	                                this.velocity.y += this.friction.y * delta;
+	                                if (this.velocity.y > this.virtualVelocity.y) {
+	                                        this.velocity.y = this.virtualVelocity.y;
+	                                }
+	                        } else if (this.velocity.y > this.virtualVelocity.y) {
+	                                this.velocity.y -= this.friction.y * delta;
+	                                if (this.velocity.y < this.virtualVelocity.y) {
+	                                        this.velocity.y = this.virtualVelocity.y;
+	                                }
+	                        }
+	                }
+	        }]);
+	
+	        return Ball;
 	}(PIXI.Container);
 	
 	exports.default = Ball;
