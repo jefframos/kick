@@ -102,19 +102,21 @@ export default class Ball extends PIXI.Container {
         this.rotationSpeed = 0;
         this.shooting = false;
 
-        this.spriteContainer.scale.set(1)
+        this.spriteContainer.y = 0;
 
 
         this.y = config.height - 180;
 
-        if(Math.random() < 0.5){
+        if(Math.random() < 0.995){
             this.verticalVelocity = {x:0, y:0};
-            this.spriteContainer.y = - Math.random() * 250;
+            this.spriteContainer.y = 0//- Math.random() * 250;
             this.x = config.width / 2;
-            this.verticalVelocity.y = this.shootYSpeed;
+            this.verticalVelocity.y = 0//this.shootYSpeed;
         }else{
             this.spriteContainer.y = - Math.random() * 250;
-            this.verticalVelocity.y = Math.abs(this.verticalVelocity.y);
+
+            this.verticalVelocity.y = this.shootYSpeed;
+            // this.verticalVelocity.y = Math.abs(this.verticalVelocity.y);
 
             let side = Math.random() < 0.5 ? 1 : -1;
             if(side == 1){
@@ -126,14 +128,54 @@ export default class Ball extends PIXI.Container {
             this.virtualVelocity.x = -this.speed.x * side;
             this.velocity.x = -this.speed.x * side;
         }
+        this.spriteContainer.scale.set(1)
 
         // console.log(this.verticalVelocity);
     }
+    backSide(force, force2) {
+        let t = Math.abs(force2) - 0.5
+        // force2 = 1 - force2
+        this.velocity.x *=  t//force2
+        this.velocity.y *=  t//force2
+
+        this.verticalVelocity.y = -this.velocity.y * force2 * force
+    }
+    back(force, force2, forceDown) {
+
+        // force2 > 
+        //0 eh no meio
+        //>0 embaixo
+        //<acima
+        let t = Math.abs(force2) - 0.5
+        // force2 = 1 - force2
+        this.velocity.y *=  t//force2
+        if(forceDown){
+            this.verticalVelocity.y += 1000
+        }else{
+        this.verticalVelocity.y = -this.velocity.y * force2 * force
+            
+        }
+
+
+        // if(Math.abs(force2) < 0.5){
+
+        // }else{
+        //     this.velocity.y *= - force/2 * -force2
+        // }
+
+        // this.verticalVelocity.y = this.velocity.y * (force * force2)
+        // if(force2 < 0.45){
+        //     this.velocity.y = Math.abs(this.speed.y) * 2
+        //     this.verticalVelocity.y =  Math.abs( 1.5 *  this.shootYSpeed)
+        // }
+
+    }
     getRadius() {
-        return this.standardScale * this.radius;
+        // this.standardScale
+        return this.scale.x * this.radius;
     }
     getExternalRadius() {
-        return this.standardScale * this.externalRadius;
+        return this.scale.x * this.externalRadius;
     }
 
     touchGround ( delta ) {
@@ -160,7 +202,7 @@ export default class Ball extends PIXI.Container {
 
         if(this.shooting){
             let ang = Math.atan2(this.velocity.y, this.velocity.x)
-            TweenLite.to(this.spriteContainer.scale, 0.5, {x:Math.sin(ang)*0.2 + 1, y:Math.cos(ang)*0.2+1})
+            TweenLite.to(this.spriteContainer.scale, 0.5, {x:Math.sin(ang)*0.2 + 1, y:Math.cos(ang)*0.3+1})
         }
         //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
 
