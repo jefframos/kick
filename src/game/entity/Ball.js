@@ -151,8 +151,9 @@ export default class Ball extends PIXI.Container {
         this.velocity.y *=  t//force2
         if(forceDown){
             this.verticalVelocity.y += 3500
-            this.velocity.y = -Math.abs(this.velocity.y);
+            this.velocity.y = -Math.abs(this.velocity.y) * 0.3;
         }else{
+            this.velocity.y += 300
             this.verticalVelocity.y = -this.velocity.y * force2 * force
             
         }

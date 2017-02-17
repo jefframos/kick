@@ -38198,24 +38198,19 @@
 		}, {
 			key: 'collideBounds',
 			value: function collideBounds(delta, entity) {
+				if (this.colliding) {
+					return;
+				}
 	
 				// if(!entity.shooting){
 				if (entity.velocity.x > 0) {
 					if (entity.x > _config2.default.width + entity.getRadius()) {
-						console.log('reset');
-						//entity.virtualVelocity.x *= -0.5;
-						//entity.x += entity.virtualVelocity.x * delta;
 						this.reset();
 					}
 				} else if (entity.velocity.x < 0) {
 					if (entity.x < -entity.getRadius()) {
-	
-						console.log('reset2');
-	
 						this.reset();
 						// entity.virtualVelocity.x *= -0.1;
-						// entity.velocity.x = entity.virtualVelocity.x;
-						// entity.x += entity.virtualVelocity.x * delta
 					}
 				}
 				// }
@@ -38231,29 +38226,18 @@
 						if (this.colliding) {
 							return;
 						}
-	
-						//POSTE
-						// let p1 = {
-						// 	x:this.goleira.x - target.width / 2 * this.goleira.scale.x,
-						// 	y:this.goleira.y +(target.y * this.goleira.scale.y) //+ (target.height * this.goleira.scale.y)
-						// }
-						// let p2 = {
-						// 	x:this.goleira.x + target.width / 2 * this.goleira.scale.x,
-						// 	y:this.goleira.y +(target.y * this.goleira.scale.y) //+ (target.height * this.goleira.scale.y)
-						// }
-	
 						var ballPosition = {
-							x: this.ball.x, //+ this.ball.spriteContainer.x,
+							x: this.ball.x,
 							y: this.ball.y + this.ball.spriteContainer.y * this.ball.scale.y
 						};
-	
+						this.textLabel.text = 'NOT GOAL';
 						var collisions = [];
 						collisions.push(this.detectSideCollision(this.trave2, entity, ballPosition));
 						collisions.push(this.detectSideCollision(this.trave3, entity, ballPosition));
 						collisions.push(this.detectSideCollisionTop(this.trave1, entity, ballPosition));
 	
 						var killStandard = false;
-	
+						var isGoal = true;
 						for (var i = collisions.length - 1; i >= 0; i--) {
 							var interception = collisions[i];
 							if (interception.interception.length > 0) {
@@ -38264,13 +38248,14 @@
 								this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x, ballPosition.y, entity.getRadius());
 								//this.addChild(this.testeBall);
 	
-								this.colliding = true;
 								var distPos = (ballPosition.y - interception.p1.y) / entity.getRadius();
-								var isGoal = distPos > 0.1;
+								if (isGoal) isGoal = distPos > 0.1;
 								var distance = 1; //utils.distance(interception[0].x,0,interception[1].x,0) / entity.getRadius()
 								if (interception.type == 'side') {
 									distPos = (ballPosition.x - interception.p1.x) / entity.getRadius();
-									isGoal = distPos > 0.1;
+									if (isGoal) {
+										isGoal = distPos > 0.1;
+									}
 									this.ball.backSide(distance, distPos, isGoal);
 								} else {
 									this.ball.back(distance, distPos, isGoal);
@@ -38283,7 +38268,22 @@
 								// this.textLabel.text = 'NAO COLIDIU'
 							}
 						}
+						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() };
+						var rect = { x: this.goleira.x - this.goleira.width / 2, y: this.goleira.y - this.goleira.height, w: this.goleira.width, h: this.goleira.height };
+						var onGoal = this.rectCircleColliding(circle, rect);
+						if (onGoal && this.ball.velocity.y < 0) {
+							this.textLabel.text = 'GOAL';
+						} else {
+							this.textLabel.text = 'no goal';
+						}
+						if (this.testeRect) {
+							this.testeRect.parent.removeChild(this.testeRect);
+						}
+						this.testeRect = new PIXI.Graphics().beginFill(0x220000).drawRect(rect.x, rect.y, rect.w, rect.h);
+						this.addChild(this.testeRect);
+						this.testeRect.alpha = 0.2;
 	
+						// if(!this.colliding){
 						if (killStandard) {
 							setTimeout(function () {
 								this.reset();
@@ -38294,6 +38294,9 @@
 								this.reset();
 							}.bind(this), 100);
 						}
+						// }
+	
+						this.colliding = true;
 					}
 				}
 			}
@@ -38389,6 +38392,36 @@
 				// this.collide(delta, this.ball, this.ball2)
 				// this.collide(delta, this.ball, this.ball3)
 				this.collideBounds(delta, this.ball);
+			}
+	
+			// 	var circle={x:100,y:290,r:10};
+			// var rect={x:100,y:100,w:40,h:100};
+	
+			// return true if the rectangle and circle are colliding
+	
+		}, {
+			key: 'rectCircleColliding',
+			value: function rectCircleColliding(circle, rect) {
+				var distX = Math.abs(circle.x - rect.x - rect.w / 2);
+				var distY = Math.abs(circle.y - rect.y - rect.h / 2);
+	
+				if (distX > rect.w / 2 + circle.r) {
+					return false;
+				}
+				if (distY > rect.h / 2 + circle.r) {
+					return false;
+				}
+	
+				if (distX <= rect.w / 2) {
+					return true;
+				}
+				if (distY <= rect.h / 2) {
+					return true;
+				}
+	
+				var dx = distX - rect.w / 2;
+				var dy = distY - rect.h / 2;
+				return dx * dx + dy * dy <= circle.r * circle.r;
 			}
 		}, {
 			key: 'inteceptCircleLineSeg2',
@@ -47008,8 +47041,9 @@
 	            this.velocity.y *= t; //force2
 	            if (forceDown) {
 	                this.verticalVelocity.y += 3500;
-	                this.velocity.y = -Math.abs(this.velocity.y);
+	                this.velocity.y = -Math.abs(this.velocity.y) * 0.3;
 	            } else {
+	                this.velocity.y += 300;
 	                this.verticalVelocity.y = -this.velocity.y * force2 * force;
 	            }
 	        }
