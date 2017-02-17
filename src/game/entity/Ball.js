@@ -150,24 +150,13 @@ export default class Ball extends PIXI.Container {
         // force2 = 1 - force2
         this.velocity.y *=  t//force2
         if(forceDown){
-            this.verticalVelocity.y += 1000
+            this.verticalVelocity.y += 3500
+            this.velocity.y = -Math.abs(this.velocity.y);
         }else{
-        this.verticalVelocity.y = -this.velocity.y * force2 * force
+            this.verticalVelocity.y = -this.velocity.y * force2 * force
             
         }
 
-
-        // if(Math.abs(force2) < 0.5){
-
-        // }else{
-        //     this.velocity.y *= - force/2 * -force2
-        // }
-
-        // this.verticalVelocity.y = this.velocity.y * (force * force2)
-        // if(force2 < 0.45){
-        //     this.velocity.y = Math.abs(this.speed.y) * 2
-        //     this.verticalVelocity.y =  Math.abs( 1.5 *  this.shootYSpeed)
-        // }
 
     }
     getRadius() {

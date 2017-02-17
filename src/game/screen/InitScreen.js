@@ -216,15 +216,18 @@ export default class InitScreen extends Screen{
 
 						this.colliding = true;
 						let distPos = (ballPosition.y - interception.p1.y) / entity.getRadius();
+						let isGoal = distPos > 0.1;
 						let distance = 1//utils.distance(interception[0].x,0,interception[1].x,0) / entity.getRadius()
 						if(interception.type == 'side'){
 							distPos = (ballPosition.x - interception.p1.x) / entity.getRadius();
-							this.ball.backSide(distance, distPos, distPos > 0.6);
+							isGoal = distPos > 0.1;
+							this.ball.backSide(distance, distPos, isGoal);
 						}else{						
-							this.ball.back(distance, distPos, distPos > 0.6);
+							this.ball.back(distance, distPos, isGoal);
 						}
 						
-						this.textLabel.text = distance +' - '+distPos//interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
+						let label =  isGoal?'GOAL':'NOT GOAL'
+						this.textLabel.text = distance +' - '+distPos+' - '+label;//interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
 						killStandard = true;
 					}else{
 						// this.textLabel.text = 'NAO COLIDIU'
