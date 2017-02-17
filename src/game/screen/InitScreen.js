@@ -219,8 +219,15 @@ export default class InitScreen extends Screen{
 						// this.textLabel.text = 'NAO COLIDIU'
 					}
 				}
-				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius()}
-				let rect = {x:this.goleira.x - this.goleira.width/2,y:this.goleira.y- this.goleira.height, w:this.goleira.width, h:this.goleira.height}
+				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.5}
+				let www = 10
+				let hhh = 12
+				let rect = {
+					x:this.goleira.x - this.goleira.width/2 + www,
+					y:this.goleira.y - this.goleira.height + hhh,
+					w:this.goleira.width - www *2 + 4,
+					h:this.goleira.height - hhh}
+
 				let onGoal = this.rectCircleColliding(circle, rect)
 				if(onGoal && this.ball.velocity.y < 0){
 					this.textLabel.text = 'GOAL'
@@ -251,12 +258,12 @@ export default class InitScreen extends Screen{
 
 	detectSideCollisionTop(target, entity,ballPosition){
 		let p1 = {
-			x:this.goleira.x - target.width / 2 * this.goleira.scale.x,
-			y:this.goleira.y +(target.y * this.goleira.scale.y) //+ (target.height * this.goleira.scale.y)
+			x:this.goleira.x - target.width / 2 * this.goleira.scale.x + 2,
+			y:this.goleira.y +(target.y * this.goleira.scale.y) + 2//+ (target.height * this.goleira.scale.y)
 		}
 		let p2 = {
-			x:this.goleira.x + target.width / 2 * this.goleira.scale.x,
-			y:this.goleira.y +(target.y * this.goleira.scale.y) //+ (target.height * this.goleira.scale.y)
+			x:this.goleira.x + target.width / 2 * this.goleira.scale.x + 2,
+			y:this.goleira.y +(target.y * this.goleira.scale.y) + 2 //+ (target.height * this.goleira.scale.y)
 		}
 
 
@@ -273,12 +280,12 @@ export default class InitScreen extends Screen{
 
 	detectSideCollision(target, entity,ballPosition){
 		let p1 = {
-			x:this.goleira.x - target.x * this.goleira.scale.x,
-			y:this.goleira.y -(target.y * this.goleira.scale.y) //+ (target.height * this.goleira.scale.y)
+			x:this.goleira.x - target.x * this.goleira.scale.x + 2,
+			y:this.goleira.y -(target.y * this.goleira.scale.y) + 2//+ (target.height * this.goleira.scale.y)
 		}
 		let p2 = {
-			x:this.goleira.x - target.x * this.goleira.scale.x,
-			y:this.goleira.y -(target.height * this.goleira.scale.y) //+ (target.height * this.goleira.scale.y)
+			x:this.goleira.x - target.x * this.goleira.scale.x + 2,
+			y:this.goleira.y -(target.height * this.goleira.scale.y) + 2 //+ (target.height * this.goleira.scale.y)
 		}
 
 

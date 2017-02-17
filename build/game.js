@@ -38268,8 +38268,15 @@
 								// this.textLabel.text = 'NAO COLIDIU'
 							}
 						}
-						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() };
-						var rect = { x: this.goleira.x - this.goleira.width / 2, y: this.goleira.y - this.goleira.height, w: this.goleira.width, h: this.goleira.height };
+						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.5 };
+						var www = 10;
+						var hhh = 12;
+						var rect = {
+							x: this.goleira.x - this.goleira.width / 2 + www,
+							y: this.goleira.y - this.goleira.height + hhh,
+							w: this.goleira.width - www * 2 + 4,
+							h: this.goleira.height - hhh };
+	
 						var onGoal = this.rectCircleColliding(circle, rect);
 						if (onGoal && this.ball.velocity.y < 0) {
 							this.textLabel.text = 'GOAL';
@@ -38304,12 +38311,12 @@
 			key: 'detectSideCollisionTop',
 			value: function detectSideCollisionTop(target, entity, ballPosition) {
 				var p1 = {
-					x: this.goleira.x - target.width / 2 * this.goleira.scale.x,
-					y: this.goleira.y + target.y * this.goleira.scale.y //+ (target.height * this.goleira.scale.y)
+					x: this.goleira.x - target.width / 2 * this.goleira.scale.x + 2,
+					y: this.goleira.y + target.y * this.goleira.scale.y + 2 //+ (target.height * this.goleira.scale.y)
 				};
 				var p2 = {
-					x: this.goleira.x + target.width / 2 * this.goleira.scale.x,
-					y: this.goleira.y + target.y * this.goleira.scale.y //+ (target.height * this.goleira.scale.y)
+					x: this.goleira.x + target.width / 2 * this.goleira.scale.x + 2,
+					y: this.goleira.y + target.y * this.goleira.scale.y + 2 //+ (target.height * this.goleira.scale.y)
 				};
 	
 				this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(p1.x, p1.y);
@@ -38325,12 +38332,12 @@
 			key: 'detectSideCollision',
 			value: function detectSideCollision(target, entity, ballPosition) {
 				var p1 = {
-					x: this.goleira.x - target.x * this.goleira.scale.x,
-					y: this.goleira.y - target.y * this.goleira.scale.y //+ (target.height * this.goleira.scale.y)
+					x: this.goleira.x - target.x * this.goleira.scale.x + 2,
+					y: this.goleira.y - target.y * this.goleira.scale.y + 2 //+ (target.height * this.goleira.scale.y)
 				};
 				var p2 = {
-					x: this.goleira.x - target.x * this.goleira.scale.x,
-					y: this.goleira.y - target.height * this.goleira.scale.y //+ (target.height * this.goleira.scale.y)
+					x: this.goleira.x - target.x * this.goleira.scale.x + 2,
+					y: this.goleira.y - target.height * this.goleira.scale.y + 2 //+ (target.height * this.goleira.scale.y)
 				};
 	
 				this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(p1.x, p1.y);
