@@ -36,8 +36,9 @@ export default class Collisions{
 			// angle -= 180 / 180 * 3.14;
 			// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
 			console.log('1',entity.velocity.y);	
-			entity.velocity.y = Math.sin(angle) * (entity.velocity.y)// * percent);
-			angle += 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAH
+			//TROCAR ENTRE SENOS E COSSENOS AQUI
+			entity.velocity.y = Math.cos(angle) * (entity.velocity.y)// * percent);
+			angle += 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
 			entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
 			console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
 			console.log('angle', angle * 180 / 3.14);
