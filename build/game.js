@@ -38030,13 +38030,21 @@
 	
 	var _Ball2 = _interopRequireDefault(_Ball);
 	
-	var _AnimationManager = __webpack_require__(193);
+	var _Collisions = __webpack_require__(196);
 	
-	var _AnimationManager2 = _interopRequireDefault(_AnimationManager);
+	var _Collisions2 = _interopRequireDefault(_Collisions);
 	
-	var _Trail = __webpack_require__(194);
+	var _TrailManager = __webpack_require__(198);
 	
-	var _Trail2 = _interopRequireDefault(_Trail);
+	var _TrailManager2 = _interopRequireDefault(_TrailManager);
+	
+	var _ViewManager = __webpack_require__(199);
+	
+	var _ViewManager2 = _interopRequireDefault(_ViewManager);
+	
+	var _GoalView = __webpack_require__(197);
+	
+	var _GoalView2 = _interopRequireDefault(_GoalView);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -38082,36 +38090,12 @@
 	
 				this.updateList = [];
 	
-				this.animationContainer = new PIXI.Container();
-				// this.addChild(this.animationContainer)
-	
-				this.animationModel = [];
-				this.animationModel.push({
-					label: 'idle',
-					src: 'players/dead/dead00',
-					totalFrames: 9,
-					startFrame: 0,
-					animationSpeed: 0.2,
-					movieClip: null,
-					position: { x: 0, y: 0 },
-					anchor: { x: 0.5, y: 0.5 }
-				});
-	
-				this.animationManager = new _AnimationManager2.default(this.animationModel, this.animationContainer);
-				// this.animationManager.finishCallback = this.finishAnimation.bind(this);
-				// this.animationManager.startCallback = this.startAnimation.bind(this);
-				this.animationManager.hideAll();
-				this.animationManager.stopAll();
-				this.animationManager.changeState('idle');
-	
 				this.ball = new _Ball2.default(this, 50);
 	
 				this.gameContainer.addChild(this.ball);
 	
 				this.ball.x = _config2.default.width / 2;
 				this.ball.y = _config2.default.height - 200;
-	
-				this.updateList.push(this.ball);
 	
 				// this.ball.velocity.y = -this.ball.speed.y;
 				// this.ball.virtualVelocity.x = 0;
@@ -38140,44 +38124,25 @@
 				this.ingameUIContainer.addChild(this.backgroundIngameUI);
 	
 				this.addEvents();
-	
 				this.currentTrail = false;
-	
 				this.trailPool = [];
 	
-				this.goal = PIXI.Sprite.fromImage('assets/images/goal.png'); //new PIXI.Graphics().beginFill(0x023548).drawRect(-500,-400,1000, 400);
-				// this.addChild(this.goal);
-				this.goal.anchor.set(0.5, 0.9);
-				// this.goal.scale.set(1.3)
-				this.goal.x = _config2.default.width / 2 + 16;
-				this.goal.y = 150;
-				this.goal.alpha = 0.5;
-	
-				this.goleira = new PIXI.Container();
-				this.gameContainer.addChild(this.goleira);
-	
-				var h = 500;
-				var w = 1300;
-				var tck = 20;
-				this.trave1 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w / 2, 0, w, tck);
-				this.goleira.addChild(this.trave1);
-				this.trave1.y = -h;
-				this.trave2 = new PIXI.Graphics().beginFill(0x023548).drawRect(0, -h, tck, h);
-				this.goleira.addChild(this.trave2);
-				this.trave2.x = w / 2;
-	
-				this.trave3 = new PIXI.Graphics().beginFill(0x023548).drawRect(0, -h, tck, h);
-				this.goleira.addChild(this.trave3);
-				this.trave3.x = -w / 2;
-	
-				// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
-				// this.goleira.addChild(this.trave4);
-	
+				this.goleira = new _GoalView2.default(this);
+				this.goleira.build();
 				this.goleira.x = _config2.default.width / 2;
 				this.goleira.y = 150;
 	
+				this.gameContainer.addChild(this.goleira);
+	
 				this.textLabel = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
 				this.addChild(this.textLabel);
+	
+				this.collisions = new _Collisions2.default();
+				this.viewManager = new _ViewManager2.default();
+				this.trailManager = new _TrailManager2.default(this.ingameUIContainer);
+	
+				this.updateList.push(this.ball);
+				this.updateList.push(this.goleira);
 			}
 		}, {
 			key: 'getTrail',
@@ -38188,7 +38153,7 @@
 						return this.trailPool[i];
 					}
 				}
-				var trail = new _Trail2.default(this.ingameUIContainer, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+				var trail = new Trail(this.ingameUIContainer, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
 				trail.trailTick = 15;
 				trail.speed = 0.01;
 				trail.frequency = 0.0001;
@@ -38201,6 +38166,15 @@
 				this.paused = false;
 				this.colliding = false;
 				this.ball.reset();
+			}
+		}, {
+			key: 'debugBall',
+			value: function debugBall(ballPosition, entity) {
+				if (this.testeBall && this.testeBall.parent) {
+					this.testeBall.parent.removeChild(this.testeBall);
+				}
+				this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x, ballPosition.y, entity.getRadius());
+				this.addChild(this.testeBall);
 			}
 		}, {
 			key: 'collideBounds',
@@ -38228,7 +38202,7 @@
 						// entity.y += entity.velocity.y * delta;
 					}
 				} else if (entity.velocity.y < 0) {
-					if (entity.y < this.goal.y - 10) {
+					if (entity.y < this.goleira.y - 10) {
 	
 						if (this.colliding) {
 							return;
@@ -38239,21 +38213,19 @@
 						};
 						this.textLabel.text = 'NOT GOAL';
 						var collisions = [];
-						collisions.push(this.detectSideCollision(this.trave2, entity, ballPosition));
-						collisions.push(this.detectSideCollision(this.trave3, entity, ballPosition));
-						collisions.push(this.detectSideCollisionTop(this.trave1, entity, ballPosition));
+						var topStickPoint = this.goleira.getTopStick();
+						collisions.push(this.detectSideCollision(this.goleira.getLeftStick(), entity, ballPosition));
+						collisions.push(this.detectSideCollision(this.goleira.getRightStick(), entity, ballPosition));
+						collisions.push(this.detectTopCollision(topStickPoint, entity, ballPosition));
 	
 						var killStandard = false;
 						var isGoal = true;
+	
 						for (var i = collisions.length - 1; i >= 0; i--) {
 							var interception = collisions[i];
 							if (interception.interception.length > 0) {
 	
-								if (this.testeBall && this.testeBall.parent) {
-									this.testeBall.parent.removeChild(this.testeBall);
-								}
-								this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x, ballPosition.y, entity.getRadius());
-								//this.addChild(this.testeBall);
+								this.debugBall(ballPosition, entity);
 	
 								var distPos = (ballPosition.y - interception.p1.y) / entity.getRadius();
 								if (isGoal) isGoal = distPos > 0;
@@ -38265,26 +38237,27 @@
 									}
 									this.ball.backSide(distance, distPos, isGoal);
 								} else {
-									this.ball.back(distance, distPos, isGoal);
+									// console.log(ballPosition.x, ballPosition.y, interception.interception);
+									var topStick = { x: ballPosition.x + this.ball.getRadius() * 0.5, y: interception.interception[0].y, getRadius: function getRadius() {
+											return 5;
+										} };
+									// 				if(utils.distance(topStick.x, topStick.y, entity.x, entity.y) < topStick.getRadius() + entity.getRadius()){
+									// let angle = -Math.atan2(topStick.y - entity.y, topStick.x - entity.x);
+									this.collisions.collideSticks(1 / 60, this.ball, topStick, ballPosition);
+									//this.ball.back(distance, distPos, isGoal);
 								}
 	
 								var label = isGoal ? 'GOAL' : 'NOT GOAL';
 								this.textLabel.text = distance + ' - ' + distPos + ' - ' + label; //interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
 								killStandard = true;
-							} else {
-								// this.textLabel.text = 'NAO COLIDIU'
 							}
 						}
-						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.5 };
-						var www = 10;
-						var hhh = 6;
-						var rect = {
-							x: this.goleira.x - this.goleira.width / 2 + www,
-							y: this.goleira.y - this.goleira.height + hhh,
-							w: this.goleira.width - www * 2 + 4,
-							h: this.goleira.height - hhh };
 	
-						var onGoal = this.rectCircleColliding(circle, rect);
+						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.5 };
+						var rect = this.goleira.getGoalRect();
+	
+						var onGoal = this.collisions.rectCircleColliding(circle, rect);
+	
 						if (onGoal && this.ball.velocity.y < 0) {
 							this.ball.verticalVelocity.y += 8000 / -this.ball.velocity.y;
 							this.ball.velocity.y *= 0.25;
@@ -38296,24 +38269,15 @@
 							this.ball.spriteGravity *= 5;
 							this.ball.velocity.y *= 0.4;
 						}
-						if (this.testeRect) {
-							this.testeRect.parent.removeChild(this.testeRect);
-						}
-						this.testeRect = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(rect.x, rect.y, rect.w, rect.h);
-						this.addChild(this.testeRect);
-						this.testeRect.alpha = 0.2;
 	
+						this.debugGoal(rect);
 						// if(!this.colliding){
-						if (killStandard) {
-							setTimeout(function () {
-								this.reset();
-							}.bind(this), 2000);
-						} else {
-							// this.paused = true;
-							setTimeout(function () {
-								this.reset();
-							}.bind(this), 1500);
-						}
+						// if(killStandard){
+						// 	setTimeout(function() {this.reset();}.bind(this), 2000);
+						// }else{
+						// 	// this.paused = true;
+						// 	setTimeout(function() {this.reset();}.bind(this), 1500);
+						// }
 						// }
 	
 						this.colliding = true;
@@ -38321,89 +38285,22 @@
 				}
 			}
 		}, {
-			key: 'detectSideCollisionTop',
-			value: function detectSideCollisionTop(target, entity, ballPosition) {
-				var p1 = {
-					x: this.goleira.x - target.width / 2 * this.goleira.scale.x + 2,
-					y: this.goleira.y + target.y * this.goleira.scale.y + 2 //+ (target.height * this.goleira.scale.y)
-				};
-				var p2 = {
-					x: this.goleira.x + target.width / 2 * this.goleira.scale.x + 2,
-					y: this.goleira.y + target.y * this.goleira.scale.y + 2 //+ (target.height * this.goleira.scale.y)
-				};
-	
-				this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(p1.x, p1.y);
-				this.testee.lineTo(p2.x, p2.y);
-				this.addChild(this.testee);
-	
-				console.log(p1, p2);
-	
-				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: p1, p2: p2 }, entity.getRadius());
-				return { interception: interception, p1: p1, p2: p2, type: 'top' };
-			}
-		}, {
-			key: 'detectSideCollision',
-			value: function detectSideCollision(target, entity, ballPosition) {
-				var p1 = {
-					x: this.goleira.x - target.x * this.goleira.scale.x + 2,
-					y: this.goleira.y - target.y * this.goleira.scale.y + 2 //+ (target.height * this.goleira.scale.y)
-				};
-				var p2 = {
-					x: this.goleira.x - target.x * this.goleira.scale.x + 2,
-					y: this.goleira.y - target.height * this.goleira.scale.y + 2 //+ (target.height * this.goleira.scale.y)
-				};
-	
-				this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(p1.x, p1.y);
-				this.testee.lineTo(p2.x, p2.y);
-				this.addChild(this.testee);
-	
-				console.log(p1, p2);
-	
-				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: p1, p2: p2 }, entity.getRadius());
-				return { interception: interception, p1: p1, p2: p2, type: 'side' };
-			}
-		}, {
-			key: 'collide',
-			value: function collide(delta, entity, toCollide) {
-				if (_utils2.default.distance(toCollide.x, toCollide.y, entity.x, entity.y) < toCollide.getRadius() + entity.getRadius()) {
-					var angle = -Math.atan2(toCollide.y - entity.y, toCollide.x - entity.x);
-					angle += 90 / 180 * 3.14;
-					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
-					entity.velocity.x = Math.sin(angle) * -Math.abs(entity.speed.x * percent);
-					entity.velocity.y = Math.cos(angle) * -Math.abs(entity.speed.y * percent);
-				}
-			}
-		}, {
 			key: 'update',
 			value: function update(delta) {
-				if (this.currentTrail) {
-					this.currentTrail.update(delta, this.mousePosition);
-				}
-				for (var i = this.trailPool.length - 1; i >= 0; i--) {
-					if (!this.trailPool[i].killed && this.trailPool[i] != this.currentTrail) {
-						this.trailPool[i].update(delta, null);
-					}
-				}
+				this.trailManager.update(delta, this.mousePosition);
 				if (this.paused) {
 					return;
 				}
 				_get(InitScreen.prototype.__proto__ || Object.getPrototypeOf(InitScreen.prototype), 'update', this).call(this, delta);
 	
 				for (var i = this.updateList.length - 1; i >= 0; i--) {
-					this.updateList[i].update(delta);
+					if (this.updateList[i].update) {
+						this.updateList[i].update(delta);
+					}
+					this.viewManager.updateObjectScale(this.updateList[i], _config2.default.height);
 				}
 	
 				this.gameContainer.children.sort(_utils2.default.depthCompare);
-	
-				var perspectiveFactor = 1 - this.ball.y / _config2.default.height;
-				// console.log(perspectiveFactor);
-				this.ball.scale.set(1.1 - perspectiveFactor * 1.1);
-	
-				perspectiveFactor = 1 - this.goal.y / _config2.default.height;
-				this.goal.scale.set(1.1 - perspectiveFactor * 1.1);
-	
-				perspectiveFactor = 1 - this.goleira.y / _config2.default.height;
-				this.goleira.scale.set(1.1 - perspectiveFactor * 1.1);
 	
 				this.mousePosition = renderer.plugins.interaction.pointer.global;
 				// if(this.currentTrail)
@@ -38413,137 +38310,48 @@
 				// this.collide(delta, this.ball, this.ball3)
 				this.collideBounds(delta, this.ball);
 			}
-	
-			// 	var circle={x:100,y:290,r:10};
-			// var rect={x:100,y:100,w:40,h:100};
-	
-			// return true if the rectangle and circle are colliding
-	
 		}, {
-			key: 'rectCircleColliding',
-			value: function rectCircleColliding(circle, rect) {
-				var distX = Math.abs(circle.x - rect.x - rect.w / 2);
-				var distY = Math.abs(circle.y - rect.y - rect.h / 2);
-	
-				if (distX > rect.w / 2 + circle.r) {
-					return false;
+			key: 'debugGoal',
+			value: function debugGoal(rect) {
+				if (this.testeRect) {
+					this.testeRect.parent.removeChild(this.testeRect);
 				}
-				if (distY > rect.h / 2 + circle.r) {
-					return false;
-				}
-	
-				if (distX <= rect.w / 2) {
-					return true;
-				}
-				if (distY <= rect.h / 2) {
-					return true;
-				}
-	
-				var dx = distX - rect.w / 2;
-				var dy = distY - rect.h / 2;
-				return dx * dx + dy * dy <= circle.r * circle.r;
+				this.testeRect = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(rect.x, rect.y, rect.w, rect.h);
+				this.addChild(this.testeRect);
+				this.testeRect.alpha = 0.2;
 			}
 		}, {
-			key: 'inteceptCircleLineSeg2',
-			value: function inteceptCircleLineSeg2(circle, line, radius) {
-				var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
-				v1 = {};
-				v2 = {};
-				v1.x = line.p2.x - line.p1.x;
-				v1.y = line.p2.y - line.p1.y;
-				v2.x = line.p1.x - circle.x;
-				v2.y = line.p1.y - circle.y;
-				b = v1.x * v2.x + v1.y * v2.y;
-				c = 2 * (v1.x * v1.x + v1.y * v1.y);
-				b *= -2;
-				d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius));
-				if (isNaN(d)) {
-					// no intercept
-					return [];
-				}
-				u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
-				u2 = (b + d) / c;
-				retP1 = {}; // return points
-				retP2 = {};
-				ret = []; // return array
-				if (u1 <= 1 && u1 >= 0) {
-					// add point if on the line segment
-					retP1.x = line.p1.x + v1.x * u1;
-					retP1.y = line.p1.y + v1.y * u1;
-					ret[0] = retP1;
-				}
-				if (u2 <= 1 && u2 >= 0) {
-					// second add point if on the line segment
-					retP2.x = line.p1.x + v1.x * u2;
-					retP2.y = line.p1.y + v1.y * u2;
-					ret[ret.length] = retP2;
-				}
-				return ret;
-			}
-		}, {
-			key: 'inteceptCircleLineSeg',
-			value: function inteceptCircleLineSeg(circle, line) {
-				var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
-				v1 = {};
-				v2 = {};
-				v1.x = line.p2.x - line.p1.x;
-				v1.y = line.p2.y - line.p1.y;
-				v2.x = line.p1.x - circle.x;
-				v2.y = line.p1.y - circle.y;
-				b = v1.x * v2.x + v1.y * v2.y;
-				c = 2 * (v1.x * v1.x + v1.y * v1.y);
-				b *= -2;
-				d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.getExternalRadius() * circle.getExternalRadius()));
-				if (isNaN(d)) {
-					// no intercept
-					return [];
-				}
-				u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
-				u2 = (b + d) / c;
-				retP1 = {}; // return points
-				retP2 = {};
-				ret = []; // return array
-				if (u1 <= 1 && u1 >= 0) {
-					// add point if on the line segment
-					retP1.x = line.p1.x + v1.x * u1;
-					retP1.y = line.p1.y + v1.y * u1;
-					ret[0] = retP1;
-				}
-				if (u2 <= 1 && u2 >= 0) {
-					// second add point if on the line segment
-					retP2.x = line.p1.x + v1.x * u2;
-					retP2.y = line.p1.y + v1.y * u2;
-					ret[ret.length] = retP2;
-				}
-				return ret;
+			key: 'debugStick',
+			value: function debugStick(target) {
+				this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(target.p1.x, target.p1.y);
+				this.testee.lineTo(target.p2.x, target.p2.y);
+				this.addChild(this.testee);
 			}
 		}, {
 			key: 'verifyInterception',
 			value: function verifyInterception() {
-				if (this.firstPoint && this.firstPoint.y < this.mousePosition.y) {
-					return;
-				}
-				if (!this.tapping) {
+				if (!this.tapping || this.firstPoint && this.firstPoint.y < this.mousePosition.y) {
 					return;
 				}
 	
 				this.secPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
-				// console.log(this.firstPoint);
-				// console.log(this.secPoint);
+				var interception = this.collisions.inteceptCircleLineSeg(this.ball, { p1: this.firstPoint, p2: this.secPoint });
 	
-				var interception = this.inteceptCircleLineSeg(this.ball, { p1: this.firstPoint, p2: this.secPoint });
-				// console.log(interception);
+				//just shoot if have two points of intersection
 				if (interception.length < 2) {
 					return;
 				}
 				this.tapping = false;
+	
+				//angle btx the intersection points
 				var angleColision = -Math.atan2(interception[0].y - interception[1].y, interception[0].x - interception[1].x);
-				angleColision += 90 / 180 * 3.14;
-				// console.log(interception, angleColision * 180 / 3.14);
-				var angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
+				angleColision += 90 / 180 * 3.14;;
+				var frontBall = { x: this.ball.x, y: this.ball.y - this.ball.getRadius() };
+	
+				//angle btw front of the ball and the points
+				var angle = -Math.atan2(this.firstPoint.y - frontBall.y, this.secPoint.x - frontBall.x);
+				// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
 				angle += 90 / 180 * 3.14;
-				//this.ball.x = config.width / 2;
-				//this.ball.y = config.height;
 				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025;
 	
 				this.ball.shoot(force, angle, angleColision);
@@ -38553,23 +38361,32 @@
 				}.bind(this), 100);
 			}
 		}, {
+			key: 'detectTopCollision',
+			value: function detectTopCollision(target, entity, ballPosition) {
+				this.debugStick(target);
+				return this.collisions.detectTopCollision(target, entity, ballPosition);
+			}
+		}, {
+			key: 'detectSideCollision',
+			value: function detectSideCollision(target, entity, ballPosition) {
+				this.debugStick(target);
+				return this.collisions.detectSideCollision(target, entity, ballPosition);
+			}
+		}, {
 			key: 'onTapUp',
 			value: function onTapUp() {
-				this.currentTrail = null;
+				this.trailManager.removeTrail();
 				this.tapping = false;
-	
-				// console.log(renderer.plugins.interaction);
 			}
 		}, {
 			key: 'onTapDown',
 			value: function onTapDown() {
-				this.currentTrail = this.getTrail();
-				this.currentTrail.mesh.alpha = 0.2;
-				this.currentTrail.mesh.blendMode = PIXI.BLEND_MODES.ADD;
-				this.currentTrail.speed = 0.1;
-				this.currentTrail.update(0, this.mousePosition);
+				// this.ball.shoot(6.5 , 0,  0);
+				this.reset();
+				this.ball.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
 				this.tapping = true;
 				this.firstPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
+				this.trailManager.startNewTrail(this.mousePosition);
 			}
 		}, {
 			key: 'removeEvents',
@@ -46881,7 +46698,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-	        value: true
+	    value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -46905,492 +46722,307 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var Ball = function (_PIXI$Container) {
-	        _inherits(Ball, _PIXI$Container);
+	    _inherits(Ball, _PIXI$Container);
 	
-	        function Ball(game) {
-	                var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+	    function Ball(game) {
+	        var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
 	
-	                _classCallCheck(this, Ball);
+	        _classCallCheck(this, Ball);
 	
-	                var _this = _possibleConstructorReturn(this, (Ball.__proto__ || Object.getPrototypeOf(Ball)).call(this));
+	        var _this = _possibleConstructorReturn(this, (Ball.__proto__ || Object.getPrototypeOf(Ball)).call(this));
 	
-	                _this.game = game;
-	                _this.virtualVelocity = { x: 0, y: 0 };
-	                _this.velocity = { x: 0, y: 0 };
-	                _this.speed = { x: 230, y: 230 };
-	                _this.friction = { x: 100, y: 200 };
-	                _this.rotationInfluence = { x: 0, y: 0 };
-	                _this.rotationSpeed = 0;
-	                _this.scaleFator = 1;
-	                _this.standardScale = 1;
-	                _this.speedScale = 1;
-	                _this.starterScale = 0.5;
-	                _this.radius = radius;
-	                _this.externalRadius = _this.radius * 1;
-	                _this.static = false;
-	                _this.side = 1;
-	                _this.maxLife = 5;
-	                _this.life = 5;
-	                _this.collidable = true;
+	        _this.game = game;
+	        _this.virtualVelocity = { x: 0, y: 0 };
+	        _this.velocity = { x: 0, y: 0 };
+	        _this.speed = { x: 230, y: 230 };
+	        _this.friction = { x: 100, y: 200 };
+	        _this.rotationInfluence = { x: 0, y: 0 };
+	        _this.rotationSpeed = 0;
+	        _this.scaleFator = 1;
+	        _this.standardScale = 1;
+	        _this.speedScale = 1;
+	        _this.starterScale = 0.5;
+	        _this.radius = radius;
+	        _this.externalRadius = _this.radius * 1;
+	        _this.static = false;
+	        _this.side = 1;
+	        _this.maxLife = 5;
+	        _this.life = 5;
+	        _this.collidable = true;
 	
-	                _this.verticalVelocity = { x: 0, y: 0 };
-	                _this.spriteGravityStandard = 5000;
-	                _this.spriteGravity = 5000;
-	                _this.shootYSpeed = -1200;
-	                _this.spriteDirection = 1;
+	        _this.verticalVelocity = { x: 0, y: 0 };
+	        _this.spriteGravityStandard = 5000;
+	        _this.spriteGravity = 5000;
+	        _this.shootYSpeed = -1200;
+	        _this.spriteDirection = 1;
 	
-	                _this.container = new PIXI.Container();
-	                _this.addChild(_this.container);
+	        _this.container = new PIXI.Container();
+	        _this.addChild(_this.container);
 	
-	                _this.externalColisionCircle = new PIXI.Graphics();
-	                _this.externalColisionCircle.beginFill(0x000000);
-	                _this.externalColisionCircle.drawCircle(0, _this.radius, _this.radius);
-	                _this.externalColisionCircle.alpha = 0.1;
-	                _this.container.addChild(_this.externalColisionCircle);
-	                _this.externalColisionCircle.scale.y = 0.5;
+	        _this.externalColisionCircle = new PIXI.Graphics();
+	        _this.externalColisionCircle.beginFill(0x000000);
+	        _this.externalColisionCircle.drawCircle(0, _this.radius, _this.radius);
+	        _this.externalColisionCircle.alpha = 0.1;
+	        _this.container.addChild(_this.externalColisionCircle);
+	        _this.externalColisionCircle.scale.y = 0.5;
 	
-	                _this.spriteContainer = new PIXI.Container();
-	                _this.container.addChild(_this.spriteContainer);
+	        _this.spriteContainer = new PIXI.Container();
+	        _this.container.addChild(_this.spriteContainer);
 	
-	                // if(this.radius > 20){
+	        // if(this.radius > 20){
 	
-	                _this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
-	                _this.spriteContainer.addChild(_this.sprite);
-	                _this.sprite.anchor.set(0.5);
-	                console.log(_this.radius, _this.sprite.width);
-	                _this.sprite.scale.set(_this.radius / 150);
-	                // }
+	        _this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
+	        _this.spriteContainer.addChild(_this.sprite);
+	        _this.sprite.anchor.set(0.5);
+	        _this.sprite.scale.set(_this.radius / 150);
+	        // }
 	
-	                console.log(_this.container.skew.scope);
+	        _this.shooting = false;
+	        return _this;
+	    }
 	
-	                _this.shooting = false;
-	                return _this;
+	    _createClass(Ball, [{
+	        key: 'shoot',
+	        value: function shoot(force, angle, angleColision) {
+	
+	            var angSpeed = -angle;
+	            // let angSpeed = this.ball.rotation - angleColision;
+	            // this.ball.rotation += angleColision// * 0.5;
+	            // console.log(force);
+	            this.rotationSpeed = angSpeed * 1.8; // * 0.5;
+	            this.velocity.x = 0;
+	            this.velocity.y = 0;
+	            this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
+	            this.velocity.y = -this.speed.y * Math.cos(angleColision) * force;
+	
+	            this.virtualVelocity.x = 0;
+	            this.virtualVelocity.y = 0;
+	
+	            this.shooting = true;
+	            this.rotationInfluence.x = this.rotationSpeed * 850;
+	            this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
+	
+	            var force2 = force * 0.35;
+	
+	            this.verticalVelocity.y += this.shootYSpeed * force2;
+	            this.spriteDirection = 1;
+	            //this.sprite.y = 0;
 	        }
+	    }, {
+	        key: 'reset',
+	        value: function reset() {
+	            this.virtualVelocity = { x: 0, y: 0 };
+	            this.velocity = { x: 0, y: 0 };
 	
-	        _createClass(Ball, [{
-	                key: 'shoot',
-	                value: function shoot(force, angle, angleColision) {
+	            this.rotationInfluence = { x: 0, y: 0 };
+	            this.rotationSpeed = 0;
+	            this.shooting = false;
 	
-	                        var angSpeed = angleColision;
-	                        // let angSpeed = this.ball.rotation - angleColision;
-	                        // this.ball.rotation += angleColision// * 0.5;
-	                        // console.log(force);
-	                        this.rotationSpeed = angSpeed * 0.8; // * 0.5;
-	                        this.velocity.x = 0;
-	                        this.velocity.y = 0;
-	                        this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
-	                        this.velocity.y = -this.speed.y * Math.cos(angleColision) * force;
+	            this.sprite.rotation = 0;
 	
-	                        this.virtualVelocity.x = 0;
-	                        this.virtualVelocity.y = 0;
+	            this.spriteGravity = this.spriteGravityStandard;
 	
-	                        this.shooting = true;
-	                        this.rotationInfluence.x = this.rotationSpeed * 850;
-	                        this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
+	            this.onGoal = false;
 	
-	                        var force2 = force * 0.35;
+	            this.spriteContainer.y = 0;
 	
-	                        this.verticalVelocity.y += this.shootYSpeed * force2;
+	            this.y = _config2.default.height - 180;
 	
-	                        // this.spriteGravity = this.spriteGravityStandard * force*0.5
+	            if (Math.random() < 0.9995) {
+	                this.verticalVelocity = { x: 0, y: 0 };
+	                // this.spriteContainer.y = - Math.random() * 80;
+	                this.spriteContainer.y = 0; //- Math.random() * 250;
+	                this.x = _config2.default.width / 2;
+	                // this.verticalVelocity.y = Math.random() * this.shootYSpeed;
+	                this.verticalVelocity.y = 0; //this.shootYSpeed;
+	            } else {
+	                this.spriteContainer.y = -Math.random() * 250;
 	
-	                        console.log(this.verticalVelocity.y, force2);
+	                this.verticalVelocity.y = this.shootYSpeed;
+	                // this.verticalVelocity.y = Math.abs(this.verticalVelocity.y);
 	
-	                        this.spriteDirection = 1;
-	                        //this.sprite.y = 0;
+	                var side = Math.random() < 0.5 ? 1 : -1;
+	                if (side == 1) {
+	                    this.x = _config2.default.width * 1.1;
+	                } else {
+	                    this.x = -_config2.default.width * 0.1;
 	                }
-	        }, {
-	                key: 'reset',
-	                value: function reset() {
-	                        this.virtualVelocity = { x: 0, y: 0 };
-	                        this.velocity = { x: 0, y: 0 };
 	
-	                        this.rotationInfluence = { x: 0, y: 0 };
-	                        this.rotationSpeed = 0;
-	                        this.shooting = false;
+	                this.virtualVelocity.x = -this.speed.x * side;
+	                this.velocity.x = -this.speed.x * side;
+	            }
+	            this.spriteContainer.scale.set(1);
+	            // this.sprite.scale.set(1)
 	
-	                        this.sprite.rotation = 0;
+	            // console.log(this.verticalVelocity);
+	        }
+	    }, {
+	        key: 'backSide',
+	        value: function backSide(force, force2) {
+	            var t = Math.abs(force2) - 0.5;
+	            // force2 = 1 - force2
 	
-	                        this.spriteGravity = this.spriteGravityStandard;
+	            console.log('backSide', this.velocity.y);
+	            this.velocity.x += -t * this.velocity.x; //force2
+	            this.velocity.y *= -0.8; //force2
+	            // this.velocity.y +=  t * this.velocity.y//force2
+	            console.log('backSide2', this.velocity.y, t);
 	
-	                        this.onGoal = false;
+	            this.verticalVelocity.y = -this.velocity.y * force2 * force * 2;
+	        }
+	    }, {
+	        key: 'back',
+	        value: function back(force, force2, forceDown) {
 	
-	                        this.spriteContainer.y = 0;
+	            // force2 > 
+	            //0 eh no meio
+	            //>0 embaixo
+	            //<acima
+	            var t = Math.abs(force2) - 0.5;
+	            // force2 = 1 - force2
+	            this.velocity.y *= t; //force2
+	            if (forceDown) {
+	                this.verticalVelocity.y += 3500;
+	                this.velocity.y = -Math.abs(this.velocity.y) * 0.3 - 250;
+	            } else {
+	                this.velocity.y += 600;
+	                this.verticalVelocity.y = -this.velocity.y * force2 * force;
+	            }
+	        }
+	    }, {
+	        key: 'getRadius',
+	        value: function getRadius() {
+	            // this.standardScale
+	            return this.scale.x * this.radius;
+	        }
+	    }, {
+	        key: 'getExternalRadius',
+	        value: function getExternalRadius() {
+	            return this.scale.x * this.externalRadius;
+	        }
+	    }, {
+	        key: 'onGoal',
+	        value: function onGoal() {
+	            this.rotationSpeed *= 0.2;
+	        }
+	    }, {
+	        key: 'touchGround',
+	        value: function touchGround(delta) {
 	
-	                        this.y = _config2.default.height - 180;
+	            // console.log('touchGround');
 	
-	                        if (Math.random() < 0.5) {
-	                                this.verticalVelocity = { x: 0, y: 0 };
-	                                this.spriteContainer.y = -Math.random() * 80;
-	                                // this.spriteContainer.y = 0//- Math.random() * 250;
-	                                this.x = _config2.default.width / 2;
-	                                this.verticalVelocity.y = Math.random() * this.shootYSpeed;
-	                                // this.verticalVelocity.y = 0//this.shootYSpeed;
-	                        } else {
-	                                this.spriteContainer.y = -Math.random() * 250;
+	            // console.log(this.verticalVelocity.y);
+	            if (this.onGoal) {
+	                this.verticalVelocity.y = -this.verticalVelocity.y / 3;
+	            } else {
+	                this.verticalVelocity.y = -this.verticalVelocity.y / 1.7;
+	            }
+	            // console.log(this.verticalVelocity.y);
 	
-	                                this.verticalVelocity.y = this.shootYSpeed;
-	                                // this.verticalVelocity.y = Math.abs(this.verticalVelocity.y);
+	            this.velocity.x *= 0.85;
 	
-	                                var side = Math.random() < 0.5 ? 1 : -1;
-	                                if (side == 1) {
-	                                        this.x = _config2.default.width * 1.1;
-	                                } else {
-	                                        this.x = -_config2.default.width * 0.1;
-	                                }
+	            if (Math.abs(this.verticalVelocity.y) < 200) {
+	                // console.log(this.verticalVelocity);
+	                this.verticalVelocity.y = 0;
+	                this.spriteContainer.y = 0;
+	                // this.spriteGravity = 0;
+	            }
+	            this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update(delta) {
+	            // delta*= 0.2
 	
-	                                this.virtualVelocity.x = -this.speed.x * side;
-	                                this.velocity.x = -this.speed.x * side;
-	                        }
-	                        this.spriteContainer.scale.set(1);
-	                        // this.sprite.scale.set(1)
+	            this.x += this.velocity.x * delta * this.scale.x;
+	            this.y += this.velocity.y * delta * this.scale.y;
 	
-	                        // console.log(this.verticalVelocity);
+	            if (this.shooting) {
+	                var ang = Math.atan2(this.velocity.y, this.velocity.x);
+	                TweenLite.to(this.spriteContainer.scale, 0.5, { x: Math.sin(ang) * 0.2 + 1, y: Math.cos(ang) * 0.3 + 1 });
+	            }
+	            //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
+	
+	            var percentage = Math.abs((Math.abs(this.velocity.x) + Math.abs(this.velocity.y)) / (Math.abs(this.speed.x) + Math.abs(this.speed.y)));
+	            // console.log(this.rotationSpeed);
+	            this.sprite.rotation += this.rotationSpeed * percentage * 0.5;
+	
+	            this.sprite.rotation += this.velocity.x / 5000;
+	
+	            // let hScale = (this.spriteContainer.y / 250)
+	            // console.log((this.spriteContainer.y / 250));
+	            // this.externalColisionCircle.scale.x = 1 + hScale
+	            // this.externalColisionCircle.scale.y = 0.5 + hScale
+	            // if(this.shooting && percentage == 0){
+	            //     this.game.reset();
+	            // }
+	            // if(percentage){
+	            this.velocity.x += this.rotationInfluence.x * delta * percentage;
+	
+	            // console.log(this.rotationInfluence.x);
+	            this.spriteContainer.x += this.verticalVelocity.x * delta * this.scale.x;
+	            this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.y;
+	            this.verticalVelocity.y += this.spriteGravity * delta;
+	
+	            //console.log(this.verticalVelocity.y);
+	
+	            // if(this.verticalVelocity.y < 0){
+	            // }
+	            // this.velocity.y += Math.cos(this.rotation);
+	            // }
+	
+	            if (this.spriteContainer.y > 0) {
+	
+	                this.touchGround(delta);
+	
+	                //console.log(Math.abs(this.verticalVelocity.y));
+	            }
+	
+	            if (this.rotationInfluence.x < 0) {
+	                this.rotationInfluence.x += this.friction.x * delta;
+	                if (this.rotationInfluence.x > 0) {
+	                    this.rotationInfluence.x = 0;
 	                }
-	        }, {
-	                key: 'backSide',
-	                value: function backSide(force, force2) {
-	                        var t = Math.abs(force2) - 0.5;
-	                        // force2 = 1 - force2
-	                        this.velocity.x *= t; //force2
-	                        this.velocity.y *= t; //force2
-	
-	                        this.verticalVelocity.y = -this.velocity.y * force2 * force * 2;
+	            } else if (this.rotationInfluence.x > 0) {
+	                this.rotationInfluence.x -= this.friction.x * delta;
+	                if (this.rotationInfluence.x < 0) {
+	                    this.rotationInfluence.x = 0;
 	                }
-	        }, {
-	                key: 'back',
-	                value: function back(force, force2, forceDown) {
+	            }
 	
-	                        // force2 > 
-	                        //0 eh no meio
-	                        //>0 embaixo
-	                        //<acima
-	                        var t = Math.abs(force2) - 0.5;
-	                        // force2 = 1 - force2
-	                        this.velocity.y *= t; //force2
-	                        if (forceDown) {
-	                                this.verticalVelocity.y += 3500;
-	                                this.velocity.y = -Math.abs(this.velocity.y) * 0.3 - 250;
-	                        } else {
-	                                this.velocity.y += 600;
-	                                this.verticalVelocity.y = -this.velocity.y * force2 * force;
-	                        }
+	            if (this.velocity.x < this.virtualVelocity.x) {
+	                this.velocity.x += this.friction.x * delta;
+	                if (this.velocity.x > this.virtualVelocity.x) {
+	                    this.velocity.x = this.virtualVelocity.x;
 	                }
-	        }, {
-	                key: 'getRadius',
-	                value: function getRadius() {
-	                        // this.standardScale
-	                        return this.scale.x * this.radius;
+	            } else if (this.velocity.x > this.virtualVelocity.x) {
+	                this.velocity.x -= this.friction.x * delta;
+	                if (this.velocity.x < this.virtualVelocity.x) {
+	                    this.velocity.x = this.virtualVelocity.x;
 	                }
-	        }, {
-	                key: 'getExternalRadius',
-	                value: function getExternalRadius() {
-	                        return this.scale.x * this.externalRadius;
+	            }
+	
+	            if (this.velocity.y < this.virtualVelocity.y) {
+	                this.velocity.y += this.friction.y * delta;
+	                if (this.velocity.y > this.virtualVelocity.y) {
+	                    this.velocity.y = this.virtualVelocity.y;
 	                }
-	        }, {
-	                key: 'touchGround',
-	                value: function touchGround(delta) {
-	
-	                        // console.log('touchGround');
-	
-	                        // console.log(this.verticalVelocity.y);
-	                        if (this.onGoal) {
-	                                this.verticalVelocity.y = -this.verticalVelocity.y / 3;
-	                        } else {
-	                                this.verticalVelocity.y = -this.verticalVelocity.y / 1.7;
-	                        }
-	                        // console.log(this.verticalVelocity.y);
-	
-	                        this.velocity.x *= 0.5;
-	
-	                        if (Math.abs(this.verticalVelocity.y) < 200) {
-	                                // console.log(this.verticalVelocity);
-	                                this.verticalVelocity.y = 0;
-	                                this.spriteContainer.y = 0;
-	                                // this.spriteGravity = 0;
-	                        }
-	                        this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
+	            } else if (this.velocity.y > this.virtualVelocity.y) {
+	                this.velocity.y -= this.friction.y * delta;
+	                if (this.velocity.y < this.virtualVelocity.y) {
+	                    this.velocity.y = this.virtualVelocity.y;
 	                }
-	        }, {
-	                key: 'update',
-	                value: function update(delta) {
-	                        // delta*= 0.2
+	            }
+	        }
+	    }]);
 	
-	                        this.x += this.velocity.x * delta * this.scale.x;
-	                        this.y += this.velocity.y * delta * this.scale.y;
-	
-	                        if (this.shooting) {
-	                                var ang = Math.atan2(this.velocity.y, this.velocity.x);
-	                                TweenLite.to(this.spriteContainer.scale, 0.5, { x: Math.sin(ang) * 0.2 + 1, y: Math.cos(ang) * 0.3 + 1 });
-	                        }
-	                        //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
-	
-	                        var percentage = Math.abs((Math.abs(this.velocity.x) + Math.abs(this.velocity.y)) / (Math.abs(this.speed.x) + Math.abs(this.speed.y)));
-	                        // console.log(this.rotationSpeed);
-	                        this.sprite.rotation += this.rotationSpeed * percentage * 0.5;
-	
-	                        this.sprite.rotation += this.velocity.x / 5000;
-	
-	                        // let hScale = (this.spriteContainer.y / 250)
-	                        // console.log((this.spriteContainer.y / 250));
-	                        // this.externalColisionCircle.scale.x = 1 + hScale
-	                        // this.externalColisionCircle.scale.y = 0.5 + hScale
-	                        // if(this.shooting && percentage == 0){
-	                        //     this.game.reset();
-	                        // }
-	                        // if(percentage){
-	                        this.velocity.x += this.rotationInfluence.x * delta * percentage;
-	
-	                        // console.log(this.rotationInfluence.x);
-	                        this.spriteContainer.x += this.verticalVelocity.x * delta * this.scale.x;
-	                        this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.y;
-	                        this.verticalVelocity.y += this.spriteGravity * delta;
-	
-	                        //console.log(this.verticalVelocity.y);
-	
-	                        // if(this.verticalVelocity.y < 0){
-	                        // }
-	                        // this.velocity.y += Math.cos(this.rotation);
-	                        // }
-	
-	                        if (this.spriteContainer.y > 0) {
-	
-	                                this.touchGround(delta);
-	
-	                                //console.log(Math.abs(this.verticalVelocity.y));
-	                        }
-	
-	                        if (this.rotationInfluence.x < 0) {
-	                                this.rotationInfluence.x += this.friction.x * delta;
-	                                if (this.rotationInfluence.x > 0) {
-	                                        this.rotationInfluence.x = 0;
-	                                }
-	                        } else if (this.rotationInfluence.x > 0) {
-	                                this.rotationInfluence.x -= this.friction.x * delta;
-	                                if (this.rotationInfluence.x < 0) {
-	                                        this.rotationInfluence.x = 0;
-	                                }
-	                        }
-	
-	                        if (this.velocity.x < this.virtualVelocity.x) {
-	                                this.velocity.x += this.friction.x * delta;
-	                                if (this.velocity.x > this.virtualVelocity.x) {
-	                                        this.velocity.x = this.virtualVelocity.x;
-	                                }
-	                        } else if (this.velocity.x > this.virtualVelocity.x) {
-	                                this.velocity.x -= this.friction.x * delta;
-	                                if (this.velocity.x < this.virtualVelocity.x) {
-	                                        this.velocity.x = this.virtualVelocity.x;
-	                                }
-	                        }
-	
-	                        if (this.velocity.y < this.virtualVelocity.y) {
-	                                this.velocity.y += this.friction.y * delta;
-	                                if (this.velocity.y > this.virtualVelocity.y) {
-	                                        this.velocity.y = this.virtualVelocity.y;
-	                                }
-	                        } else if (this.velocity.y > this.virtualVelocity.y) {
-	                                this.velocity.y -= this.friction.y * delta;
-	                                if (this.velocity.y < this.virtualVelocity.y) {
-	                                        this.velocity.y = this.virtualVelocity.y;
-	                                }
-	                        }
-	                }
-	        }]);
-	
-	        return Ball;
+	    return Ball;
 	}(PIXI.Container);
 	
 	exports.default = Ball;
 
 /***/ },
-/* 193 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var AnimationManager = function () {
-	    function AnimationManager(animationModel, animationContainer) {
-	        _classCallCheck(this, AnimationManager);
-	
-	        this.animationModel = animationModel;
-	        this.animationContainer = animationContainer;
-	
-	        for (var i = 0; i < this.animationModel.length; i++) {
-	            var texturesList = [];
-	            this.animationModel[i];
-	            if (this.animationModel[i].singleFrame) {
-	                var texture = PIXI.Texture.fromFrame(this.animationModel[i].src + '.png');
-	                texturesList.push(texture);
-	                texture.smooth = true;
-	            } else {
-	                for (var j = 0; j < this.animationModel[i].totalFrames; j++) {
-	                    if (j + 1 > 9) {
-	                        var texture = PIXI.Texture.fromFrame(this.animationModel[i].src + (j + 1) + '.png');
-	                    } else {
-	                        var texture = PIXI.Texture.fromFrame(this.animationModel[i].src + '0' + (j + 1) + '.png');
-	                    }
-	
-	                    texturesList.push(texture);
-	                    texture.smooth = true;
-	                }
-	            }
-	
-	            this.animationModel[i].movieClip = new PIXI.extras.AnimatedSprite(texturesList);
-	            if (this.animationModel[i].loop != undefined) {
-	                this.animationModel[i].movieClip.loop = this.animationModel[i].loop;
-	                this.animationModel[i].movieClip.onComplete = this.animationFinished;
-	            }
-	            this.animationModel[i].movieClip.anchor.set(this.animationModel[i].anchor.x, this.animationModel[i].anchor.y);
-	            this.animationModel[i].movieClip.x = this.animationModel[i].position.x;
-	            this.animationModel[i].movieClip.y = this.animationModel[i].position.y;
-	            this.animationModel[i].movieClip.rotation = this.animationModel[i].rotation ? this.animationModel[i].rotation : 0;
-	            this.animationModel[i].movieClip.animationSpeed = this.animationModel[i].animationSpeed;
-	            this.animationModel[i].movieClip.gotoAndStop(this.animationModel[i].startFrame);
-	            this.animationContainer.addChild(this.animationModel[i].movieClip);
-	        }
-	
-	        this.ableToChangeAnimation = true;
-	
-	        this.startCallback = function () {};
-	        this.finishCallback = function () {};
-	        // this.hideAll();
-	        // this.stopAll();
-	        // this.changeState('idle');
-	    }
-	
-	    _createClass(AnimationManager, [{
-	        key: 'showJust',
-	        value: function showJust(list) {
-	            this.hideAll();
-	            for (var i = 0; i < list.length; i++) {
-	                for (var j = 0; j < this.animationModel.length; j++) {
-	                    if (this.animationModel[j].label == list[i]) {
-	                        this.animationModel[j].movieClip.visible = true;
-	                    }
-	                }
-	            }
-	        }
-	    }, {
-	        key: 'stopCurrent',
-	        value: function stopCurrent() {
-	            var current = this.animationModel[this.getAnimationID(this.state)];current.movieClip.gotoAndStop(current.startFrame);
-	        }
-	    }, {
-	        key: 'hideCurrent',
-	        value: function hideCurrent() {
-	            this.animationModel[this.getAnimationID(this.state)].movieClip.visible = false;
-	        }
-	    }, {
-	        key: 'hideAll',
-	        value: function hideAll() {
-	            for (var i = 0; i < this.animationModel.length; i++) {
-	                var animData = this.animationModel[i];
-	                animData.movieClip.visible = false;
-	            }
-	        }
-	    }, {
-	        key: 'stopAll',
-	        value: function stopAll() {
-	            for (var i = 0; i < this.animationModel.length; i++) {
-	                var animData = this.animationModel[i];
-	                if (!animData.movieClip.playing) {
-	                    animData.movieClip.stop();
-	                }
-	            }
-	        }
-	    }, {
-	        key: 'playMovieclip',
-	        value: function playMovieclip(id, forcePlay) {
-	            var animData = this.animationModel[id];
-	            if (animData.haveCallback) {
-	                // this.ableToChangeAnimation = false;
-	            } else {
-	                this.ableToChangeAnimation = true;
-	            }
-	            if (!animData.movieClip.playing || forcePlay) {
-	                this.startCallback();
-	                animData.movieClip.gotoAndPlay(animData.startFrame);
-	                animData.movieClip.visible = true;
-	                //console.log('q',animData.movieClip);
-	            }
-	        }
-	    }, {
-	        key: 'getAnimation',
-	        value: function getAnimation(label) {
-	            for (var i = 0; i < this.animationModel.length; i++) {
-	                if (this.animationModel[i].label == label) {
-	                    return this.animationModel[i];
-	                }
-	            }
-	            return null;
-	        }
-	    }, {
-	        key: 'getAnimationID',
-	        value: function getAnimationID(label) {
-	            for (var i = 0; i < this.animationModel.length; i++) {
-	                if (this.animationModel[i].label == label) {
-	                    return i;
-	                }
-	            }
-	            return -1;
-	        }
-	    }, {
-	        key: 'changeState',
-	        value: function changeState(state, force) {
-	            //console.log(state);
-	            if (!force && (this.state == state || !this.ableToChangeAnimation)) {
-	                return false;
-	            }
-	
-	            //console.log(state);
-	
-	            if (this.state) {
-	                this.stopCurrent();
-	                this.hideCurrent();
-	            }
-	            this.state = state;
-	            this.updateState();
-	            return true;
-	        }
-	    }, {
-	        key: 'updateState',
-	        value: function updateState() {
-	            // console.log('updateState');
-	            this.playMovieclip(this.getAnimationID(this.state));
-	        }
-	    }, {
-	        key: 'updateAnimations',
-	        value: function updateAnimations() {
-	            //console.log(this.animationModel[this.getAnimationID(this.state)].movieClip.playing);
-	            //console.log(this.state, this.getAnimationID(this.state),  this.animationModel[this.getAnimationID(this.state)].haveCallback, this.animationModel[this.getAnimationID(this.state)].movieClip.playing);
-	            if (this.state && this.animationModel[this.getAnimationID(this.state)].haveCallback && !this.animationModel[this.getAnimationID(this.state)].movieClip.playing) {
-	                //console.log(this.finishCallback);
-	                this.finishCallback();
-	            }
-	        }
-	    }]);
-	
-	    return AnimationManager;
-	}();
-	
-	exports.default = AnimationManager;
-
-/***/ },
+/* 193 */,
 /* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -47951,6 +47583,460 @@
 	}(_Screen3.default);
 	
 	exports.default = LoadScreen;
+
+/***/ },
+/* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(190);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Collisions = function () {
+		function Collisions() {
+			_classCallCheck(this, Collisions);
+		}
+	
+		_createClass(Collisions, [{
+			key: 'detectTopCollision',
+			value: function detectTopCollision(target, entity, ballPosition) {
+				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: target.p1, p2: target.p2 }, entity.getRadius());
+				return { interception: interception, p1: target.p1, p2: target.p2, type: 'top' };
+			}
+		}, {
+			key: 'detectSideCollision',
+			value: function detectSideCollision(target, entity, ballPosition) {
+				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: target.p1, p2: target.p2 }, entity.getRadius());
+				return { interception: interception, p1: target.p1, p2: target.p2, type: 'top' };
+			}
+		}, {
+			key: 'collideEntities',
+			value: function collideEntities(delta, entity, toCollide) {
+				var distance = _utils2.default.distance(toCollide.x, toCollide.y, entity.x, entity.y) < toCollide.getRadius() + entity.getRadius();
+				console.log(toCollide, toCollide.getRadius());
+				if (distance) {
+					var angle = -Math.atan2(toCollide.y - entity.y, toCollide.x - entity.x);
+					angle += 90 / 180 * 3.14;
+					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
+					entity.velocity.x = Math.sin(angle) * -Math.abs(entity.speed.x * percent);
+					entity.velocity.y = Math.cos(angle) * -Math.abs(entity.speed.y * percent);
+				}
+			}
+		}, {
+			key: 'collideSticks',
+			value: function collideSticks(delta, entity, toCollide, ballPosition) {
+				var distance = _utils2.default.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
+				//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
+				if (distance) {
+					var angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
+					angle -= 10 / 180 * 3.14;
+					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
+	
+					// angle -= 180 / 180 * 3.14;
+					// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
+					console.log('1', entity.velocity.y);
+					entity.velocity.y = Math.sin(angle) * entity.velocity.y; // * percent);
+					angle += 180 / 180 * 3.14; //GAMBIARRAS AQUI, QUASE LAH
+					entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent); //(entity.shootYSpeed * percent);
+					console.log('1', entity.velocity.y, entity.verticalVelocity.y);
+					console.log('angle', angle * 180 / 3.14);
+					console.log('-----');
+				}
+			}
+		}, {
+			key: 'rectCircleColliding',
+			value: function rectCircleColliding(circle, rect) {
+				var distX = Math.abs(circle.x - rect.x - rect.w / 2);
+				var distY = Math.abs(circle.y - rect.y - rect.h / 2);
+	
+				if (distX > rect.w / 2 + circle.r) {
+					return false;
+				}
+				if (distY > rect.h / 2 + circle.r) {
+					return false;
+				}
+	
+				if (distX <= rect.w / 2) {
+					return true;
+				}
+				if (distY <= rect.h / 2) {
+					return true;
+				}
+	
+				var dx = distX - rect.w / 2;
+				var dy = distY - rect.h / 2;
+				return dx * dx + dy * dy <= circle.r * circle.r;
+			}
+		}, {
+			key: 'inteceptCircleLineSeg2',
+			value: function inteceptCircleLineSeg2(circle, line, radius) {
+				var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
+				v1 = {};
+				v2 = {};
+				v1.x = line.p2.x - line.p1.x;
+				v1.y = line.p2.y - line.p1.y;
+				v2.x = line.p1.x - circle.x;
+				v2.y = line.p1.y - circle.y;
+				b = v1.x * v2.x + v1.y * v2.y;
+				c = 2 * (v1.x * v1.x + v1.y * v1.y);
+				b *= -2;
+				d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius));
+				if (isNaN(d)) {
+					// no intercept
+					return [];
+				}
+				u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
+				u2 = (b + d) / c;
+				retP1 = {}; // return points
+				retP2 = {};
+				ret = []; // return array
+				if (u1 <= 1 && u1 >= 0) {
+					// add point if on the line segment
+					retP1.x = line.p1.x + v1.x * u1;
+					retP1.y = line.p1.y + v1.y * u1;
+					ret[0] = retP1;
+				}
+				if (u2 <= 1 && u2 >= 0) {
+					// second add point if on the line segment
+					retP2.x = line.p1.x + v1.x * u2;
+					retP2.y = line.p1.y + v1.y * u2;
+					ret[ret.length] = retP2;
+				}
+				return ret;
+			}
+		}, {
+			key: 'inteceptCircleLineSeg',
+			value: function inteceptCircleLineSeg(circle, line) {
+				var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
+				v1 = {};
+				v2 = {};
+				v1.x = line.p2.x - line.p1.x;
+				v1.y = line.p2.y - line.p1.y;
+				v2.x = line.p1.x - circle.x;
+				v2.y = line.p1.y - circle.y;
+				b = v1.x * v2.x + v1.y * v2.y;
+				c = 2 * (v1.x * v1.x + v1.y * v1.y);
+				b *= -2;
+				d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.getExternalRadius() * circle.getExternalRadius()));
+				if (isNaN(d)) {
+					// no intercept
+					return [];
+				}
+				u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
+				u2 = (b + d) / c;
+				retP1 = {}; // return points
+				retP2 = {};
+				ret = []; // return array
+				if (u1 <= 1 && u1 >= 0) {
+					// add point if on the line segment
+					retP1.x = line.p1.x + v1.x * u1;
+					retP1.y = line.p1.y + v1.y * u1;
+					ret[0] = retP1;
+				}
+				if (u2 <= 1 && u2 >= 0) {
+					// second add point if on the line segment
+					retP2.x = line.p1.x + v1.x * u2;
+					retP2.y = line.p1.y + v1.y * u2;
+					ret[ret.length] = retP2;
+				}
+				return ret;
+			}
+		}]);
+	
+		return Collisions;
+	}();
+	
+	exports.default = Collisions;
+
+/***/ },
+/* 197 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+			value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var GoalView = function (_PIXI$Container) {
+			_inherits(GoalView, _PIXI$Container);
+	
+			function GoalView(game) {
+					_classCallCheck(this, GoalView);
+	
+					var _this = _possibleConstructorReturn(this, (GoalView.__proto__ || Object.getPrototypeOf(GoalView)).call(this));
+	
+					_this.game = game;
+					return _this;
+			}
+	
+			_createClass(GoalView, [{
+					key: 'build',
+					value: function build() {
+	
+							this.goal = PIXI.Sprite.fromImage('assets/images/goal.png'); //new PIXI.Graphics().beginFill(0x023548).drawRect(-500,-400,1000, 400);
+							// this.addChild(this.goal);
+							this.goal.anchor.set(0.5, 0.9);
+							// this.goal.scale.set(1.3)
+							this.goal.x = _config2.default.width / 2 + 16;
+							this.goal.y = 150;
+							this.goal.alpha = 0.5;
+	
+							this.goleira = new PIXI.Container();
+							this.addChild(this.goleira);
+	
+							var h = 500;
+							var w = 1300;
+							var tick = 20;
+							this.traveTop = new PIXI.Graphics().beginFill(0x023548).drawRect(-w / 2, 0, w, tick);
+							this.goleira.addChild(this.traveTop);
+							this.traveTop.y = -h;
+							this.traveLeft = new PIXI.Graphics().beginFill(0x023548).drawRect(-tick / 2, -h, tick, h);
+							this.goleira.addChild(this.traveLeft);
+							this.traveLeft.x = w / 2;
+	
+							this.traveRight = new PIXI.Graphics().beginFill(0x023548).drawRect(-tick / 2, -h, tick, h);
+							this.goleira.addChild(this.traveRight);
+							this.traveRight.x = -w / 2;
+	
+							// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
+							// this.goleira.addChild(this.trave4);
+	
+					}
+			}, {
+					key: 'getStickSide',
+					value: function getStickSide(target) {
+							var side = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+	
+							var p1 = {
+									x: this.x + this.goleira.x + side * (this.goleira.width / 2 * this.scale.x) + -side * (target.width / 2 * this.scale.x),
+									y: this.y + this.goleira.y + target.y * this.scale.y - target.height * this.scale.y //+ (target.height * this.goleira.scale.y)
+							};
+							var p2 = {
+									x: p1.x,
+									y: this.y + this.goleira.y + target.y * this.scale.y //+ (target.height * this.goleira.scale.y)
+							};
+	
+							return { p1: p1, p2: p2 };
+					}
+			}, {
+					key: 'getGoalRect',
+					value: function getGoalRect() {
+							var www = 10;
+							var hhh = 6;
+							var rect = {
+									x: this.goleira.x - this.goleira.width / 2 + www,
+									y: this.goleira.y - this.goleira.height + hhh,
+									w: this.goleira.width - www * 2 + 4,
+									h: this.goleira.height - hhh
+							};
+							return rect;
+					}
+			}, {
+					key: 'getLeftStick',
+					value: function getLeftStick() {
+							return this.getStickSide(this.traveLeft, -1);
+					}
+			}, {
+					key: 'getRightStick',
+					value: function getRightStick() {
+							return this.getStickSide(this.traveRight, 1);
+					}
+			}, {
+					key: 'getTopStick',
+					value: function getTopStick() {
+							var target = this.traveTop;
+							var p1 = {
+									x: this.x + this.goleira.x - target.width / 2 * this.scale.x + 2,
+									y: this.y + this.goleira.y + target.y * this.scale.y + target.height / 2 * this.scale.x
+							};
+							var p2 = {
+									x: this.x + this.goleira.x + target.width / 2 * this.scale.x + 2,
+									y: p1.y
+							};
+	
+							return { p1: p1, p2: p2 };
+					}
+			}]);
+	
+			return GoalView;
+	}(PIXI.Container);
+	
+	exports.default = GoalView;
+
+/***/ },
+/* 198 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _Trail = __webpack_require__(194);
+	
+	var _Trail2 = _interopRequireDefault(_Trail);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var TrailManager = function () {
+		function TrailManager(container) {
+			_classCallCheck(this, TrailManager);
+	
+			this.container = container;
+			this.currentTrail = false;
+			this.trailPool = [];
+		}
+	
+		_createClass(TrailManager, [{
+			key: 'getTrail',
+			value: function getTrail(position) {
+				for (var i = this.trailPool.length - 1; i >= 0; i--) {
+					if (this.trailPool[i].killed) {
+						this.trailPool[i].reset(position);
+						return this.trailPool[i];
+					}
+				}
+				var trail = new _Trail2.default(this.container, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+				trail.trailTick = 15;
+				trail.speed = 0.01;
+				trail.frequency = 0.0001;
+				this.trailPool.push(trail);
+				return trail;
+			}
+		}, {
+			key: 'removeTrail',
+			value: function removeTrail() {
+				this.currentTrail = false;
+			}
+		}, {
+			key: 'startNewTrail',
+			value: function startNewTrail(position) {
+				this.currentTrail = this.getTrail(position);
+				this.currentTrail.mesh.alpha = 0.2;
+				this.currentTrail.mesh.blendMode = PIXI.BLEND_MODES.ADD;
+				this.currentTrail.speed = 0.1;
+				this.currentTrail.update(0, position);
+			}
+		}, {
+			key: 'update',
+			value: function update(delta, position) {
+				if (this.currentTrail) {
+					this.currentTrail.update(delta, position);
+				}
+				for (var i = this.trailPool.length - 1; i >= 0; i--) {
+					if (!this.trailPool[i].killed && this.trailPool[i] != this.currentTrail) {
+						this.trailPool[i].update(delta, null);
+					}
+				}
+			}
+		}]);
+	
+		return TrailManager;
+	}();
+	
+	exports.default = TrailManager;
+
+/***/ },
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var ViewManager = function () {
+		function ViewManager() {
+			_classCallCheck(this, ViewManager);
+		}
+	
+		_createClass(ViewManager, [{
+			key: 'updateObjectScale',
+			value: function updateObjectScale(object, height) {
+				var perspectiveFactor = 1 - object.y / height;
+				object.scale.set(1.1 - perspectiveFactor * 1.1);
+			}
+		}]);
+	
+		return ViewManager;
+	}();
+	
+	exports.default = ViewManager;
 
 /***/ }
 /******/ ]);

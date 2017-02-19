@@ -4,8 +4,11 @@ import config  from '../../config';
 import utils  from '../../utils';
 import Screen from '../../screenManager/Screen'
 import Ball from '../entity/Ball'
-import AnimationManager  from '../entity/utils/AnimationManager';
-import Trail from '../entity/Trail';
+
+import Collisions from '../core/Collisions';
+import TrailManager from '../core/TrailManager';
+import ViewManager from '../core/ViewManager';
+import GoalView from '../entity/GoalView';
 
 export default class InitScreen extends Screen{	
 	constructor(label){
@@ -35,28 +38,6 @@ export default class InitScreen extends Screen{
 		this.updateList = [];
 
 
-		this.animationContainer = new PIXI.Container();
-		// this.addChild(this.animationContainer)
-
-		this.animationModel = [];
-        this.animationModel.push({
-            label:'idle',
-            src:'players/dead/dead00',
-            totalFrames:9,
-            startFrame:0,
-            animationSpeed:0.2,
-            movieClip:null,
-            position:{x:0,y:0},
-            anchor:{x:0.5,y:0.5}
-        });
-
-        this.animationManager = new AnimationManager(this.animationModel, this.animationContainer)
-        // this.animationManager.finishCallback = this.finishAnimation.bind(this);
-        // this.animationManager.startCallback = this.startAnimation.bind(this);
-        this.animationManager.hideAll();
-        this.animationManager.stopAll();
-        this.animationManager.changeState('idle');
-
         this.ball = new Ball(this,50);
 
         this.gameContainer.addChild(this.ball)
@@ -64,7 +45,6 @@ export default class InitScreen extends Screen{
         this.ball.x = config.width / 2;
         this.ball.y = config.height - 200;
 
-        this.updateList.push(this.ball)
 
         // this.ball.velocity.y = -this.ball.speed.y;
         // this.ball.virtualVelocity.x = 0;
@@ -94,44 +74,26 @@ export default class InitScreen extends Screen{
 
 
 		this.addEvents();
-
 		this.currentTrail = false;
-
 		this.trailPool = [];
 
-		this.goal = PIXI.Sprite.fromImage('assets/images/goal.png');//new PIXI.Graphics().beginFill(0x023548).drawRect(-500,-400,1000, 400);
-		// this.addChild(this.goal);
-		this.goal.anchor.set(0.5, 0.9)
-		// this.goal.scale.set(1.3)
-		this.goal.x = config.width / 2 + 16
-		this.goal.y = 150
-		this.goal.alpha = 0.5
 
-		this.goleira = new PIXI.Container();
-		this.gameContainer.addChild(this.goleira);
-
-		let h = 500
-		let w = 1300
-		let tck = 20
-		this.trave1 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
-		this.goleira.addChild(this.trave1);
-		this.trave1.y = -h
-		this.trave2 = new PIXI.Graphics().beginFill(0x023548).drawRect(0,-h,tck, h);
-		this.goleira.addChild(this.trave2);
-		this.trave2.x = w/2
-
-		this.trave3 = new PIXI.Graphics().beginFill(0x023548).drawRect(0,-h,tck, h);
-		this.goleira.addChild(this.trave3);
-		this.trave3.x = -w/2
-
-		// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
-		// this.goleira.addChild(this.trave4);
-
+		this.goleira = new GoalView(this)
+		this.goleira.build();
 		this.goleira.x = config.width / 2
 		this.goleira.y = 150
 
+		this.gameContainer.addChild(this.goleira)
+
 		this.textLabel = new PIXI.Text('---',{font : '20px', fill : 0x000000, align : 'right'});
 		this.addChild(this.textLabel)
+
+		this.collisions = new Collisions();
+		this.viewManager = new ViewManager();
+		this.trailManager = new TrailManager(this.ingameUIContainer);
+
+        this.updateList.push(this.ball)
+        this.updateList.push(this.goleira)
 	}
 
 	getTrail(){
@@ -153,6 +115,13 @@ export default class InitScreen extends Screen{
 		this.colliding = false;
         this.ball.reset();
         
+	}
+	debugBall(ballPosition, entity){
+		if(this.testeBall && this.testeBall.parent){
+			this.testeBall.parent.removeChild(this.testeBall)
+		}
+		this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x,ballPosition.y, entity.getRadius());
+		this.addChild(this.testeBall);
 	}
 	collideBounds(delta, entity){
 		if(this.colliding){
@@ -178,7 +147,7 @@ export default class InitScreen extends Screen{
 				// entity.y += entity.velocity.y * delta;
 			}
 		}else if(entity.velocity.y < 0){
-			if(entity.y < this.goal.y -10){
+			if(entity.y < this.goleira.y -10){
 
 				if(this.colliding){
 					return
@@ -189,21 +158,20 @@ export default class InitScreen extends Screen{
 				}
 				this.textLabel.text = 'NOT GOAL'
 				let collisions = [];
-				collisions.push(this.detectSideCollision(this.trave2, entity,ballPosition))
-				collisions.push(this.detectSideCollision(this.trave3, entity,ballPosition))
-				collisions.push(this.detectSideCollisionTop(this.trave1, entity,ballPosition))
+				let topStickPoint = this.goleira.getTopStick();
+				collisions.push(this.detectSideCollision(this.goleira.getLeftStick(), entity,ballPosition))
+				collisions.push(this.detectSideCollision(this.goleira.getRightStick(), entity,ballPosition))
+				collisions.push(this.detectTopCollision(topStickPoint, entity,ballPosition))
 
 				let killStandard = false
 				let isGoal = true;
+
+
 				for (var i = collisions.length - 1; i >= 0; i--) {
 					let interception = collisions[i];
 					if(interception.interception.length > 0){
 
-						if(this.testeBall && this.testeBall.parent){
-							this.testeBall.parent.removeChild(this.testeBall)
-						}
-						this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x,ballPosition.y, entity.getRadius());
-						//this.addChild(this.testeBall);
+						this.debugBall(ballPosition, entity);
 
 						let distPos = (ballPosition.y - interception.p1.y) / entity.getRadius();
 						if(isGoal)
@@ -216,27 +184,29 @@ export default class InitScreen extends Screen{
 							}
 							this.ball.backSide(distance, distPos, isGoal);
 
-						}else{						
-							this.ball.back(distance, distPos, isGoal);
+						}else{
+							// console.log(ballPosition.x, ballPosition.y, interception.interception);
+							let topStick = {x:ballPosition.x + this.ball.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
+			// 				if(utils.distance(topStick.x, topStick.y, entity.x, entity.y) < topStick.getRadius() + entity.getRadius()){
+			// let angle = -Math.atan2(topStick.y - entity.y, topStick.x - entity.x);
+							this.collisions.collideSticks(1/60, this.ball, topStick, ballPosition)
+							//this.ball.back(distance, distPos, isGoal);
 						}
 						
 						let label =  isGoal?'GOAL':'NOT GOAL'
 						this.textLabel.text = distance +' - '+distPos+' - '+label;//interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
 						killStandard = true;
-					}else{
-						// this.textLabel.text = 'NAO COLIDIU'
 					}
 				}
-				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.5}
-				let www = 10
-				let hhh = 6
-				let rect = {
-					x:this.goleira.x - this.goleira.width/2 + www,
-					y:this.goleira.y - this.goleira.height + hhh,
-					w:this.goleira.width - www *2 + 4,
-					h:this.goleira.height - hhh}
 
-				let onGoal = this.rectCircleColliding(circle, rect)
+
+
+				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.5}
+				let rect = this.goleira.getGoalRect()
+
+				let onGoal = this.collisions.rectCircleColliding(circle, rect);
+
+
 				if(onGoal && this.ball.velocity.y < 0){
 					this.ball.verticalVelocity.y += 8000 / -this.ball.velocity.y
 					this.ball.velocity.y *= 0.25;
@@ -248,21 +218,16 @@ export default class InitScreen extends Screen{
 					this.ball.spriteGravity *= 5
 					this.ball.velocity.y *= 0.4
 				}
-				if(this.testeRect){
-					this.testeRect.parent.removeChild(this.testeRect)
-				}
-				this.testeRect = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(rect.x,rect.y, rect.w,rect.h);
-				this.addChild(this.testeRect)
-				this.testeRect.alpha = 0.2
+				
 
-
+				this.debugGoal(rect);
 				// if(!this.colliding){
-					if(killStandard){
-						setTimeout(function() {this.reset();}.bind(this), 2000);
-					}else{
-						// this.paused = true;
-						setTimeout(function() {this.reset();}.bind(this), 1500);
-					}
+					// if(killStandard){
+					// 	setTimeout(function() {this.reset();}.bind(this), 2000);
+					// }else{
+					// 	// this.paused = true;
+					// 	setTimeout(function() {this.reset();}.bind(this), 1500);
+					// }
 				// }
 				
 				this.colliding = true;
@@ -270,88 +235,23 @@ export default class InitScreen extends Screen{
 		}
 	}
 
-	detectSideCollisionTop(target, entity,ballPosition){
-		let p1 = {
-			x:this.goleira.x - target.width / 2 * this.goleira.scale.x + 2,
-			y:this.goleira.y +(target.y * this.goleira.scale.y) + 2//+ (target.height * this.goleira.scale.y)
-		}
-		let p2 = {
-			x:this.goleira.x + target.width / 2 * this.goleira.scale.x + 2,
-			y:this.goleira.y +(target.y * this.goleira.scale.y) + 2 //+ (target.height * this.goleira.scale.y)
-		}
-
-
-		this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(p1.x,p1.y);
-		this.testee.lineTo(p2.x,p2.y);
-		this.addChild(this.testee);
-
-		console.log(p1,p2);
-		
-
-		let interception = this.inteceptCircleLineSeg2(ballPosition, {p1:p1, p2:p2}, entity.getRadius());
-		return {interception:interception, p1:p1, p2:p2, type:'top'}
-	}
-
-	detectSideCollision(target, entity,ballPosition){
-		let p1 = {
-			x:this.goleira.x - target.x * this.goleira.scale.x + 2,
-			y:this.goleira.y -(target.y * this.goleira.scale.y) + 2//+ (target.height * this.goleira.scale.y)
-		}
-		let p2 = {
-			x:this.goleira.x - target.x * this.goleira.scale.x + 2,
-			y:this.goleira.y -(target.height * this.goleira.scale.y) + 2 //+ (target.height * this.goleira.scale.y)
-		}
-
-
-		this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(p1.x,p1.y);
-		this.testee.lineTo(p2.x,p2.y);
-		this.addChild(this.testee);
-
-		console.log(p1,p2);
-		
-
-		let interception = this.inteceptCircleLineSeg2(ballPosition, {p1:p1, p2:p2}, entity.getRadius());
-		return  {interception:interception, p1:p1, p2:p2, type:'side'}
-	}
-	collide(delta, entity, toCollide){
-		if(utils.distance(toCollide.x, toCollide.y, entity.x, entity.y) < toCollide.getRadius() + entity.getRadius()){
-			let angle = -Math.atan2(toCollide.y - entity.y, toCollide.x - entity.x);
-			angle += 90 / 180 * 3.14;
-			let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))
-			entity.velocity.x = Math.sin(angle) * - Math.abs(entity.speed.x * percent);
-			entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y * percent);
-		}
-	}
+	
 	
 	update(delta){
-		if(this.currentTrail){
-			this.currentTrail.update(delta, this.mousePosition)
-		}
-		for (var i = this.trailPool.length - 1; i >= 0; i--) {
-			if(!this.trailPool[i].killed && this.trailPool[i] != this.currentTrail){
-				this.trailPool[i].update(delta, null);
-			}
-		}
+		this.trailManager.update(delta, this.mousePosition);
 		if(this.paused){
 			return
 		}
 		super.update(delta);
 
 		for (var i = this.updateList.length - 1; i >= 0; i--) {
-			this.updateList[i].update(delta)
+			if(this.updateList[i].update){
+				this.updateList[i].update(delta)
+			}
+			this.viewManager.updateObjectScale(this.updateList[i], config.height)
 		}
 
 		this.gameContainer.children.sort(utils.depthCompare);
-
-		let perspectiveFactor = 1-this.ball.y / config.height
-		// console.log(perspectiveFactor);
-		this.ball.scale.set(1.1 - perspectiveFactor*1.1)
-
-		perspectiveFactor = 1-this.goal.y / config.height
-		this.goal.scale.set(1.1 - perspectiveFactor*1.1)
-
-		perspectiveFactor = 1-this.goleira.y / config.height
-		this.goleira.scale.set(1.1 - perspectiveFactor*1.1)
 
 		this.mousePosition = renderer.plugins.interaction.pointer.global;
 		// if(this.currentTrail)
@@ -365,117 +265,44 @@ export default class InitScreen extends Screen{
 
 	}
 
-// 	var circle={x:100,y:290,r:10};
-// var rect={x:100,y:100,w:40,h:100};
-
-// return true if the rectangle and circle are colliding
-	rectCircleColliding(circle,rect){
-	    var distX = Math.abs(circle.x - rect.x-rect.w/2);
-	    var distY = Math.abs(circle.y - rect.y-rect.h/2);
-
-	    if (distX > (rect.w/2 + circle.r)) { return false; }
-	    if (distY > (rect.h/2 + circle.r)) { return false; }
-
-	    if (distX <= (rect.w/2)) { return true; } 
-	    if (distY <= (rect.h/2)) { return true; }
-
-	    var dx=distX-rect.w/2;
-	    var dy=distY-rect.h/2;
-	    return (dx*dx+dy*dy<=(circle.r*circle.r));
-	}
-
-
-	inteceptCircleLineSeg2(circle, line, radius){
-	    var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
-	    v1 = {};
-	    v2 = {};
-	    v1.x = line.p2.x - line.p1.x;
-	    v1.y = line.p2.y - line.p1.y;
-	    v2.x = line.p1.x - circle.x;
-	    v2.y = line.p1.y - circle.y;
-	    b = (v1.x * v2.x + v1.y * v2.y);
-	    c = 2 * (v1.x * v1.x + v1.y * v1.y);
-	    b *= -2;
-	    d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius));
-	    if(isNaN(d)){ // no intercept
-	        return [];
-	    }
-	    u1 = (b - d) / c;  // these represent the unit distance of point one and two on the line
-	    u2 = (b + d) / c;    
-	    retP1 = {};   // return points
-	    retP2 = {}  
-	    ret = []; // return array
-	    if(u1 <= 1 && u1 >= 0){  // add point if on the line segment
-	        retP1.x = line.p1.x + v1.x * u1;
-	        retP1.y = line.p1.y + v1.y * u1;
-	        ret[0] = retP1;
-	    }
-	    if(u2 <= 1 && u2 >= 0){  // second add point if on the line segment
-	        retP2.x = line.p1.x + v1.x * u2;
-	        retP2.y = line.p1.y + v1.y * u2;
-	        ret[ret.length] = retP2;
-	    }       
-	    return ret;
-	}
-
-
-	inteceptCircleLineSeg(circle, line){
-	    var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
-	    v1 = {};
-	    v2 = {};
-	    v1.x = line.p2.x - line.p1.x;
-	    v1.y = line.p2.y - line.p1.y;
-	    v2.x = line.p1.x - circle.x;
-	    v2.y = line.p1.y - circle.y;
-	    b = (v1.x * v2.x + v1.y * v2.y);
-	    c = 2 * (v1.x * v1.x + v1.y * v1.y);
-	    b *= -2;
-	    d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.getExternalRadius() * circle.getExternalRadius()));
-	    if(isNaN(d)){ // no intercept
-	        return [];
-	    }
-	    u1 = (b - d) / c;  // these represent the unit distance of point one and two on the line
-	    u2 = (b + d) / c;    
-	    retP1 = {};   // return points
-	    retP2 = {}  
-	    ret = []; // return array
-	    if(u1 <= 1 && u1 >= 0){  // add point if on the line segment
-	        retP1.x = line.p1.x + v1.x * u1;
-	        retP1.y = line.p1.y + v1.y * u1;
-	        ret[0] = retP1;
-	    }
-	    if(u2 <= 1 && u2 >= 0){  // second add point if on the line segment
-	        retP2.x = line.p1.x + v1.x * u2;
-	        retP2.y = line.p1.y + v1.y * u2;
-	        ret[ret.length] = retP2;
-	    }       
-	    return ret;
-	}
-	verifyInterception(){
-		if(this.firstPoint && this.firstPoint.y < this.mousePosition.y){
-			return
+	debugGoal(rect){
+		if(this.testeRect){
+			this.testeRect.parent.removeChild(this.testeRect)
 		}
-		if(!this.tapping){
-			return;
+		this.testeRect = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(rect.x,rect.y, rect.w,rect.h);
+		this.addChild(this.testeRect)
+		this.testeRect.alpha = 0.2
+	}
+
+	debugStick(target){
+		this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(target.p1.x,target.p1.y);
+		this.testee.lineTo(target.p2.x,target.p2.y);
+		this.addChild(this.testee);
+	}
+
+	verifyInterception(){
+		if(!this.tapping || (this.firstPoint && this.firstPoint.y < this.mousePosition.y)){
+			return
 		}
 
 		this.secPoint = {x:this.mousePosition.x,y:this.mousePosition.y};
-		// console.log(this.firstPoint);
-		// console.log(this.secPoint);
-
-		let interception = this.inteceptCircleLineSeg(this.ball, {p1:this.firstPoint, p2:this.secPoint});
-		// console.log(interception);
+		let interception = this.collisions.inteceptCircleLineSeg(this.ball, {p1:this.firstPoint, p2:this.secPoint});
+		
+		//just shoot if have two points of intersection
 		if(interception.length < 2){
 			return
 		}
 		this.tapping = false;
+
+		//angle btx the intersection points
 		let angleColision = -Math.atan2(interception[0].y - interception[1].y, interception[0].x - interception[1].x);
-		angleColision += 90 / 180 * 3.14;
-		// console.log(interception, angleColision * 180 / 3.14);
-		let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
+		angleColision += 90 / 180 * 3.14;;
+		let frontBall = {x:this.ball.x, y:this.ball.y - this.ball.getRadius()}
+		
+		//angle btw front of the ball and the points
+		let angle = -Math.atan2(this.firstPoint.y - frontBall.y, this.secPoint.x - frontBall.x);
+		// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
 		angle += 90 / 180 * 3.14;
-		//this.ball.x = config.width / 2;
-        //this.ball.y = config.height;
         let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025
 
        
@@ -483,20 +310,27 @@ export default class InitScreen extends Screen{
         this.paused = true;
         setTimeout(function() {this.paused = false;}.bind(this), 100);
 	}
-	onTapUp(){
-		this.currentTrail = null;
-		this.tapping = false;
+	
+	detectTopCollision(target, entity,ballPosition){
+		this.debugStick(target)
+		return this.collisions.detectTopCollision(target, entity,ballPosition);
+	}
 
-		// console.log(renderer.plugins.interaction);
+	detectSideCollision(target, entity,ballPosition){
+		this.debugStick(target)
+		return this.collisions.detectSideCollision(target, entity,ballPosition);
+	}
+	onTapUp(){
+		this.trailManager.removeTrail();
+		this.tapping = false;
 	}
 	onTapDown(){
-		this.currentTrail = this.getTrail();
-		this.currentTrail.mesh.alpha = 0.2;
-		this.currentTrail.mesh.blendMode = PIXI.BLEND_MODES.ADD;
-		this.currentTrail.speed = 0.1
-		this.currentTrail.update(0, this.mousePosition)
+		// this.ball.shoot(6.5 , 0,  0);
+		this.reset();
+		this.ball.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
 		this.tapping = true;
 		this.firstPoint = {x:this.mousePosition.x,y:this.mousePosition.y};
+		this.trailManager.startNewTrail(this.mousePosition);
 	}
 	removeEvents(){
 		this.ingameUIContainer.interactive = false;

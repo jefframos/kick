@@ -49,12 +49,8 @@ export default class Ball extends PIXI.Container {
         this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
         this.spriteContainer.addChild(this.sprite);
         this.sprite.anchor.set(0.5);
-        console.log(this.radius, this.sprite.width);
         this.sprite.scale.set(this.radius / 150);
         // }
-
-        console.log(this.container.skew.scope);
-        
 
         this.shooting = false;
     }
@@ -64,11 +60,11 @@ export default class Ball extends PIXI.Container {
 
 
 
-         let angSpeed = angleColision;
+         let angSpeed = -angle;
         // let angSpeed = this.ball.rotation - angleColision;
         // this.ball.rotation += angleColision// * 0.5;
         // console.log(force);
-        this.rotationSpeed = angSpeed * 0.8// * 0.5;
+        this.rotationSpeed = angSpeed * 1.8// * 0.5;
         this.velocity.x = 0;
         this.velocity.y = 0;
         this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
@@ -85,12 +81,6 @@ export default class Ball extends PIXI.Container {
         let force2 = force*0.35
 
         this.verticalVelocity.y += this.shootYSpeed * force2;
-
-        // this.spriteGravity = this.spriteGravityStandard * force*0.5
-
-        console.log(this.verticalVelocity.y, force2);
-
-        
         this.spriteDirection = 1;
         //this.sprite.y = 0;
     }
@@ -113,13 +103,13 @@ export default class Ball extends PIXI.Container {
 
         this.y = config.height - 180;
 
-        if(Math.random() < 0.5){
+        if(Math.random() < 0.9995){
             this.verticalVelocity = {x:0, y:0};
-            this.spriteContainer.y = - Math.random() * 80;
-            // this.spriteContainer.y = 0//- Math.random() * 250;
+            // this.spriteContainer.y = - Math.random() * 80;
+            this.spriteContainer.y = 0//- Math.random() * 250;
             this.x = config.width / 2;
-            this.verticalVelocity.y = Math.random() * this.shootYSpeed;
-            // this.verticalVelocity.y = 0//this.shootYSpeed;
+            // this.verticalVelocity.y = Math.random() * this.shootYSpeed;
+            this.verticalVelocity.y = 0//this.shootYSpeed;
         }else{
             this.spriteContainer.y = - Math.random() * 250;
 
@@ -144,8 +134,12 @@ export default class Ball extends PIXI.Container {
     backSide(force, force2) {
         let t = Math.abs(force2) - 0.5
         // force2 = 1 - force2
-        this.velocity.x *=  t//force2
-        this.velocity.y *=  t//force2
+
+        console.log('backSide', this.velocity.y);
+        this.velocity.x +=  -t * this.velocity.x//force2
+        this.velocity.y *=  -0.8//force2
+        // this.velocity.y +=  t * this.velocity.y//force2
+        console.log('backSide2', this.velocity.y, t);
 
         this.verticalVelocity.y = -this.velocity.y * force2 * force*2
     }
@@ -177,6 +171,9 @@ export default class Ball extends PIXI.Container {
         return this.scale.x * this.externalRadius;
     }
 
+    onGoal ( ) {
+        this.rotationSpeed *= 0.2;
+    }
     touchGround ( delta ) {
 
         // console.log('touchGround');
@@ -189,7 +186,7 @@ export default class Ball extends PIXI.Container {
         }
         // console.log(this.verticalVelocity.y);
 
-        this.velocity.x *= 0.5
+        this.velocity.x *= 0.85
 
         if(Math.abs(this.verticalVelocity.y) < 200){
             // console.log(this.verticalVelocity);
