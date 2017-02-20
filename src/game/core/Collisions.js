@@ -11,7 +11,7 @@ export default class Collisions{
 
 	detectSideCollision(target, entity,ballPosition){
 		let interception = this.inteceptCircleLineSeg2(ballPosition, {p1:target.p1, p2:target.p2}, entity.getRadius());
-		return {interception:interception, p1:target.p1, p2:target.p2, type:'top'}	
+		return {interception:interception, p1:target.p1, p2:target.p2, type:'side'}	
 	}
 	collideEntities(delta, entity, toCollide){
 		let distance = utils.distance(toCollide.x, toCollide.y, entity.x, entity.y) < toCollide.getRadius() + entity.getRadius();
@@ -29,19 +29,51 @@ export default class Collisions{
 		let distance = utils.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
 		//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
 		if(distance){
+
+			entity.stickCollide();
+
 			let angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
-			angle -= 10 / 180 * 3.14;
-			let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))
-			
-			// angle -= 180 / 180 * 3.14;
+			//angle -= 30 / 180 * 3.14;
+			let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))			
+			angle -= 180 / 180 * 3.14;
+			// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
+			// console.log('1',entity.velocity.y);	
+			//TROCAR ENTRE SENOS E COSSENOS AQUI
+
+			entity.velocity.y = (Math.sin(angle) *  Math.abs((entity.velocity.y * 2)) - entity.velocity.y) / percent
+			// entity.velocity.y =Math.sin(angle) * Math.abs(entity.velocity.y*2) + entity.velocity.y
+
+			// entity.velocity.y = Math.sin(angle) * (entity.velocity.y)// * percent);
+			// angle += 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
+			entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
+			// console.log('2', Math.sin(angle), entity.velocity.y);	
+			// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
+			// console.log('angle --', angle * 180 / 3.14);
+			// console.log('-----');	
+		}
+	}
+
+	collideSticksSide(delta, entity, toCollide, ballPosition){
+		let distance = utils.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
+		//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
+		if(distance){
+
+			entity.stickCollide();
+
+			let angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
+			//angle -= 30 / 180 * 3.14;
+			let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))			
+			angle -= 180 / 180 * 3.14;
 			// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
 			console.log('1',entity.velocity.y);	
 			//TROCAR ENTRE SENOS E COSSENOS AQUI
-			entity.velocity.y = Math.cos(angle) * (entity.velocity.y)// * percent);
-			angle += 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
-			entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
+			entity.velocity.x = -Math.cos(angle) * (entity.velocity.x*2)// * percent);
+			// angle -= 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
+			entity.velocity.y = Math.sin(angle) *  Math.abs((entity.velocity.y * 2)) + entity.velocity.y// * percent);
+			//entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
+			// console.log('2', Math.sin(angle), entity.velocity.y);	
 			console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
-			console.log('angle', angle * 180 / 3.14);
+			console.log('angle --', angle * 180 / 3.14);
 			console.log('-----');	
 		}
 	}

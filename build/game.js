@@ -38089,32 +38089,11 @@
 				this.addChild(this.gameContainer);
 	
 				this.updateList = [];
+				this.trailPool = [];
+				this.ballPool = [];
+				this.currentBalls = [];
 	
-				this.ball = new _Ball2.default(this, 50);
-	
-				this.gameContainer.addChild(this.ball);
-	
-				this.ball.x = _config2.default.width / 2;
-				this.ball.y = _config2.default.height - 200;
-	
-				// this.ball.velocity.y = -this.ball.speed.y;
-				// this.ball.virtualVelocity.x = 0;
-				// this.ball.virtualVelocity.y = 0;
-	
-				// this.ball2 = new Ball(this);
-	
-				// // this.addChild(this.ball2)
-	
-				// this.ball2.x = 200;
-				// this.ball2.y = 400;
-	
-	
-				// this.ball3 = new Ball(this);
-	
-				// // this.addChild(this.ball3)
-	
-				// this.ball3.x = 400;
-				// this.ball3.y = 600;
+				// this.currentBalls.push(this.getBall());
 	
 				this.ingameUIContainer = new PIXI.Container();
 				this.addChild(this.ingameUIContainer);
@@ -38125,7 +38104,6 @@
 	
 				this.addEvents();
 				this.currentTrail = false;
-				this.trailPool = [];
 	
 				this.goleira = new _GoalView2.default(this);
 				this.goleira.build();
@@ -38141,8 +38119,35 @@
 				this.viewManager = new _ViewManager2.default();
 				this.trailManager = new _TrailManager2.default(this.ingameUIContainer);
 	
-				this.updateList.push(this.ball);
+				// this.updateList.push(this.currentBalls)
 				this.updateList.push(this.goleira);
+	
+				this.reset();
+			}
+		}, {
+			key: 'getBall',
+			value: function getBall() {
+				for (var i = this.ballPool.length - 1; i >= 0; i--) {
+					if (!this.ballPool[i].killed && !this.ballPool[i].shooting || this.ballPool[i].shooting && this.ballPool[i].killed) {
+						console.log(this.ballPool[i].killed, this.ballPool[i].shooting);
+	
+						this.ballPool[i].reset();
+						return this.ballPool[i];
+					}
+				}
+				var ball = new _Ball2.default(this, 50);
+				this.ballPool.push(ball);
+				ball.reset();
+				this.gameContainer.addChild(ball);
+	
+				for (var i = this.updateList.length - 1; i >= 0; i--) {
+					if (this.updateList[i] == ball) {
+						this.updateList.splice(i, 1);
+					}
+				}
+				this.updateList.push(ball);
+	
+				return ball;
 			}
 		}, {
 			key: 'getTrail',
@@ -38163,9 +38168,10 @@
 		}, {
 			key: 'reset',
 			value: function reset() {
+				console.log('reset');
 				this.paused = false;
 				this.colliding = false;
-				this.ball.reset();
+				this.currentBalls.push(this.getBall());
 			}
 		}, {
 			key: 'debugBall',
@@ -38179,39 +38185,42 @@
 		}, {
 			key: 'collideBounds',
 			value: function collideBounds(delta, entity) {
-				if (this.colliding) {
+				if (entity.collided) {
 					return;
 				}
 	
-				// if(!entity.shooting){
-				if (entity.velocity.x > 0) {
-					if (entity.x > _config2.default.width + entity.getRadius()) {
-						this.reset();
-					}
-				} else if (entity.velocity.x < 0) {
-					if (entity.x < -entity.getRadius()) {
-						this.reset();
-						// entity.virtualVelocity.x *= -0.1;
-					}
-				}
-				// }
+				//if is out of bounds
+				// if(entity.velocity.x > 0){
+				// 		if(entity.x > config.width + entity.getRadius() * 2){
+				// 			this.reset();
+				// 		}
+				// 	}else if(entity.velocity.x < 0){
+				// 		if(entity.x < -entity.getRadius() * 2){
+				// 			this.reset();
+				// 			// entity.virtualVelocity.x *= -0.1;
+				// 		}
+				// 	}
 	
-				if (entity.velocity.y > 0) {
-					if (entity.y > _config2.default.height * 0.8) {
-						// entity.velocity.y *= -0.5;
-						// entity.y += entity.velocity.y * delta;
-					}
-				} else if (entity.velocity.y < 0) {
+	
+				// if(entity.velocity.y > 0){
+				// 	if(entity.y > config.height * 0.8){
+				// 		// entity.velocity.y *= -0.5;
+				// 		// entity.y += entity.velocity.y * delta;
+				// 	}
+				// }else 
+	
+				if (entity.velocity.y < 0) {
 					if (entity.y < this.goleira.y - 10) {
 	
-						if (this.colliding) {
-							return;
-						}
+						// if(this.colliding){
+						// 	return
+						// }
 						var ballPosition = {
-							x: this.ball.x,
-							y: this.ball.y + this.ball.spriteContainer.y * this.ball.scale.y
+							x: entity.x,
+							y: entity.y + entity.spriteContainer.y * entity.scale.y
 						};
-						this.textLabel.text = 'NOT GOAL';
+						this.debugBall(ballPosition, entity);
+						this.textLabel.text = ''; //'NOT GOAL'
 						var collisions = [];
 						var topStickPoint = this.goleira.getTopStick();
 						collisions.push(this.detectSideCollision(this.goleira.getLeftStick(), entity, ballPosition));
@@ -38221,34 +38230,27 @@
 						var killStandard = false;
 						var isGoal = true;
 	
+						entity.stickCollide();
 						for (var i = collisions.length - 1; i >= 0; i--) {
 							var interception = collisions[i];
 							if (interception.interception.length > 0) {
 	
-								this.debugBall(ballPosition, entity);
-	
-								var distPos = (ballPosition.y - interception.p1.y) / entity.getRadius();
-								if (isGoal) isGoal = distPos > 0;
-								var distance = 1; //utils.distance(interception[0].x,0,interception[1].x,0) / entity.getRadius()
 								if (interception.type == 'side') {
-									distPos = (ballPosition.x - interception.p1.x) / entity.getRadius();
-									if (isGoal) {
-										isGoal = distPos > 0.1;
-									}
-									this.ball.backSide(distance, distPos, isGoal);
-								} else {
-									// console.log(ballPosition.x, ballPosition.y, interception.interception);
-									var topStick = { x: ballPosition.x + this.ball.getRadius() * 0.5, y: interception.interception[0].y, getRadius: function getRadius() {
-											return 5;
+									console.log('SIDE');
+									var sideStick = { x: interception.interception[0].x, y: ballPosition.y + 1, getRadius: function getRadius() {
+											return 1;
 										} };
-									// 				if(utils.distance(topStick.x, topStick.y, entity.x, entity.y) < topStick.getRadius() + entity.getRadius()){
-									// let angle = -Math.atan2(topStick.y - entity.y, topStick.x - entity.x);
-									this.collisions.collideSticks(1 / 60, this.ball, topStick, ballPosition);
-									//this.ball.back(distance, distPos, isGoal);
+									this.collisions.collideSticksSide(1 / 60, entity, sideStick, ballPosition);
+								} else {
+									var topStick = { x: ballPosition.x + 1, y: interception.interception[0].y, getRadius: function getRadius() {
+											return 1;
+										} };
+									// let topStick = {x:ballPosition.x + entity.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
+									this.collisions.collideSticks(1 / 60, entity, topStick, ballPosition);
 								}
 	
 								var label = isGoal ? 'GOAL' : 'NOT GOAL';
-								this.textLabel.text = distance + ' - ' + distPos + ' - ' + label; //interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
+								//this.textLabel.text = distance +' - '+distPos+' - '+label;//interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
 								killStandard = true;
 							}
 						}
@@ -38258,19 +38260,22 @@
 	
 						var onGoal = this.collisions.rectCircleColliding(circle, rect);
 	
-						if (onGoal && this.ball.velocity.y < 0) {
-							this.ball.verticalVelocity.y += 8000 / -this.ball.velocity.y;
-							this.ball.velocity.y *= 0.25;
-							this.ball.onGoal = true;
-							this.textLabel.text = 'GOAL';
+						if (onGoal && entity.velocity.y < 0) {
+							entity.verticalVelocity.y += 8000 / -entity.velocity.y;
+							entity.velocity.y *= 0.25;
+							entity.rotationInfluence.x *= 0.25;
+							entity.onGoal = true;
+							// this.textLabel.text = 'GOAL'
 						} else {
-							this.textLabel.text = 'NO GOAL';
+							// this.textLabel.text = 'NO GOAL'
 	
-							this.ball.spriteGravity *= 5;
-							this.ball.velocity.y *= 0.4;
+							entity.spriteGravity *= 5;
+							entity.velocity.y *= 0.4;
+							entity.rotationInfluence.x *= 0.25;
 						}
 	
 						this.debugGoal(rect);
+	
 						// if(!this.colliding){
 						// if(killStandard){
 						// 	setTimeout(function() {this.reset();}.bind(this), 2000);
@@ -38304,11 +38309,18 @@
 	
 				this.mousePosition = renderer.plugins.interaction.pointer.global;
 				// if(this.currentTrail)
-				this.verifyInterception();
 	
-				// this.collide(delta, this.ball, this.ball2)
-				// this.collide(delta, this.ball, this.ball3)
-				this.collideBounds(delta, this.ball);
+				// this.collide(delta, this.currentBalls, this.currentBalls2)
+				// this.collide(delta, this.currentBalls, this.currentBalls3)
+				// console.log(this.currentBalls.length);
+				for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+					this.verifyInterception(this.currentBalls[i]);
+					this.collideBounds(delta, this.currentBalls[i]);
+	
+					if (this.currentBalls[i].killed) {
+						this.currentBalls.splice(i, 1);
+					}
+				}
 			}
 		}, {
 			key: 'debugGoal',
@@ -38329,13 +38341,13 @@
 			}
 		}, {
 			key: 'verifyInterception',
-			value: function verifyInterception() {
+			value: function verifyInterception(entity) {
 				if (!this.tapping || this.firstPoint && this.firstPoint.y < this.mousePosition.y) {
 					return;
 				}
 	
 				this.secPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
-				var interception = this.collisions.inteceptCircleLineSeg(this.ball, { p1: this.firstPoint, p2: this.secPoint });
+				var interception = this.collisions.inteceptCircleLineSeg(entity, { p1: this.firstPoint, p2: this.secPoint });
 	
 				//just shoot if have two points of intersection
 				if (interception.length < 2) {
@@ -38346,15 +38358,19 @@
 				//angle btx the intersection points
 				var angleColision = -Math.atan2(interception[0].y - interception[1].y, interception[0].x - interception[1].x);
 				angleColision += 90 / 180 * 3.14;;
-				var frontBall = { x: this.ball.x, y: this.ball.y - this.ball.getRadius() };
+				var frontBall = { x: entity.x, y: entity.y - entity.getRadius() };
 	
 				//angle btw front of the ball and the points
 				var angle = -Math.atan2(this.firstPoint.y - frontBall.y, this.secPoint.x - frontBall.x);
 				// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
 				angle += 90 / 180 * 3.14;
+	
 				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025;
 	
-				this.ball.shoot(force, angle, angleColision);
+				entity.shoot(force, angle, angleColision);
+	
+				this.reset();
+	
 				this.paused = true;
 				setTimeout(function () {
 					this.paused = false;
@@ -38381,9 +38397,13 @@
 		}, {
 			key: 'onTapDown',
 			value: function onTapDown() {
-				// this.ball.shoot(6.5 , 0,  0);
-				this.reset();
-				this.ball.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
+				// this.currentBalls.shoot(6.5 , 0,  0);
+				// this.reset();
+				// let tempBall = this.getBall()
+				// this.currentBalls.push(tempBall)
+				// //tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.34);
+				// //TOP SHOOT
+				// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
 				this.tapping = true;
 				this.firstPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
 				this.trailManager.startNewTrail(this.mousePosition);
@@ -46735,7 +46755,8 @@
 	        _this.virtualVelocity = { x: 0, y: 0 };
 	        _this.velocity = { x: 0, y: 0 };
 	        _this.speed = { x: 230, y: 230 };
-	        _this.friction = { x: 100, y: 200 };
+	        _this.friction = { x: 350, y: 200 };
+	        // this.rotationFriction = {x:100,y:200};
 	        _this.rotationInfluence = { x: 0, y: 0 };
 	        _this.rotationSpeed = 0;
 	        _this.scaleFator = 1;
@@ -46759,12 +46780,12 @@
 	        _this.container = new PIXI.Container();
 	        _this.addChild(_this.container);
 	
-	        _this.externalColisionCircle = new PIXI.Graphics();
-	        _this.externalColisionCircle.beginFill(0x000000);
-	        _this.externalColisionCircle.drawCircle(0, _this.radius, _this.radius);
-	        _this.externalColisionCircle.alpha = 0.1;
-	        _this.container.addChild(_this.externalColisionCircle);
-	        _this.externalColisionCircle.scale.y = 0.5;
+	        _this.shadow = new PIXI.Graphics();
+	        _this.shadow.beginFill(0x000000);
+	        _this.shadow.drawCircle(0, _this.radius, _this.radius);
+	        _this.shadow.alpha = 0.1;
+	        _this.container.addChild(_this.shadow);
+	        _this.shadow.scale.y = 0.5;
 	
 	        _this.spriteContainer = new PIXI.Container();
 	        _this.container.addChild(_this.spriteContainer);
@@ -46778,6 +46799,7 @@
 	        // }
 	
 	        _this.shooting = false;
+	        _this.killed = false;
 	        return _this;
 	    }
 	
@@ -46786,10 +46808,20 @@
 	        value: function shoot(force, angle, angleColision) {
 	
 	            var angSpeed = -angle;
+	
+	            if (force > 9) {
+	                force = 9;
+	            }
 	            // let angSpeed = this.ball.rotation - angleColision;
 	            // this.ball.rotation += angleColision// * 0.5;
 	            // console.log(force);
-	            this.rotationSpeed = angSpeed * 1.8; // * 0.5;
+	            this.rotationSpeed = angSpeed * 1.5; // * 0.5;
+	            if (this.rotationSpeed > 1.2) {
+	                this.rotationSpeed = 1.2;
+	            } else if (this.rotationSpeed < -1.2) {
+	                this.rotationSpeed = -1.2;
+	            }
+	            console.log(this.rotationSpeed, force);
 	            this.velocity.x = 0;
 	            this.velocity.y = 0;
 	            this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
@@ -46798,7 +46830,6 @@
 	            this.virtualVelocity.x = 0;
 	            this.virtualVelocity.y = 0;
 	
-	            this.shooting = true;
 	            this.rotationInfluence.x = this.rotationSpeed * 850;
 	            this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
 	
@@ -46806,24 +46837,30 @@
 	
 	            this.verticalVelocity.y += this.shootYSpeed * force2;
 	            this.spriteDirection = 1;
+	            this.shooting = true;
 	            //this.sprite.y = 0;
 	        }
 	    }, {
 	        key: 'reset',
 	        value: function reset() {
+	
+	            console.log('RESET');
+	            this.updateable = true;
+	            this.shooting = false;
+	            this.killed = false;
+	
+	            this.collided = false;
+	
 	            this.virtualVelocity = { x: 0, y: 0 };
 	            this.velocity = { x: 0, y: 0 };
 	
 	            this.rotationInfluence = { x: 0, y: 0 };
 	            this.rotationSpeed = 0;
-	            this.shooting = false;
 	
 	            this.sprite.rotation = 0;
-	
+	            this.killTimer = 4;
 	            this.spriteGravity = this.spriteGravityStandard;
-	
 	            this.onGoal = false;
-	
 	            this.spriteContainer.y = 0;
 	
 	            this.y = _config2.default.height - 180;
@@ -46852,6 +46889,7 @@
 	                this.velocity.x = -this.speed.x * side;
 	            }
 	            this.spriteContainer.scale.set(1);
+	            this.shadow.alpha = 0.1;
 	            // this.sprite.scale.set(1)
 	
 	            // console.log(this.verticalVelocity);
@@ -46862,11 +46900,11 @@
 	            var t = Math.abs(force2) - 0.5;
 	            // force2 = 1 - force2
 	
-	            console.log('backSide', this.velocity.y);
+	            // console.log('backSide', this.velocity.y);
 	            this.velocity.x += -t * this.velocity.x; //force2
 	            this.velocity.y *= -0.8; //force2
 	            // this.velocity.y +=  t * this.velocity.y//force2
-	            console.log('backSide2', this.velocity.y, t);
+	            // console.log('backSide2', this.velocity.y, t);
 	
 	            this.verticalVelocity.y = -this.velocity.y * force2 * force * 2;
 	        }
@@ -46890,6 +46928,11 @@
 	            }
 	        }
 	    }, {
+	        key: 'stickCollide',
+	        value: function stickCollide() {
+	            this.collided = true;
+	        }
+	    }, {
 	        key: 'getRadius',
 	        value: function getRadius() {
 	            // this.standardScale
@@ -46911,17 +46954,19 @@
 	
 	            // console.log('touchGround');
 	
-	            // console.log(this.verticalVelocity.y);
+	            // console.log('1',this.verticalVelocity.y);
 	            if (this.onGoal) {
 	                this.verticalVelocity.y = -this.verticalVelocity.y / 3;
 	            } else {
 	                this.verticalVelocity.y = -this.verticalVelocity.y / 1.7;
 	            }
-	            // console.log(this.verticalVelocity.y);
+	            // console.log('2',this.verticalVelocity.y);
 	
 	            this.velocity.x *= 0.85;
 	
-	            if (Math.abs(this.verticalVelocity.y) < 200) {
+	            // console.log(this.verticalVelocity.y);
+	
+	            if (Math.abs(this.verticalVelocity.y) < 2500) {
 	                // console.log(this.verticalVelocity);
 	                this.verticalVelocity.y = 0;
 	                this.spriteContainer.y = 0;
@@ -46930,16 +46975,61 @@
 	            this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
 	        }
 	    }, {
+	        key: 'killBall',
+	        value: function killBall() {
+	            this.killTimer = 99999;
+	            this.updateable = false;
+	            TweenLite.to(this.shadow, 0.2, { alpha: 0 });
+	
+	            console.log('kill');
+	
+	            TweenLite.to(this.spriteContainer.scale, 0.2, { x: 0, y: 0, onComplete: function onComplete() {
+	                    console.log(this);
+	                    this.killed = true;
+	                }, onCompleteScope: this });
+	        }
+	    }, {
+	        key: 'updateScale',
+	        value: function updateScale() {
+	            var ang = 0;
+	            var targetScale = { x: 1, y: 1 };
+	            if (!this.collided && this.shooting) {
+	                ang = Math.atan2(this.velocity.y, this.velocity.x);
+	                targetScale = { x: Math.sin(ang) * 0.2 + 1, y: Math.cos(ang) * 0.3 + 1 };
+	            } else if (!this.shooting) {
+	                ang = Math.atan2(this.velocity.y, this.verticalVelocity.y);
+	                targetScale = { x: Math.sin(ang) * 0.2 + 1, y: Math.cos(ang) * 0.2 + 1 };
+	            } else {
+	                targetScale = { x: 1, y: 1 };
+	            }
+	
+	            // this.spriteContainer.scale.x=targetScale.x;
+	            // this.spriteContainer.scale.y=targetScale.y;
+	
+	            TweenLite.to(this.spriteContainer.scale, 0.5, targetScale);
+	        }
+	    }, {
 	        key: 'update',
 	        value: function update(delta) {
 	            // delta*= 0.2
+	            if (this.killed) {
+	                return;
+	            }
+	            if (!this.updateable) {
+	                return;
+	            }
+	
+	            this.updateScale();
 	
 	            this.x += this.velocity.x * delta * this.scale.x;
 	            this.y += this.velocity.y * delta * this.scale.y;
 	
+	            // console.log(this.killTimer);
 	            if (this.shooting) {
-	                var ang = Math.atan2(this.velocity.y, this.velocity.x);
-	                TweenLite.to(this.spriteContainer.scale, 0.5, { x: Math.sin(ang) * 0.2 + 1, y: Math.cos(ang) * 0.3 + 1 });
+	                this.killTimer -= delta;
+	                if (this.killTimer <= 0) {
+	                    this.killBall();
+	                }
 	            }
 	            //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
 	
@@ -46951,8 +47041,8 @@
 	
 	            // let hScale = (this.spriteContainer.y / 250)
 	            // console.log((this.spriteContainer.y / 250));
-	            // this.externalColisionCircle.scale.x = 1 + hScale
-	            // this.externalColisionCircle.scale.y = 0.5 + hScale
+	            // this.shadow.scale.x = 1 + hScale
+	            // this.shadow.scale.y = 0.5 + hScale
 	            // if(this.shooting && percentage == 0){
 	            //     this.game.reset();
 	            // }
@@ -47066,7 +47156,7 @@
 			key: 'detectSideCollision',
 			value: function detectSideCollision(target, entity, ballPosition) {
 				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: target.p1, p2: target.p2 }, entity.getRadius());
-				return { interception: interception, p1: target.p1, p2: target.p2, type: 'top' };
+				return { interception: interception, p1: target.p1, p2: target.p2, type: 'side' };
 			}
 		}, {
 			key: 'collideEntities',
@@ -47087,19 +47177,52 @@
 				var distance = _utils2.default.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
 				//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
 				if (distance) {
-					var angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
-					angle -= 10 / 180 * 3.14;
-					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
 	
-					// angle -= 180 / 180 * 3.14;
+					entity.stickCollide();
+	
+					var angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
+					//angle -= 30 / 180 * 3.14;
+					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
+					angle -= 180 / 180 * 3.14;
+					// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
+					// console.log('1',entity.velocity.y);	
+					//TROCAR ENTRE SENOS E COSSENOS AQUI
+	
+					entity.velocity.y = (Math.sin(angle) * Math.abs(entity.velocity.y * 2) - entity.velocity.y) / percent;
+					// entity.velocity.y =Math.sin(angle) * Math.abs(entity.velocity.y*2) + entity.velocity.y
+	
+					// entity.velocity.y = Math.sin(angle) * (entity.velocity.y)// * percent);
+					// angle += 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
+					entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent); //(entity.shootYSpeed * percent);
+					// console.log('2', Math.sin(angle), entity.velocity.y);	
+					// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
+					// console.log('angle --', angle * 180 / 3.14);
+					// console.log('-----');	
+				}
+			}
+		}, {
+			key: 'collideSticksSide',
+			value: function collideSticksSide(delta, entity, toCollide, ballPosition) {
+				var distance = _utils2.default.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
+				//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
+				if (distance) {
+	
+					entity.stickCollide();
+	
+					var angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
+					//angle -= 30 / 180 * 3.14;
+					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
+					angle -= 180 / 180 * 3.14;
 					// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
 					console.log('1', entity.velocity.y);
 					//TROCAR ENTRE SENOS E COSSENOS AQUI
-					entity.velocity.y = Math.cos(angle) * entity.velocity.y; // * percent);
-					angle += 180 / 180 * 3.14; //GAMBIARRAS AQUI, QUASE LAHlo
-					entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent); //(entity.shootYSpeed * percent);
+					entity.velocity.x = -Math.cos(angle) * (entity.velocity.x * 2); // * percent);
+					// angle -= 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
+					entity.velocity.y = Math.sin(angle) * Math.abs(entity.velocity.y * 2) + entity.velocity.y; // * percent);
+					//entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
+					// console.log('2', Math.sin(angle), entity.velocity.y);	
 					console.log('1', entity.velocity.y, entity.verticalVelocity.y);
-					console.log('angle', angle * 180 / 3.14);
+					console.log('angle --', angle * 180 / 3.14);
 					console.log('-----');
 				}
 			}

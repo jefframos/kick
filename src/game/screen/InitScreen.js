@@ -36,34 +36,12 @@ export default class InitScreen extends Screen{
 		this.addChild(this.gameContainer);
 
 		this.updateList = [];
+		this.trailPool = [];
+		this.ballPool = [];
+		this.currentBalls = [];
 
 
-        this.ball = new Ball(this,50);
-
-        this.gameContainer.addChild(this.ball)
-
-        this.ball.x = config.width / 2;
-        this.ball.y = config.height - 200;
-
-
-        // this.ball.velocity.y = -this.ball.speed.y;
-        // this.ball.virtualVelocity.x = 0;
-        // this.ball.virtualVelocity.y = 0;
-
-        // this.ball2 = new Ball(this);
-
-        // // this.addChild(this.ball2)
-
-        // this.ball2.x = 200;
-        // this.ball2.y = 400;
-
-
-        // this.ball3 = new Ball(this);
-
-        // // this.addChild(this.ball3)
-
-        // this.ball3.x = 400;
-        // this.ball3.y = 600;
+        // this.currentBalls.push(this.getBall());
 
         this.ingameUIContainer = new PIXI.Container();
 		this.addChild(this.ingameUIContainer);
@@ -75,7 +53,6 @@ export default class InitScreen extends Screen{
 
 		this.addEvents();
 		this.currentTrail = false;
-		this.trailPool = [];
 
 
 		this.goleira = new GoalView(this)
@@ -92,10 +69,36 @@ export default class InitScreen extends Screen{
 		this.viewManager = new ViewManager();
 		this.trailManager = new TrailManager(this.ingameUIContainer);
 
-        this.updateList.push(this.ball)
+        // this.updateList.push(this.currentBalls)
         this.updateList.push(this.goleira)
+
+        this.reset();
 	}
 
+	getBall(){
+		for (var i = this.ballPool.length - 1; i >= 0; i--) {
+			if((!this.ballPool[i].killed && !this.ballPool[i].shooting) || (this.ballPool[i].shooting && this.ballPool[i].killed)){
+				console.log(this.ballPool[i].killed , this.ballPool[i].shooting);
+
+
+				this.ballPool[i].reset();
+				return this.ballPool[i]
+			}
+		}
+		let ball = new Ball(this,50);
+		this.ballPool.push(ball);
+		ball.reset();
+		this.gameContainer.addChild(ball)
+
+		for (var i = this.updateList.length - 1; i >= 0; i--) {
+			if(this.updateList[i] == ball){
+				this.updateList.splice(i,1);
+			}
+		}
+		this.updateList.push(ball)
+
+		return ball;
+	}
 	getTrail(){
 		for (var i = this.trailPool.length - 1; i >= 0; i--) {
 			if(this.trailPool[i].killed){
@@ -111,9 +114,10 @@ export default class InitScreen extends Screen{
 		return trail;
 	}
 	reset(){
+		console.log('reset');
 		this.paused = false;		
 		this.colliding = false;
-        this.ball.reset();
+        this.currentBalls.push(this.getBall())
         
 	}
 	debugBall(ballPosition, entity){
@@ -124,39 +128,43 @@ export default class InitScreen extends Screen{
 		this.addChild(this.testeBall);
 	}
 	collideBounds(delta, entity){
-		if(this.colliding){
-			return
+		if(entity.collided){
+			return;
 		}
 
-		// if(!entity.shooting){
-			if(entity.velocity.x > 0){
-				if(entity.x > config.width + entity.getRadius()){
-					this.reset();
-				}
-			}else if(entity.velocity.x < 0){
-				if(entity.x < -entity.getRadius()){
-					this.reset();
-					// entity.virtualVelocity.x *= -0.1;
-				}
-			}
-		// }
+		//if is out of bounds
+		// if(entity.velocity.x > 0){
+		// 		if(entity.x > config.width + entity.getRadius() * 2){
+		// 			this.reset();
+		// 		}
+		// 	}else if(entity.velocity.x < 0){
+		// 		if(entity.x < -entity.getRadius() * 2){
+		// 			this.reset();
+		// 			// entity.virtualVelocity.x *= -0.1;
+		// 		}
+		// 	}
 
-		if(entity.velocity.y > 0){
-			if(entity.y > config.height * 0.8){
-				// entity.velocity.y *= -0.5;
-				// entity.y += entity.velocity.y * delta;
-			}
-		}else if(entity.velocity.y < 0){
+
+		// if(entity.velocity.y > 0){
+		// 	if(entity.y > config.height * 0.8){
+		// 		// entity.velocity.y *= -0.5;
+		// 		// entity.y += entity.velocity.y * delta;
+		// 	}
+		// }else 
+
+		if(entity.velocity.y < 0){
 			if(entity.y < this.goleira.y -10){
 
-				if(this.colliding){
-					return
-				}
+
+				// if(this.colliding){
+				// 	return
+				// }
 				let ballPosition = {
-					x: this.ball.x,
-					y: this.ball.y + this.ball.spriteContainer.y * this.ball.scale.y
+					x: entity.x,
+					y: entity.y + entity.spriteContainer.y * entity.scale.y
 				}
-				this.textLabel.text = 'NOT GOAL'
+				this.debugBall(ballPosition, entity);
+				this.textLabel.text = ''//'NOT GOAL'
 				let collisions = [];
 				let topStickPoint = this.goleira.getTopStick();
 				collisions.push(this.detectSideCollision(this.goleira.getLeftStick(), entity,ballPosition))
@@ -166,35 +174,25 @@ export default class InitScreen extends Screen{
 				let killStandard = false
 				let isGoal = true;
 
-
+				entity.stickCollide();
 				for (var i = collisions.length - 1; i >= 0; i--) {
 					let interception = collisions[i];
 					if(interception.interception.length > 0){
 
-						this.debugBall(ballPosition, entity);
+						
 
-						let distPos = (ballPosition.y - interception.p1.y) / entity.getRadius();
-						if(isGoal)
-							isGoal = distPos > 0;
-						let distance = 1//utils.distance(interception[0].x,0,interception[1].x,0) / entity.getRadius()
 						if(interception.type == 'side'){
-							distPos = (ballPosition.x - interception.p1.x) / entity.getRadius();
-							if(isGoal){
-								isGoal = distPos > 0.1;
-							}
-							this.ball.backSide(distance, distPos, isGoal);
-
+							console.log('SIDE');
+							let sideStick = {x:interception.interception[0].x, y:ballPosition.y + 1, getRadius:function(){return 1}}
+							this.collisions.collideSticksSide(1/60, entity, sideStick, ballPosition)
 						}else{
-							// console.log(ballPosition.x, ballPosition.y, interception.interception);
-							let topStick = {x:ballPosition.x + this.ball.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
-			// 				if(utils.distance(topStick.x, topStick.y, entity.x, entity.y) < topStick.getRadius() + entity.getRadius()){
-			// let angle = -Math.atan2(topStick.y - entity.y, topStick.x - entity.x);
-							this.collisions.collideSticks(1/60, this.ball, topStick, ballPosition)
-							//this.ball.back(distance, distPos, isGoal);
+							let topStick = {x:ballPosition.x + 1, y:interception.interception[0].y, getRadius:function(){return 1}}
+							// let topStick = {x:ballPosition.x + entity.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
+							this.collisions.collideSticks(1/60, entity, topStick, ballPosition)
 						}
 						
 						let label =  isGoal?'GOAL':'NOT GOAL'
-						this.textLabel.text = distance +' - '+distPos+' - '+label;//interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
+						//this.textLabel.text = distance +' - '+distPos+' - '+label;//interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
 						killStandard = true;
 					}
 				}
@@ -207,20 +205,25 @@ export default class InitScreen extends Screen{
 				let onGoal = this.collisions.rectCircleColliding(circle, rect);
 
 
-				if(onGoal && this.ball.velocity.y < 0){
-					this.ball.verticalVelocity.y += 8000 / -this.ball.velocity.y
-					this.ball.velocity.y *= 0.25;
-					this.ball.onGoal = true;
-					this.textLabel.text = 'GOAL'
+				if(onGoal && entity.velocity.y < 0){
+					entity.verticalVelocity.y += 8000 / -entity.velocity.y
+					entity.velocity.y *= 0.25;
+					entity.rotationInfluence.x *= 0.25;
+					entity.onGoal = true;
+					// this.textLabel.text = 'GOAL'
 				}else{
-					this.textLabel.text = 'NO GOAL'
+					// this.textLabel.text = 'NO GOAL'
 
-					this.ball.spriteGravity *= 5
-					this.ball.velocity.y *= 0.4
+					entity.spriteGravity *= 5
+					entity.velocity.y *= 0.4
+					entity.rotationInfluence.x *= 0.25;
 				}
 				
 
 				this.debugGoal(rect);
+
+
+				
 				// if(!this.colliding){
 					// if(killStandard){
 					// 	setTimeout(function() {this.reset();}.bind(this), 2000);
@@ -255,11 +258,18 @@ export default class InitScreen extends Screen{
 
 		this.mousePosition = renderer.plugins.interaction.pointer.global;
 		// if(this.currentTrail)
-		this.verifyInterception();
 
-		// this.collide(delta, this.ball, this.ball2)
-		// this.collide(delta, this.ball, this.ball3)
-		this.collideBounds(delta, this.ball)
+		// this.collide(delta, this.currentBalls, this.currentBalls2)
+		// this.collide(delta, this.currentBalls, this.currentBalls3)
+		// console.log(this.currentBalls.length);
+		for (var i = this.currentBalls.length - 1; i >= 0; i--) {			
+			this.verifyInterception(this.currentBalls[i]);
+			this.collideBounds(delta, this.currentBalls[i])
+
+			if(this.currentBalls[i].killed){
+				this.currentBalls.splice(i, 1);
+			}
+		}
 
 
 
@@ -280,13 +290,13 @@ export default class InitScreen extends Screen{
 		this.addChild(this.testee);
 	}
 
-	verifyInterception(){
+	verifyInterception(entity){
 		if(!this.tapping || (this.firstPoint && this.firstPoint.y < this.mousePosition.y)){
 			return
 		}
 
 		this.secPoint = {x:this.mousePosition.x,y:this.mousePosition.y};
-		let interception = this.collisions.inteceptCircleLineSeg(this.ball, {p1:this.firstPoint, p2:this.secPoint});
+		let interception = this.collisions.inteceptCircleLineSeg(entity, {p1:this.firstPoint, p2:this.secPoint});
 		
 		//just shoot if have two points of intersection
 		if(interception.length < 2){
@@ -297,16 +307,21 @@ export default class InitScreen extends Screen{
 		//angle btx the intersection points
 		let angleColision = -Math.atan2(interception[0].y - interception[1].y, interception[0].x - interception[1].x);
 		angleColision += 90 / 180 * 3.14;;
-		let frontBall = {x:this.ball.x, y:this.ball.y - this.ball.getRadius()}
+		let frontBall = {x:entity.x, y:entity.y - entity.getRadius()}
 		
 		//angle btw front of the ball and the points
 		let angle = -Math.atan2(this.firstPoint.y - frontBall.y, this.secPoint.x - frontBall.x);
 		// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
 		angle += 90 / 180 * 3.14;
+
+
         let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025
 
        
-        this.ball.shoot(force, angle, angleColision);
+        entity.shoot(force, angle, angleColision);
+
+        this.reset();
+
         this.paused = true;
         setTimeout(function() {this.paused = false;}.bind(this), 100);
 	}
@@ -325,9 +340,13 @@ export default class InitScreen extends Screen{
 		this.tapping = false;
 	}
 	onTapDown(){
-		// this.ball.shoot(6.5 , 0,  0);
-		this.reset();
-		this.ball.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
+		// this.currentBalls.shoot(6.5 , 0,  0);
+		// this.reset();
+		// let tempBall = this.getBall()
+		// this.currentBalls.push(tempBall)
+		// //tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.34);
+		// //TOP SHOOT
+		// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
 		this.tapping = true;
 		this.firstPoint = {x:this.mousePosition.x,y:this.mousePosition.y};
 		this.trailManager.startNewTrail(this.mousePosition);

@@ -8,7 +8,8 @@ export default class Ball extends PIXI.Container {
         this.virtualVelocity = {x:0,y:0};
         this.velocity = {x:0,y:0};
         this.speed = {x:230,y:230};
-        this.friction = {x:100,y:200};
+        this.friction = {x:350,y:200};
+        // this.rotationFriction = {x:100,y:200};
         this.rotationInfluence = {x:0,y:0};
         this.rotationSpeed = 0;
         this.scaleFator = 1;
@@ -33,12 +34,12 @@ export default class Ball extends PIXI.Container {
         this.container = new PIXI.Container();
         this.addChild(this.container);
 
-        this.externalColisionCircle = new PIXI.Graphics();
-        this.externalColisionCircle.beginFill(0x000000);
-        this.externalColisionCircle.drawCircle(0,this.radius,this.radius);
-        this.externalColisionCircle.alpha = 0.1;
-        this.container.addChild(this.externalColisionCircle);
-        this.externalColisionCircle.scale.y = 0.5
+        this.shadow = new PIXI.Graphics();
+        this.shadow.beginFill(0x000000);
+        this.shadow.drawCircle(0,this.radius,this.radius);
+        this.shadow.alpha = 0.1;
+        this.container.addChild(this.shadow);
+        this.shadow.scale.y = 0.5
 
 
         this.spriteContainer = new PIXI.Container();
@@ -53,6 +54,7 @@ export default class Ball extends PIXI.Container {
         // }
 
         this.shooting = false;
+        this.killed = false;
     }
    
 
@@ -61,10 +63,20 @@ export default class Ball extends PIXI.Container {
 
 
          let angSpeed = -angle;
+
+         if(force > 9){
+            force = 9;
+         }
         // let angSpeed = this.ball.rotation - angleColision;
         // this.ball.rotation += angleColision// * 0.5;
         // console.log(force);
-        this.rotationSpeed = angSpeed * 1.8// * 0.5;
+        this.rotationSpeed = angSpeed * 1.5// * 0.5;
+        if(this.rotationSpeed > 1.2){
+            this.rotationSpeed = 1.2
+        }else if(this.rotationSpeed < -1.2){
+            this.rotationSpeed = -1.2
+        }
+        console.log(this.rotationSpeed, force);
         this.velocity.x = 0;
         this.velocity.y = 0;
         this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
@@ -74,7 +86,6 @@ export default class Ball extends PIXI.Container {
         this.virtualVelocity.y = 0;
 
 
-        this.shooting = true;
         this.rotationInfluence.x = this.rotationSpeed * 850;
         this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
 
@@ -82,24 +93,29 @@ export default class Ball extends PIXI.Container {
 
         this.verticalVelocity.y += this.shootYSpeed * force2;
         this.spriteDirection = 1;
+        this.shooting = true;
         //this.sprite.y = 0;
     }
     reset() {
+
+        console.log('RESET');
+        this.updateable = true;
+        this.shooting = false;
+        this.killed = false;
+
+        this.collided = false;
+
         this.virtualVelocity = {x:0,y:0};
         this.velocity = {x:0,y:0};
 
         this.rotationInfluence = {x:0,y:0};
         this.rotationSpeed = 0;
-        this.shooting = false;
 
         this.sprite.rotation = 0;
-
+        this.killTimer = 4;
         this.spriteGravity = this.spriteGravityStandard;
-
         this.onGoal = false;
-
         this.spriteContainer.y = 0;
-
 
         this.y = config.height - 180;
 
@@ -126,7 +142,8 @@ export default class Ball extends PIXI.Container {
             this.virtualVelocity.x = -this.speed.x * side;
             this.velocity.x = -this.speed.x * side;
         }
-        this.spriteContainer.scale.set(1)
+        this.spriteContainer.scale.set(1);
+        this.shadow.alpha = 0.1;
         // this.sprite.scale.set(1)
 
         // console.log(this.verticalVelocity);
@@ -135,11 +152,11 @@ export default class Ball extends PIXI.Container {
         let t = Math.abs(force2) - 0.5
         // force2 = 1 - force2
 
-        console.log('backSide', this.velocity.y);
+        // console.log('backSide', this.velocity.y);
         this.velocity.x +=  -t * this.velocity.x//force2
         this.velocity.y *=  -0.8//force2
         // this.velocity.y +=  t * this.velocity.y//force2
-        console.log('backSide2', this.velocity.y, t);
+        // console.log('backSide2', this.velocity.y, t);
 
         this.verticalVelocity.y = -this.velocity.y * force2 * force*2
     }
@@ -163,6 +180,10 @@ export default class Ball extends PIXI.Container {
 
 
     }
+    stickCollide() {
+        this.collided = true;
+
+    }
     getRadius() {
         // this.standardScale
         return this.scale.x * this.radius;
@@ -178,17 +199,19 @@ export default class Ball extends PIXI.Container {
 
         // console.log('touchGround');
 
-        // console.log(this.verticalVelocity.y);
+        // console.log('1',this.verticalVelocity.y);
         if(this.onGoal){
             this.verticalVelocity.y = -this.verticalVelocity.y/3
         }else{
             this.verticalVelocity.y = -this.verticalVelocity.y/1.7
         }
-        // console.log(this.verticalVelocity.y);
+        // console.log('2',this.verticalVelocity.y);
 
         this.velocity.x *= 0.85
 
-        if(Math.abs(this.verticalVelocity.y) < 200){
+        // console.log(this.verticalVelocity.y);
+
+        if(Math.abs(this.verticalVelocity.y) < 2500){
             // console.log(this.verticalVelocity);
             this.verticalVelocity.y = 0;
             this.spriteContainer.y = 0;
@@ -196,15 +219,57 @@ export default class Ball extends PIXI.Container {
         }
         this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
     }
+    killBall ( ) {
+        this.killTimer = 99999;
+        this.updateable = false;
+        TweenLite.to(this.shadow, 0.2, {alpha:0})
+
+        console.log('kill');
+
+        TweenLite.to(this.spriteContainer.scale, 0.2, {x:0,y:0, onComplete:function(){
+            console.log(this);
+            this.killed = true;
+        }, onCompleteScope:this})
+    }
+    updateScale ( ) {
+        let ang = 0;
+        let targetScale = {x:1, y:1}
+        if(!this.collided && this.shooting){
+            ang = Math.atan2(this.velocity.y, this.velocity.x)
+            targetScale = {x:Math.sin(ang)*0.2 + 1,y:Math.cos(ang)*0.3 + 1};
+        }else if(!this.shooting){
+            ang = Math.atan2(this.velocity.y, this.verticalVelocity.y)            
+            targetScale = {x:Math.sin(ang)*0.2 + 1,y:Math.cos(ang)*0.2 + 1};
+        }else{
+            targetScale = {x:1, y:1}
+        }
+
+        // this.spriteContainer.scale.x=targetScale.x;
+        // this.spriteContainer.scale.y=targetScale.y;
+
+        TweenLite.to(this.spriteContainer.scale, 0.5, targetScale)
+    }
     update ( delta ) {
         // delta*= 0.2
+        if(this.killed){
+            return
+        }
+        if(!this.updateable){
+            return
+        }
+
+        this.updateScale();
 
         this.x += this.velocity.x * delta * this.scale.x;
         this.y += this.velocity.y * delta * this.scale.y;
 
+        // console.log(this.killTimer);
         if(this.shooting){
-            let ang = Math.atan2(this.velocity.y, this.velocity.x)
-            TweenLite.to(this.spriteContainer.scale, 0.5, {x:Math.sin(ang)*0.2 + 1, y:Math.cos(ang)*0.3+1})
+            this.killTimer -= delta;
+            if(this.killTimer <= 0){
+                this.killBall();
+                
+            }
         }
         //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
 
@@ -217,8 +282,8 @@ export default class Ball extends PIXI.Container {
 
         // let hScale = (this.spriteContainer.y / 250)
         // console.log((this.spriteContainer.y / 250));
-        // this.externalColisionCircle.scale.x = 1 + hScale
-        // this.externalColisionCircle.scale.y = 0.5 + hScale
+        // this.shadow.scale.x = 1 + hScale
+        // this.shadow.scale.y = 0.5 + hScale
         // if(this.shooting && percentage == 0){
         //     this.game.reset();
         // }
