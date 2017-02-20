@@ -65,6 +65,10 @@ export default class InitScreen extends Screen{
 		this.textLabel = new PIXI.Text('---',{font : '20px', fill : 0x000000, align : 'right'});
 		this.addChild(this.textLabel)
 
+		this.debug2 = new PIXI.Text('---',{font : '20px', fill : 0x000000, align : 'right'});
+		this.addChild(this.debug2)
+		this.debug2.y = config.height - 20;
+
 		this.collisions = new Collisions();
 		this.viewManager = new ViewManager();
 		this.trailManager = new TrailManager(this.ingameUIContainer);
@@ -201,6 +205,9 @@ export default class InitScreen extends Screen{
 
 				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.5}
 				let rect = this.goleira.getGoalRect()
+				this.debugGoal(rect);
+
+				console.log(rect);
 
 				let onGoal = this.collisions.rectCircleColliding(circle, rect);
 
@@ -210,9 +217,9 @@ export default class InitScreen extends Screen{
 					entity.velocity.y *= 0.25;
 					entity.rotationInfluence.x *= 0.25;
 					entity.onGoal = true;
-					// this.textLabel.text = 'GOAL'
+					this.textLabel.text = 'GOAL'
 				}else{
-					// this.textLabel.text = 'NO GOAL'
+					this.textLabel.text = 'NO GOAL'
 
 					entity.spriteGravity *= 5
 					entity.velocity.y *= 0.4
@@ -220,7 +227,6 @@ export default class InitScreen extends Screen{
 				}
 				
 
-				this.debugGoal(rect);
 
 
 				
@@ -262,6 +268,9 @@ export default class InitScreen extends Screen{
 		// this.collide(delta, this.currentBalls, this.currentBalls2)
 		// this.collide(delta, this.currentBalls, this.currentBalls3)
 		// console.log(this.currentBalls.length);
+		if(this.debug2.text != this.currentBalls.length){
+			this.debug2.text = this.currentBalls.length;
+		}
 		for (var i = this.currentBalls.length - 1; i >= 0; i--) {			
 			this.verifyInterception(this.currentBalls[i]);
 			this.collideBounds(delta, this.currentBalls[i])
@@ -279,7 +288,7 @@ export default class InitScreen extends Screen{
 		if(this.testeRect){
 			this.testeRect.parent.removeChild(this.testeRect)
 		}
-		this.testeRect = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(rect.x,rect.y, rect.w,rect.h);
+		this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x,rect.y, rect.w,rect.h);
 		this.addChild(this.testeRect)
 		this.testeRect.alpha = 0.2
 	}

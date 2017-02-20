@@ -55,10 +55,10 @@ export default class GoalView extends PIXI.Container {
     	let www = 10
 		let hhh = 6
 		let rect = {
-			x:this.goleira.x - this.goleira.width/2 + www,
-			y:this.goleira.y - this.goleira.height + hhh,
-			w:this.goleira.width - www *2 + 4,
-			h:this.goleira.height - hhh
+			x:this.x- this.goleira.width/2 * this.scale.x + www,
+			y:this.y- this.goleira.height * this.scale.y + hhh,
+			w:this.goleira.width * this.scale.x - www *2 + 4,
+			h:this.goleira.height * this.scale.y - hhh
 		}
 		return rect
     }

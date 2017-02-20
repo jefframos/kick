@@ -38115,6 +38115,10 @@
 				this.textLabel = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
 				this.addChild(this.textLabel);
 	
+				this.debug2 = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
+				this.addChild(this.debug2);
+				this.debug2.y = _config2.default.height - 20;
+	
 				this.collisions = new _Collisions2.default();
 				this.viewManager = new _ViewManager2.default();
 				this.trailManager = new _TrailManager2.default(this.ingameUIContainer);
@@ -38257,6 +38261,9 @@
 	
 						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.5 };
 						var rect = this.goleira.getGoalRect();
+						this.debugGoal(rect);
+	
+						console.log(rect);
 	
 						var onGoal = this.collisions.rectCircleColliding(circle, rect);
 	
@@ -38265,16 +38272,14 @@
 							entity.velocity.y *= 0.25;
 							entity.rotationInfluence.x *= 0.25;
 							entity.onGoal = true;
-							// this.textLabel.text = 'GOAL'
+							this.textLabel.text = 'GOAL';
 						} else {
-							// this.textLabel.text = 'NO GOAL'
+							this.textLabel.text = 'NO GOAL';
 	
 							entity.spriteGravity *= 5;
 							entity.velocity.y *= 0.4;
 							entity.rotationInfluence.x *= 0.25;
 						}
-	
-						this.debugGoal(rect);
 	
 						// if(!this.colliding){
 						// if(killStandard){
@@ -38313,6 +38318,9 @@
 				// this.collide(delta, this.currentBalls, this.currentBalls2)
 				// this.collide(delta, this.currentBalls, this.currentBalls3)
 				// console.log(this.currentBalls.length);
+				if (this.debug2.text != this.currentBalls.length) {
+					this.debug2.text = this.currentBalls.length;
+				}
 				for (var i = this.currentBalls.length - 1; i >= 0; i--) {
 					this.verifyInterception(this.currentBalls[i]);
 					this.collideBounds(delta, this.currentBalls[i]);
@@ -38328,7 +38336,7 @@
 				if (this.testeRect) {
 					this.testeRect.parent.removeChild(this.testeRect);
 				}
-				this.testeRect = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(rect.x, rect.y, rect.w, rect.h);
+				this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x, rect.y, rect.w, rect.h);
 				this.addChild(this.testeRect);
 				this.testeRect.alpha = 0.2;
 			}
@@ -46845,7 +46853,7 @@
 	        value: function reset() {
 	
 	            console.log('RESET');
-	            this.updateable = true;
+	            //this.updateable = true;
 	            this.shooting = false;
 	            this.killed = false;
 	
@@ -46888,11 +46896,18 @@
 	                this.virtualVelocity.x = -this.speed.x * side;
 	                this.velocity.x = -this.speed.x * side;
 	            }
-	            this.spriteContainer.scale.set(1);
-	            this.shadow.alpha = 0.1;
+	            this.spriteContainer.scale.set(2, 0);
+	
+	            TweenLite.to(this.spriteContainer.scale, 0.8, { delay: 0.75, x: 1, y: 1, ease: 'easeOutElastic', onComplete: this.startUpdate, onCompleteScope: this });
+	            TweenLite.to(this.shadow, 0.5, { alpha: 0.1 });
 	            // this.sprite.scale.set(1)
 	
 	            // console.log(this.verticalVelocity);
+	        }
+	    }, {
+	        key: 'startUpdate',
+	        value: function startUpdate() {
+	            this.updateable = true;
 	        }
 	    }, {
 	        key: 'backSide',
@@ -47883,10 +47898,10 @@
 							var www = 10;
 							var hhh = 6;
 							var rect = {
-									x: this.goleira.x - this.goleira.width / 2 + www,
-									y: this.goleira.y - this.goleira.height + hhh,
-									w: this.goleira.width - www * 2 + 4,
-									h: this.goleira.height - hhh
+									x: this.x - this.goleira.width / 2 * this.scale.x + www,
+									y: this.y - this.goleira.height * this.scale.y + hhh,
+									w: this.goleira.width * this.scale.x - www * 2 + 4,
+									h: this.goleira.height * this.scale.y - hhh
 							};
 							return rect;
 					}

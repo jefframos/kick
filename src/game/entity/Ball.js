@@ -99,7 +99,7 @@ export default class Ball extends PIXI.Container {
     reset() {
 
         console.log('RESET');
-        this.updateable = true;
+        //this.updateable = true;
         this.shooting = false;
         this.killed = false;
 
@@ -142,11 +142,16 @@ export default class Ball extends PIXI.Container {
             this.virtualVelocity.x = -this.speed.x * side;
             this.velocity.x = -this.speed.x * side;
         }
-        this.spriteContainer.scale.set(1);
-        this.shadow.alpha = 0.1;
+        this.spriteContainer.scale.set(2,0);
+
+        TweenLite.to(this.spriteContainer.scale, 0.8, {delay:0.75, x:1, y:1, ease:'easeOutElastic', onComplete:this.startUpdate, onCompleteScope:this})
+        TweenLite.to(this.shadow, 0.5, {alpha:0.1})
         // this.sprite.scale.set(1)
 
         // console.log(this.verticalVelocity);
+    }
+    startUpdate(){
+        this.updateable = true;
     }
     backSide(force, force2) {
         let t = Math.abs(force2) - 0.5
