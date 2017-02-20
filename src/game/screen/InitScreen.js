@@ -225,8 +225,8 @@ export default class InitScreen extends Screen{
 				}else{
 					this.textLabel.text = 'NO GOAL'
 
-					if(travessao && distance > 3){
-						entity.velocity.y *= 0.5
+					entity.velocity.y *= 0.6
+					if(travessao && distance > 5){
 						this.textLabel.text = this.textLabel.text+ ' - travetop - '+distance
 						entity.velocity.y = -Math.abs(entity.velocity.y)
 					}
