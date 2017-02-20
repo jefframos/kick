@@ -38233,24 +38233,26 @@
 	
 						var killStandard = false;
 						var isGoal = true;
-	
+						var travessao = false;
 						entity.stickCollide();
+						var distance = 0;
 						for (var i = collisions.length - 1; i >= 0; i--) {
 							var interception = collisions[i];
 							if (interception.interception.length > 0) {
-	
 								if (interception.type == 'side') {
-									console.log('SIDE');
 									var sideStick = { x: interception.interception[0].x, y: ballPosition.y + 1, getRadius: function getRadius() {
 											return 1;
 										} };
 									this.collisions.collideSticksSide(1 / 60, entity, sideStick, ballPosition);
 								} else {
+	
+									travessao = true;
 									var topStick = { x: ballPosition.x + 1, y: interception.interception[0].y, getRadius: function getRadius() {
 											return 1;
 										} };
 									// let topStick = {x:ballPosition.x + entity.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
 									this.collisions.collideSticks(1 / 60, entity, topStick, ballPosition);
+									distance = _utils2.default.distance(interception.interception[0].y, 0, ballPosition.y, 0);
 								}
 	
 								var label = isGoal ? 'GOAL' : 'NOT GOAL';
@@ -38268,16 +38270,24 @@
 						var onGoal = this.collisions.rectCircleColliding(circle, rect);
 	
 						if (onGoal && entity.velocity.y < 0) {
-							entity.verticalVelocity.y += 8000 / -entity.velocity.y;
+							entity.verticalVelocity.y += 3000; //-entity.velocity.y// / -entity.velocity.y
+							this.textLabel.text = 'GOAL';
+							if (travessao) {
+								this.textLabel.text = this.textLabel.text + ' - travetop';
+								entity.verticalVelocity.y += 5000; //-entity.velocity.y// / -entity.velocity.y
+							}
 							entity.velocity.y *= 0.25;
 							entity.rotationInfluence.x *= 0.25;
 							entity.onGoal = true;
-							this.textLabel.text = 'GOAL';
 						} else {
 							this.textLabel.text = 'NO GOAL';
 	
+							if (travessao && distance > 3) {
+								entity.velocity.y *= 0.5;
+								this.textLabel.text = this.textLabel.text + ' - travetop - ' + distance;
+								entity.velocity.y = -Math.abs(entity.velocity.y);
+							}
 							entity.spriteGravity *= 5;
-							entity.velocity.y *= 0.4;
 							entity.rotationInfluence.x *= 0.25;
 						}
 	
@@ -38409,8 +38419,8 @@
 				// this.reset();
 				// let tempBall = this.getBall()
 				// this.currentBalls.push(tempBall)
-				// //tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.34);
-				// //TOP SHOOT
+				// // //tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.34);
+				// // //TOP SHOOT
 				// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
 				this.tapping = true;
 				this.firstPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
