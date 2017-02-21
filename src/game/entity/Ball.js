@@ -76,7 +76,7 @@ export default class Ball extends PIXI.Container {
         }else if(this.rotationSpeed < -1.2){
             this.rotationSpeed = -1.2
         }
-        console.log(this.rotationSpeed, force);
+        // console.log(this.rotationSpeed, force);
         this.velocity.x = 0;
         this.velocity.y = 0;
         this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
@@ -98,7 +98,7 @@ export default class Ball extends PIXI.Container {
     }
     reset() {
 
-        console.log('RESET');
+        // console.log('RESET');
         //this.updateable = true;
         this.shooting = false;
         this.killed = false;
@@ -144,11 +144,12 @@ export default class Ball extends PIXI.Container {
         }
         this.spriteContainer.scale.set(2,0);
 
-        TweenLite.to(this.spriteContainer.scale, 0.8, {delay:0.75, x:1, y:1, ease:'easeOutElastic', onComplete:this.startUpdate, onCompleteScope:this})
+        TweenLite.to(this.spriteContainer.scale, 0.1, {delay:0.75, x:1, y:1, ease:'easeOutElastic', onComplete:this.startUpdate, onCompleteScope:this})
         TweenLite.to(this.shadow, 0.5, {alpha:0.1})
         // this.sprite.scale.set(1)
 
         // console.log(this.verticalVelocity);
+        this.updateable = true;
     }
     startUpdate(){
         this.updateable = true;
@@ -229,10 +230,7 @@ export default class Ball extends PIXI.Container {
         this.updateable = false;
         TweenLite.to(this.shadow, 0.2, {alpha:0})
 
-        console.log('kill');
-
         TweenLite.to(this.spriteContainer.scale, 0.2, {x:0,y:0, onComplete:function(){
-            console.log(this);
             this.killed = true;
         }, onCompleteScope:this})
     }
@@ -249,10 +247,10 @@ export default class Ball extends PIXI.Container {
             targetScale = {x:1, y:1}
         }
 
-        // this.spriteContainer.scale.x=targetScale.x;
-        // this.spriteContainer.scale.y=targetScale.y;
+        this.spriteContainer.scale.x=targetScale.x;
+        this.spriteContainer.scale.y=targetScale.y;
 
-        TweenLite.to(this.spriteContainer.scale, 0.5, targetScale)
+        // TweenLite.to(this.spriteContainer.scale, 0.5, targetScale)
     }
     update ( delta ) {
         // delta*= 0.2

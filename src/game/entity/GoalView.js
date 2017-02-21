@@ -1,11 +1,15 @@
 import * as PIXI from 'pixi.js';
 import config  from '../../config';
+import Target from '../entity/Target'
 export default class GoalView extends PIXI.Container {
 
     constructor(game) {
     	super();
 
     	this.game = game;
+    	this.targetPool = [];
+		this.targets = [];
+
     }
     build(){
 
@@ -37,7 +41,45 @@ export default class GoalView extends PIXI.Container {
 		// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
 		// this.goleira.addChild(this.trave4);
 
+    }
+    addTargets(){
+		let target = this.getTarget();
+		target.x = -this.goleira.width / 2 + target.radius 
+		target.y = -this.goleira.height + target.radius 
+		this.goleira.addChild(target);
+		this.targets.push(target);
 
+		target = this.getTarget();
+		target.x = this.goleira.width / 2 - target.radius 
+		target.y = -this.goleira.height + target.radius 
+		this.goleira.addChild(target);
+		this.targets.push(target);
+
+		// target.y = 0//-this.height
+
+    }
+    getTarget(){
+		for (var i = this.targetPool.length - 1; i >= 0; i--) {
+			if(this.targetPool[i].killed){
+				return this.targetPool[i]
+			}
+		}
+		let target = new Target(this, 80);
+		this.targetPool.push(target);
+		return target;
+	}
+	getTargetList(){
+		let returnList = [];
+		for (var i = this.targets.length - 1; i >= 0; i--) {
+			let target = this.targets[i];
+	    	let p = {
+				x:this.x + this.goleira.x + (target.x * this.scale.x),
+				y:this.y + this.goleira.y +(target.y * this.scale.y) ,
+				r: target.radius * this.scale.x 
+			}
+			returnList.push(p)
+		}
+		return returnList
     }
     getStickSide(target, side = 1){
     	let p1 = {

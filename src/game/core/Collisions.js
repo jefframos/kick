@@ -65,16 +65,16 @@ export default class Collisions{
 			let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))			
 			angle -= 180 / 180 * 3.14;
 			// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
-			console.log('1',entity.velocity.y);	
+			// console.log('1',entity.velocity.y);	
 			//TROCAR ENTRE SENOS E COSSENOS AQUI
 			entity.velocity.x = -Math.cos(angle) * (entity.velocity.x*2)// * percent);
 			// angle -= 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
 			entity.velocity.y = Math.sin(angle) *  Math.abs((entity.velocity.y * 2)) + entity.velocity.y// * percent);
 			//entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
 			// console.log('2', Math.sin(angle), entity.velocity.y);	
-			console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
-			console.log('angle --', angle * 180 / 3.14);
-			console.log('-----');	
+			// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
+			// console.log('angle --', angle * 180 / 3.14);
+			// console.log('-----');	
 		}
 	}
 

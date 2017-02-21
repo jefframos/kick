@@ -38030,6 +38030,10 @@
 	
 	var _Ball2 = _interopRequireDefault(_Ball);
 	
+	var _Target = __webpack_require__(199);
+	
+	var _Target2 = _interopRequireDefault(_Target);
+	
 	var _Collisions = __webpack_require__(193);
 	
 	var _Collisions2 = _interopRequireDefault(_Collisions);
@@ -38091,6 +38095,8 @@
 				this.updateList = [];
 				this.trailPool = [];
 				this.ballPool = [];
+				this.targetPool = [];
+				this.targets = [];
 				this.currentBalls = [];
 	
 				// this.currentBalls.push(this.getBall());
@@ -38127,13 +38133,16 @@
 				this.updateList.push(this.goleira);
 	
 				this.reset();
+	
+				this.addTargets();
 			}
 		}, {
 			key: 'getBall',
 			value: function getBall() {
 				for (var i = this.ballPool.length - 1; i >= 0; i--) {
 					if (!this.ballPool[i].killed && !this.ballPool[i].shooting || this.ballPool[i].shooting && this.ballPool[i].killed) {
-						console.log(this.ballPool[i].killed, this.ballPool[i].shooting);
+						// console.log(this.ballPool[i].killed , this.ballPool[i].shooting);
+	
 	
 						this.ballPool[i].reset();
 						return this.ballPool[i];
@@ -38154,6 +38163,18 @@
 				return ball;
 			}
 		}, {
+			key: 'getTarget',
+			value: function getTarget() {
+				for (var i = this.targetPool.length - 1; i >= 0; i--) {
+					if (this.targetPool[i].killed) {
+						return this.targetPool[i];
+					}
+				}
+				var target = new _Target2.default(this, 50);
+				this.targetPool.push(target);
+				return target;
+			}
+		}, {
 			key: 'getTrail',
 			value: function getTrail() {
 				for (var i = this.trailPool.length - 1; i >= 0; i--) {
@@ -38168,6 +38189,12 @@
 				trail.frequency = 0.0001;
 				this.trailPool.push(trail);
 				return trail;
+			}
+		}, {
+			key: 'addTargets',
+			value: function addTargets() {
+	
+				this.goleira.addTargets();
 			}
 		}, {
 			key: 'reset',
@@ -38234,12 +38261,21 @@
 						var killStandard = false;
 						var isGoal = true;
 						var travessao = false;
+						var traveRight = false;
+						var traveLeft = false;
 						entity.stickCollide();
 						var distance = 0;
 						for (var i = collisions.length - 1; i >= 0; i--) {
 							var interception = collisions[i];
 							if (interception.interception.length > 0) {
 								if (interception.type == 'side') {
+									// traves = true;
+									if (interception.interception[0].x > _config2.default.width / 2) {
+										traveRight = true;
+									} else {
+										traveLeft = true;
+									}
+									// console.log('interception', interception.interception[0].x, config.width/2);
 									var sideStick = { x: interception.interception[0].x, y: ballPosition.y + 1, getRadius: function getRadius() {
 											return 1;
 										} };
@@ -38263,22 +38299,47 @@
 	
 						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.5 };
 						var rect = this.goleira.getGoalRect();
-						this.debugGoal(rect);
+						// this.debugGoal(rect);
 	
-						console.log(rect);
+						// console.log(this.goleira.getTargetList());
+	
+						// console.log(rect);
 	
 						var onGoal = this.collisions.rectCircleColliding(circle, rect);
 	
 						if (onGoal && entity.velocity.y < 0) {
-							entity.verticalVelocity.y += 3000; //-entity.velocity.y// / -entity.velocity.y
+							entity.verticalVelocity.y += 2000; //-entity.velocity.y// / -entity.velocity.y
 							this.textLabel.text = 'GOAL';
 							if (travessao) {
 								this.textLabel.text = this.textLabel.text + ' - travetop';
 								entity.verticalVelocity.y += 5000; //-entity.velocity.y// / -entity.velocity.y
 							}
-							entity.velocity.y *= 0.25;
+							if (traveLeft) {
+								entity.rotationInfluence.x *= 10;
+								entity.velocity.x *= 3;
+								this.textLabel.text = this.textLabel.text + ' - traveLeft';
+							}
+							if (traveRight) {
+								entity.rotationInfluence.x *= -10;
+								entity.velocity.x *= -3;
+								this.textLabel.text = this.textLabel.text + ' - traveRight';
+							}
+							entity.velocity.y *= 0.15;
 							entity.rotationInfluence.x *= 0.25;
 							entity.onGoal = true;
+	
+							var targets = this.goleira.getTargetList();
+							for (var i = targets.length - 1; i >= 0; i--) {
+								var dist = _utils2.default.distance(targets[i].x, targets[i].y, ballPosition.x, ballPosition.y);
+								// console.log(dist, targets[i].r + entity.getRadius());
+								var radiusDistance = targets[i].r + entity.getRadius();
+								var radiusDistanceInner = targets[i].r / 2 + entity.getRadius();
+								if (dist < radiusDistanceInner) {
+									this.textLabel.text = 'na mosca';
+								} else if (dist < radiusDistance) {
+									this.textLabel.text = 'no angulo';
+								}
+							}
 						} else {
 							this.textLabel.text = 'NO GOAL';
 	
@@ -38287,6 +38348,17 @@
 								this.textLabel.text = this.textLabel.text + ' - travetop - ' + distance;
 								entity.velocity.y = -Math.abs(entity.velocity.y);
 							}
+							if (traveLeft) {
+								entity.rotationInfluence.x *= 10;
+								entity.velocity.x *= 3;
+								this.textLabel.text = this.textLabel.text + ' - traveLeft NO';
+							}
+							if (traveRight) {
+								entity.rotationInfluence.x *= -10;
+								entity.velocity.x *= -3;
+								this.textLabel.text = this.textLabel.text + ' - traveRight NO';
+							}
+	
 							entity.spriteGravity *= 5;
 							entity.rotationInfluence.x *= 0.25;
 						}
@@ -38332,7 +38404,9 @@
 					this.debug2.text = this.currentBalls.length;
 				}
 				for (var i = this.currentBalls.length - 1; i >= 0; i--) {
-					this.verifyInterception(this.currentBalls[i]);
+					if (this.mousePosition.x > 0 && this.mousePosition.x < _config2.default.width && this.mousePosition.y > 0 && this.mousePosition.y < _config2.default.height) {
+						this.verifyInterception(this.currentBalls[i]);
+					}
 					this.collideBounds(delta, this.currentBalls[i]);
 	
 					if (this.currentBalls[i].killed) {
@@ -38397,13 +38471,13 @@
 		}, {
 			key: 'detectTopCollision',
 			value: function detectTopCollision(target, entity, ballPosition) {
-				this.debugStick(target);
+				// this.debugStick(target)
 				return this.collisions.detectTopCollision(target, entity, ballPosition);
 			}
 		}, {
 			key: 'detectSideCollision',
 			value: function detectSideCollision(target, entity, ballPosition) {
-				this.debugStick(target);
+				// this.debugStick(target)
 				return this.collisions.detectSideCollision(target, entity, ballPosition);
 			}
 		}, {
@@ -38413,13 +38487,42 @@
 				this.tapping = false;
 			}
 		}, {
+			key: 'shootLeft',
+			value: function shootLeft() {
+				var tempBall = this.getBall();
+				this.currentBalls.push(tempBall);
+				tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.4);
+			}
+		}, {
+			key: 'shootRight',
+			value: function shootRight() {
+				var tempBall = this.getBall();
+				this.currentBalls.push(tempBall);
+				tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 - 0.4);
+			}
+		}, {
+			key: 'shootTop',
+			value: function shootTop() {
+				var tempBall = this.getBall();
+				this.currentBalls.push(tempBall);
+				tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
+			}
+		}, {
 			key: 'onTapDown',
 			value: function onTapDown() {
 				// this.currentBalls.shoot(6.5 , 0,  0);
-				// this.reset();
-				// let tempBall = this.getBall()
-				// this.currentBalls.push(tempBall)
-				// // //tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.34);
+				// for (var i = 51; i >= 0; i--) {
+				// 	let rnd = Math.random()
+				// 	if(rnd < 0.33){
+				// 		this.shootTop()
+				// 	}else if(rnd < 0.66){
+				// 		this.shootLeft()
+				// 	}else{
+				// 		this.shootRight()
+	
+				// 	}
+				// }
+				// this.shootTop()
 				// // //TOP SHOOT
 				// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
 				this.tapping = true;
@@ -46839,7 +46942,7 @@
 	            } else if (this.rotationSpeed < -1.2) {
 	                this.rotationSpeed = -1.2;
 	            }
-	            console.log(this.rotationSpeed, force);
+	            // console.log(this.rotationSpeed, force);
 	            this.velocity.x = 0;
 	            this.velocity.y = 0;
 	            this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
@@ -46862,7 +46965,7 @@
 	        key: 'reset',
 	        value: function reset() {
 	
-	            console.log('RESET');
+	            // console.log('RESET');
 	            //this.updateable = true;
 	            this.shooting = false;
 	            this.killed = false;
@@ -46908,11 +47011,12 @@
 	            }
 	            this.spriteContainer.scale.set(2, 0);
 	
-	            TweenLite.to(this.spriteContainer.scale, 0.8, { delay: 0.75, x: 1, y: 1, ease: 'easeOutElastic', onComplete: this.startUpdate, onCompleteScope: this });
+	            TweenLite.to(this.spriteContainer.scale, 0.1, { delay: 0.75, x: 1, y: 1, ease: 'easeOutElastic', onComplete: this.startUpdate, onCompleteScope: this });
 	            TweenLite.to(this.shadow, 0.5, { alpha: 0.1 });
 	            // this.sprite.scale.set(1)
 	
 	            // console.log(this.verticalVelocity);
+	            this.updateable = true;
 	        }
 	    }, {
 	        key: 'startUpdate',
@@ -47006,10 +47110,7 @@
 	            this.updateable = false;
 	            TweenLite.to(this.shadow, 0.2, { alpha: 0 });
 	
-	            console.log('kill');
-	
 	            TweenLite.to(this.spriteContainer.scale, 0.2, { x: 0, y: 0, onComplete: function onComplete() {
-	                    console.log(this);
 	                    this.killed = true;
 	                }, onCompleteScope: this });
 	        }
@@ -47028,10 +47129,10 @@
 	                targetScale = { x: 1, y: 1 };
 	            }
 	
-	            // this.spriteContainer.scale.x=targetScale.x;
-	            // this.spriteContainer.scale.y=targetScale.y;
+	            this.spriteContainer.scale.x = targetScale.x;
+	            this.spriteContainer.scale.y = targetScale.y;
 	
-	            TweenLite.to(this.spriteContainer.scale, 0.5, targetScale);
+	            // TweenLite.to(this.spriteContainer.scale, 0.5, targetScale)
 	        }
 	    }, {
 	        key: 'update',
@@ -47239,16 +47340,16 @@
 					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
 					angle -= 180 / 180 * 3.14;
 					// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
-					console.log('1', entity.velocity.y);
+					// console.log('1',entity.velocity.y);	
 					//TROCAR ENTRE SENOS E COSSENOS AQUI
 					entity.velocity.x = -Math.cos(angle) * (entity.velocity.x * 2); // * percent);
 					// angle -= 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
 					entity.velocity.y = Math.sin(angle) * Math.abs(entity.velocity.y * 2) + entity.velocity.y; // * percent);
 					//entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
 					// console.log('2', Math.sin(angle), entity.velocity.y);	
-					console.log('1', entity.velocity.y, entity.verticalVelocity.y);
-					console.log('angle --', angle * 180 / 3.14);
-					console.log('-----');
+					// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
+					// console.log('angle --', angle * 180 / 3.14);
+					// console.log('-----');	
 				}
 			}
 		}, {
@@ -47831,6 +47932,10 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
+	var _Target = __webpack_require__(199);
+	
+	var _Target2 = _interopRequireDefault(_Target);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -47850,6 +47955,9 @@
 					var _this = _possibleConstructorReturn(this, (GoalView.__proto__ || Object.getPrototypeOf(GoalView)).call(this));
 	
 					_this.game = game;
+					_this.targetPool = [];
+					_this.targets = [];
+	
 					return _this;
 			}
 	
@@ -47884,7 +47992,50 @@
 	
 							// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
 							// this.goleira.addChild(this.trave4);
+					}
+			}, {
+					key: 'addTargets',
+					value: function addTargets() {
+							var target = this.getTarget();
+							target.x = -this.goleira.width / 2 + target.radius;
+							target.y = -this.goleira.height + target.radius;
+							this.goleira.addChild(target);
+							this.targets.push(target);
 	
+							target = this.getTarget();
+							target.x = this.goleira.width / 2 - target.radius;
+							target.y = -this.goleira.height + target.radius;
+							this.goleira.addChild(target);
+							this.targets.push(target);
+	
+							// target.y = 0//-this.height
+					}
+			}, {
+					key: 'getTarget',
+					value: function getTarget() {
+							for (var i = this.targetPool.length - 1; i >= 0; i--) {
+									if (this.targetPool[i].killed) {
+											return this.targetPool[i];
+									}
+							}
+							var target = new _Target2.default(this, 80);
+							this.targetPool.push(target);
+							return target;
+					}
+			}, {
+					key: 'getTargetList',
+					value: function getTargetList() {
+							var returnList = [];
+							for (var i = this.targets.length - 1; i >= 0; i--) {
+									var target = this.targets[i];
+									var p = {
+											x: this.x + this.goleira.x + target.x * this.scale.x,
+											y: this.y + this.goleira.y + target.y * this.scale.y,
+											r: target.radius * this.scale.x
+									};
+									returnList.push(p);
+							}
+							return returnList;
 					}
 			}, {
 					key: 'getStickSide',
@@ -48185,6 +48336,64 @@
 	}(_Screen3.default);
 	
 	exports.default = LoadScreen;
+
+/***/ },
+/* 199 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	        value: true
+	});
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Target = function (_PIXI$Container) {
+	        _inherits(Target, _PIXI$Container);
+	
+	        function Target(game) {
+	                var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+	
+	                _classCallCheck(this, Target);
+	
+	                var _this = _possibleConstructorReturn(this, (Target.__proto__ || Object.getPrototypeOf(Target)).call(this));
+	
+	                _this.game = game;
+	                _this.radius = radius;
+	
+	                _this.container = new PIXI.Container();
+	                _this.addChild(_this.container);
+	
+	                _this.shadow = new PIXI.Graphics();
+	                _this.shadow.beginFill(0x0000FF);
+	                _this.shadow.drawCircle(0, 0, _this.radius);
+	                // this.shadow.alpha = 0.1;
+	                _this.container.addChild(_this.shadow);
+	
+	                return _this;
+	        }
+	
+	        return Target;
+	}(PIXI.Container);
+	
+	exports.default = Target;
 
 /***/ }
 /******/ ]);

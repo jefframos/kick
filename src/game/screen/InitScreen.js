@@ -4,6 +4,7 @@ import config  from '../../config';
 import utils  from '../../utils';
 import Screen from '../../screenManager/Screen'
 import Ball from '../entity/Ball'
+import Target from '../entity/Target'
 
 import Collisions from '../core/Collisions';
 import TrailManager from '../core/TrailManager';
@@ -38,6 +39,8 @@ export default class InitScreen extends Screen{
 		this.updateList = [];
 		this.trailPool = [];
 		this.ballPool = [];
+		this.targetPool = [];
+		this.targets = [];
 		this.currentBalls = [];
 
 
@@ -77,12 +80,14 @@ export default class InitScreen extends Screen{
         this.updateList.push(this.goleira)
 
         this.reset();
+
+        this.addTargets();
 	}
 
 	getBall(){
 		for (var i = this.ballPool.length - 1; i >= 0; i--) {
 			if((!this.ballPool[i].killed && !this.ballPool[i].shooting) || (this.ballPool[i].shooting && this.ballPool[i].killed)){
-				console.log(this.ballPool[i].killed , this.ballPool[i].shooting);
+				// console.log(this.ballPool[i].killed , this.ballPool[i].shooting);
 
 
 				this.ballPool[i].reset();
@@ -103,6 +108,16 @@ export default class InitScreen extends Screen{
 
 		return ball;
 	}
+	getTarget(){
+		for (var i = this.targetPool.length - 1; i >= 0; i--) {
+			if(this.targetPool[i].killed){
+				return this.targetPool[i]
+			}
+		}
+		let target = new Target(this, 50);
+		this.targetPool.push(target);
+		return target;
+	}
 	getTrail(){
 		for (var i = this.trailPool.length - 1; i >= 0; i--) {
 			if(this.trailPool[i].killed){
@@ -116,6 +131,11 @@ export default class InitScreen extends Screen{
 		trail.frequency = 0.0001
 		this.trailPool.push(trail);
 		return trail;
+	}
+	addTargets(){
+
+		this.goleira.addTargets();
+		
 	}
 	reset(){
 		console.log('reset');
@@ -178,12 +198,21 @@ export default class InitScreen extends Screen{
 				let killStandard = false
 				let isGoal = true;
 				let travessao = false;
+				let traveRight = false;
+				let traveLeft = false;
 				entity.stickCollide();
 				let distance = 0;
 				for (var i = collisions.length - 1; i >= 0; i--) {
 					let interception = collisions[i];
 					if(interception.interception.length > 0){
 						if(interception.type == 'side'){
+							// traves = true;
+							if(interception.interception[0].x > config.width/2){
+								traveRight = true;
+							}else{
+								traveLeft = true;
+							}
+							// console.log('interception', interception.interception[0].x, config.width/2);
 							let sideStick = {x:interception.interception[0].x, y:ballPosition.y + 1, getRadius:function(){return 1}}
 							this.collisions.collideSticksSide(1/60, entity, sideStick, ballPosition)
 						}else{
@@ -205,23 +234,51 @@ export default class InitScreen extends Screen{
 
 				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.5}
 				let rect = this.goleira.getGoalRect()
-				this.debugGoal(rect);
+				// this.debugGoal(rect);
+				
+				// console.log(this.goleira.getTargetList());
 
-				console.log(rect);
+				// console.log(rect);
 
 				let onGoal = this.collisions.rectCircleColliding(circle, rect);
 
 
 				if(onGoal && entity.velocity.y < 0){
-					entity.verticalVelocity.y += 3000 //-entity.velocity.y// / -entity.velocity.y
+					entity.verticalVelocity.y += 2000 //-entity.velocity.y// / -entity.velocity.y
 					this.textLabel.text = 'GOAL'
 					if(travessao){
 						this.textLabel.text = this.textLabel.text+ ' - travetop'
 						entity.verticalVelocity.y += 5000 //-entity.velocity.y// / -entity.velocity.y
 					}
-					entity.velocity.y *= 0.25;
+					if(traveLeft){
+						entity.rotationInfluence.x *= 10;
+						entity.velocity.x *= 3
+						this.textLabel.text = this.textLabel.text+ ' - traveLeft'
+					}
+					if(traveRight){
+						entity.rotationInfluence.x *= -10;
+						entity.velocity.x *= -3
+						this.textLabel.text = this.textLabel.text+ ' - traveRight'
+					}
+					entity.velocity.y *= 0.15;
 					entity.rotationInfluence.x *= 0.25;
 					entity.onGoal = true;
+
+
+					let targets = this.goleira.getTargetList();
+					for (var i = targets.length - 1; i >= 0; i--) {
+						let dist = utils.distance(targets[i].x, targets[i].y, ballPosition.x, ballPosition.y)
+						// console.log(dist, targets[i].r + entity.getRadius());
+						let radiusDistance = targets[i].r + entity.getRadius()
+						let radiusDistanceInner = targets[i].r/2 + entity.getRadius()
+						if(dist < radiusDistanceInner){
+							this.textLabel.text = 'na mosca'
+						}else if(dist < radiusDistance){
+							this.textLabel.text = 'no angulo'
+						}
+					}
+
+				
 				}else{
 					this.textLabel.text = 'NO GOAL'
 
@@ -230,12 +287,23 @@ export default class InitScreen extends Screen{
 						this.textLabel.text = this.textLabel.text+ ' - travetop - '+distance
 						entity.velocity.y = -Math.abs(entity.velocity.y)
 					}
+					if(traveLeft){
+						entity.rotationInfluence.x *= 10;
+						entity.velocity.x *= 3
+						this.textLabel.text = this.textLabel.text+ ' - traveLeft NO'
+					}
+					if(traveRight){
+						entity.rotationInfluence.x *= -10;
+						entity.velocity.x *= -3
+						this.textLabel.text = this.textLabel.text+ ' - traveRight NO'
+					}
+
 					entity.spriteGravity *= 5
 					entity.rotationInfluence.x *= 0.25;
 				}
 				
 
-
+				
 
 				
 				// if(!this.colliding){
@@ -279,8 +347,13 @@ export default class InitScreen extends Screen{
 		if(this.debug2.text != this.currentBalls.length){
 			this.debug2.text = this.currentBalls.length;
 		}
-		for (var i = this.currentBalls.length - 1; i >= 0; i--) {			
-			this.verifyInterception(this.currentBalls[i]);
+		for (var i = this.currentBalls.length - 1; i >= 0; i--) {	
+			if(
+				(this.mousePosition.x > 0 && this.mousePosition.x < config.width) &&
+				(this.mousePosition.y > 0 && this.mousePosition.y < config.height)
+			){
+				this.verifyInterception(this.currentBalls[i]);
+			}
 			this.collideBounds(delta, this.currentBalls[i])
 
 			if(this.currentBalls[i].killed){
@@ -344,24 +417,47 @@ export default class InitScreen extends Screen{
 	}
 	
 	detectTopCollision(target, entity,ballPosition){
-		this.debugStick(target)
+		// this.debugStick(target)
 		return this.collisions.detectTopCollision(target, entity,ballPosition);
 	}
 
 	detectSideCollision(target, entity,ballPosition){
-		this.debugStick(target)
+		// this.debugStick(target)
 		return this.collisions.detectSideCollision(target, entity,ballPosition);
 	}
 	onTapUp(){
 		this.trailManager.removeTrail();
 		this.tapping = false;
 	}
+	shootLeft(){
+		let tempBall = this.getBall()
+		this.currentBalls.push(tempBall)
+		tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.4);
+	}
+	shootRight(){
+		let tempBall = this.getBall()
+		this.currentBalls.push(tempBall)
+		tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 - 0.4);
+	}
+	shootTop(){
+		let tempBall = this.getBall()
+		this.currentBalls.push(tempBall)
+		tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
+	}
 	onTapDown(){
 		// this.currentBalls.shoot(6.5 , 0,  0);
-		// this.reset();
-		// let tempBall = this.getBall()
-		// this.currentBalls.push(tempBall)
-		// // //tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.34);
+		// for (var i = 51; i >= 0; i--) {
+		// 	let rnd = Math.random()
+		// 	if(rnd < 0.33){
+		// 		this.shootTop()
+		// 	}else if(rnd < 0.66){
+		// 		this.shootLeft()
+		// 	}else{
+		// 		this.shootRight()
+
+		// 	}
+		// }
+		// this.shootTop()
 		// // //TOP SHOOT
 		// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
 		this.tapping = true;
