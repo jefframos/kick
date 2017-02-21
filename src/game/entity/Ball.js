@@ -144,12 +144,12 @@ export default class Ball extends PIXI.Container {
         }
         this.spriteContainer.scale.set(2,0);
 
-        TweenLite.to(this.spriteContainer.scale, 0.1, {delay:0.75, x:1, y:1, ease:'easeOutElastic', onComplete:this.startUpdate, onCompleteScope:this})
+        TweenLite.to(this.spriteContainer.scale, 0.8, {delay:0.75, x:1, y:1, ease:'easeOutElastic', onComplete:this.startUpdate, onCompleteScope:this})
         TweenLite.to(this.shadow, 0.5, {alpha:0.1})
         // this.sprite.scale.set(1)
 
         // console.log(this.verticalVelocity);
-        this.updateable = true;
+        // this.updateable = true;
     }
     startUpdate(){
         this.updateable = true;

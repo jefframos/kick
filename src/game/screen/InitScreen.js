@@ -232,7 +232,7 @@ export default class InitScreen extends Screen{
 
 
 
-				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.5}
+				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.9}
 				let rect = this.goleira.getGoalRect()
 				// this.debugGoal(rect);
 				
@@ -251,13 +251,15 @@ export default class InitScreen extends Screen{
 						entity.verticalVelocity.y += 5000 //-entity.velocity.y// / -entity.velocity.y
 					}
 					if(traveLeft){
+						entity.velocity.y *= 2;
 						entity.rotationInfluence.x *= 10;
-						entity.velocity.x *= 3
+						entity.velocity.x += -entity.velocity.y
 						this.textLabel.text = this.textLabel.text+ ' - traveLeft'
 					}
 					if(traveRight){
+						entity.velocity.y *= 2;
 						entity.rotationInfluence.x *= -10;
-						entity.velocity.x *= -3
+						entity.velocity.x -= -entity.velocity.y
 						this.textLabel.text = this.textLabel.text+ ' - traveRight'
 					}
 					entity.velocity.y *= 0.15;
@@ -270,7 +272,7 @@ export default class InitScreen extends Screen{
 						let dist = utils.distance(targets[i].x, targets[i].y, ballPosition.x, ballPosition.y)
 						// console.log(dist, targets[i].r + entity.getRadius());
 						let radiusDistance = targets[i].r + entity.getRadius()
-						let radiusDistanceInner = targets[i].r/2 + entity.getRadius()
+						let radiusDistanceInner = targets[i].r/2 + entity.getRadius()/2
 						if(dist < radiusDistanceInner){
 							this.textLabel.text = 'na mosca'
 						}else if(dist < radiusDistance){
@@ -278,7 +280,7 @@ export default class InitScreen extends Screen{
 						}
 					}
 
-				
+
 				}else{
 					this.textLabel.text = 'NO GOAL'
 
@@ -451,12 +453,13 @@ export default class InitScreen extends Screen{
 		// 	if(rnd < 0.33){
 		// 		this.shootTop()
 		// 	}else if(rnd < 0.66){
-		// 		this.shootLeft()
+				// this.shootLeft()
 		// 	}else{
 		// 		this.shootRight()
 
 		// 	}
 		// }
+		// this.shootLeft()
 		// this.shootTop()
 		// // //TOP SHOOT
 		// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);

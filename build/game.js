@@ -38297,7 +38297,7 @@
 							}
 						}
 	
-						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.5 };
+						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.9 };
 						var rect = this.goleira.getGoalRect();
 						// this.debugGoal(rect);
 	
@@ -38315,13 +38315,15 @@
 								entity.verticalVelocity.y += 5000; //-entity.velocity.y// / -entity.velocity.y
 							}
 							if (traveLeft) {
+								entity.velocity.y *= 2;
 								entity.rotationInfluence.x *= 10;
-								entity.velocity.x *= 3;
+								entity.velocity.x += -entity.velocity.y;
 								this.textLabel.text = this.textLabel.text + ' - traveLeft';
 							}
 							if (traveRight) {
+								entity.velocity.y *= 2;
 								entity.rotationInfluence.x *= -10;
-								entity.velocity.x *= -3;
+								entity.velocity.x -= -entity.velocity.y;
 								this.textLabel.text = this.textLabel.text + ' - traveRight';
 							}
 							entity.velocity.y *= 0.15;
@@ -38333,7 +38335,7 @@
 								var dist = _utils2.default.distance(targets[i].x, targets[i].y, ballPosition.x, ballPosition.y);
 								// console.log(dist, targets[i].r + entity.getRadius());
 								var radiusDistance = targets[i].r + entity.getRadius();
-								var radiusDistanceInner = targets[i].r / 2 + entity.getRadius();
+								var radiusDistanceInner = targets[i].r / 2 + entity.getRadius() / 2;
 								if (dist < radiusDistanceInner) {
 									this.textLabel.text = 'na mosca';
 								} else if (dist < radiusDistance) {
@@ -38516,12 +38518,13 @@
 				// 	if(rnd < 0.33){
 				// 		this.shootTop()
 				// 	}else if(rnd < 0.66){
-				// 		this.shootLeft()
+				// this.shootLeft()
 				// 	}else{
 				// 		this.shootRight()
 	
 				// 	}
 				// }
+				// this.shootLeft()
 				// this.shootTop()
 				// // //TOP SHOOT
 				// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
@@ -47011,12 +47014,12 @@
 	            }
 	            this.spriteContainer.scale.set(2, 0);
 	
-	            TweenLite.to(this.spriteContainer.scale, 0.1, { delay: 0.75, x: 1, y: 1, ease: 'easeOutElastic', onComplete: this.startUpdate, onCompleteScope: this });
+	            TweenLite.to(this.spriteContainer.scale, 0.8, { delay: 0.75, x: 1, y: 1, ease: 'easeOutElastic', onComplete: this.startUpdate, onCompleteScope: this });
 	            TweenLite.to(this.shadow, 0.5, { alpha: 0.1 });
 	            // this.sprite.scale.set(1)
 	
 	            // console.log(this.verticalVelocity);
-	            this.updateable = true;
+	            // this.updateable = true;
 	        }
 	    }, {
 	        key: 'startUpdate',
