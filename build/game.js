@@ -37724,7 +37724,7 @@
 	
 	var _InitScreen2 = _interopRequireDefault(_InitScreen);
 	
-	var _LoadScreen = __webpack_require__(199);
+	var _LoadScreen = __webpack_require__(200);
 	
 	var _LoadScreen2 = _interopRequireDefault(_LoadScreen);
 	
@@ -38030,27 +38030,27 @@
 	
 	var _Ball2 = _interopRequireDefault(_Ball);
 	
-	var _Obstacle = __webpack_require__(200);
+	var _Obstacle = __webpack_require__(193);
 	
 	var _Obstacle2 = _interopRequireDefault(_Obstacle);
 	
-	var _Target = __webpack_require__(193);
+	var _Target = __webpack_require__(194);
 	
 	var _Target2 = _interopRequireDefault(_Target);
 	
-	var _Collisions = __webpack_require__(194);
+	var _Collisions = __webpack_require__(195);
 	
 	var _Collisions2 = _interopRequireDefault(_Collisions);
 	
-	var _TrailManager = __webpack_require__(195);
+	var _TrailManager = __webpack_require__(196);
 	
 	var _TrailManager2 = _interopRequireDefault(_TrailManager);
 	
-	var _ViewManager = __webpack_require__(197);
+	var _ViewManager = __webpack_require__(198);
 	
 	var _ViewManager2 = _interopRequireDefault(_ViewManager);
 	
-	var _GoalView = __webpack_require__(198);
+	var _GoalView = __webpack_require__(199);
 	
 	var _GoalView2 = _interopRequireDefault(_GoalView);
 	
@@ -47301,6 +47301,180 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Obstacle = function (_PIXI$Container) {
+	    _inherits(Obstacle, _PIXI$Container);
+	
+	    function Obstacle(game) {
+	        var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+	        var bounds = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : { height: 400 };
+	
+	        _classCallCheck(this, Obstacle);
+	
+	        var _this = _possibleConstructorReturn(this, (Obstacle.__proto__ || Object.getPrototypeOf(Obstacle)).call(this));
+	
+	        _this.game = game;
+	
+	        _this.radius = radius;
+	        _this.externalRadius = _this.radius * 1;
+	
+	        _this.bounds = bounds;
+	
+	        _this.container = new PIXI.Container();
+	        _this.addChild(_this.container);
+	
+	        _this.shadow = new PIXI.Graphics();
+	        _this.shadow.beginFill(0x0000);
+	        _this.shadow.drawCircle(0, _this.radius, _this.radius);
+	        _this.shadow.alpha = 0.1;
+	        _this.container.addChild(_this.shadow);
+	        _this.shadow.scale.y = 0.5;
+	
+	        _this.spriteContainer = new PIXI.Container();
+	        _this.container.addChild(_this.spriteContainer);
+	
+	        // if(this.radius > 20){
+	
+	        _this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
+	        //this.spriteContainer.addChild(this.sprite);
+	        _this.sprite.anchor.set(0.5);
+	        _this.sprite.scale.set(_this.radius / 150);
+	
+	        _this.shape = new PIXI.Graphics();
+	        _this.shape.beginFill(Math.random() * 0xFFFFFF);
+	        _this.shape.drawRect(-_this.radius, -_this.bounds.height, _this.radius * 2, _this.bounds.height);
+	        _this.container.addChild(_this.shape);
+	
+	        // }
+	
+	
+	        return _this;
+	    }
+	
+	    _createClass(Obstacle, [{
+	        key: 'reset',
+	        value: function reset() {
+	
+	            this.killed = false;
+	
+	            this.collided = false;
+	
+	            this.virtualVelocity = { x: 0, y: 0 };
+	            this.velocity = { x: 0, y: 0 };
+	
+	            this.rotationInfluence = { x: 0, y: 0 };
+	            this.rotationSpeed = 0;
+	
+	            this.sprite.rotation = 0;
+	        }
+	    }, {
+	        key: 'startUpdate',
+	        value: function startUpdate() {
+	            this.updateable = true;
+	        }
+	    }, {
+	        key: 'getBounds',
+	        value: function getBounds() {
+	            // this.standardScale
+	            return { width: this.getRadius() * 2, height: this.scale.y * this.bounds.height };
+	        }
+	    }, {
+	        key: 'getRadius',
+	        value: function getRadius() {
+	            // this.standardScale
+	            return this.scale.x * this.radius;
+	        }
+	    }, {
+	        key: 'getExternalRadius',
+	        value: function getExternalRadius() {
+	            return this.scale.x * this.externalRadius;
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update(delta) {
+	            // delta*= 0.2
+	            if (this.killed) {
+	                return;
+	            }
+	            if (!this.updateable) {
+	                return;
+	            }
+	
+	            this.x += this.velocity.x * delta * this.scale.x;
+	            this.y += this.velocity.y * delta * this.scale.y;
+	
+	            if (this.rotationInfluence.x < 0) {
+	                this.rotationInfluence.x += this.friction.x * delta;
+	                if (this.rotationInfluence.x > 0) {
+	                    this.rotationInfluence.x = 0;
+	                }
+	            } else if (this.rotationInfluence.x > 0) {
+	                this.rotationInfluence.x -= this.friction.x * delta;
+	                if (this.rotationInfluence.x < 0) {
+	                    this.rotationInfluence.x = 0;
+	                }
+	            }
+	
+	            if (this.velocity.x < this.virtualVelocity.x) {
+	                this.velocity.x += this.friction.x * delta;
+	                if (this.velocity.x > this.virtualVelocity.x) {
+	                    this.velocity.x = this.virtualVelocity.x;
+	                }
+	            } else if (this.velocity.x > this.virtualVelocity.x) {
+	                this.velocity.x -= this.friction.x * delta;
+	                if (this.velocity.x < this.virtualVelocity.x) {
+	                    this.velocity.x = this.virtualVelocity.x;
+	                }
+	            }
+	
+	            if (this.velocity.y < this.virtualVelocity.y) {
+	                this.velocity.y += this.friction.y * delta;
+	                if (this.velocity.y > this.virtualVelocity.y) {
+	                    this.velocity.y = this.virtualVelocity.y;
+	                }
+	            } else if (this.velocity.y > this.virtualVelocity.y) {
+	                this.velocity.y -= this.friction.y * delta;
+	                if (this.velocity.y < this.virtualVelocity.y) {
+	                    this.velocity.y = this.virtualVelocity.y;
+	                }
+	            }
+	        }
+	    }]);
+	
+	    return Obstacle;
+	}(PIXI.Container);
+	
+	exports.default = Obstacle;
+
+/***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
 	        value: true
 	});
 	
@@ -47353,7 +47527,7 @@
 	exports.default = Target;
 
 /***/ },
-/* 194 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47635,7 +47809,7 @@
 	exports.default = Collisions;
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47654,7 +47828,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Trail = __webpack_require__(196);
+	var _Trail = __webpack_require__(197);
 	
 	var _Trail2 = _interopRequireDefault(_Trail);
 	
@@ -47723,7 +47897,7 @@
 	exports.default = TrailManager;
 
 /***/ },
-/* 196 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48046,7 +48220,7 @@
 	exports.default = Trail;
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48090,7 +48264,7 @@
 	exports.default = ViewManager;
 
 /***/ },
-/* 198 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48109,7 +48283,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Target = __webpack_require__(193);
+	var _Target = __webpack_require__(194);
 	
 	var _Target2 = _interopRequireDefault(_Target);
 	
@@ -48276,7 +48450,7 @@
 	exports.default = GoalView;
 
 /***/ },
-/* 199 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48513,180 +48687,6 @@
 	}(_Screen3.default);
 	
 	exports.default = LoadScreen;
-
-/***/ },
-/* 200 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Obstacle = function (_PIXI$Container) {
-	    _inherits(Obstacle, _PIXI$Container);
-	
-	    function Obstacle(game) {
-	        var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
-	        var bounds = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : { height: 400 };
-	
-	        _classCallCheck(this, Obstacle);
-	
-	        var _this = _possibleConstructorReturn(this, (Obstacle.__proto__ || Object.getPrototypeOf(Obstacle)).call(this));
-	
-	        _this.game = game;
-	
-	        _this.radius = radius;
-	        _this.externalRadius = _this.radius * 1;
-	
-	        _this.bounds = bounds;
-	
-	        _this.container = new PIXI.Container();
-	        _this.addChild(_this.container);
-	
-	        _this.shadow = new PIXI.Graphics();
-	        _this.shadow.beginFill(0x0000);
-	        _this.shadow.drawCircle(0, _this.radius, _this.radius);
-	        _this.shadow.alpha = 0.1;
-	        _this.container.addChild(_this.shadow);
-	        _this.shadow.scale.y = 0.5;
-	
-	        _this.spriteContainer = new PIXI.Container();
-	        _this.container.addChild(_this.spriteContainer);
-	
-	        // if(this.radius > 20){
-	
-	        _this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
-	        //this.spriteContainer.addChild(this.sprite);
-	        _this.sprite.anchor.set(0.5);
-	        _this.sprite.scale.set(_this.radius / 150);
-	
-	        _this.shape = new PIXI.Graphics();
-	        _this.shape.beginFill(Math.random() * 0xFFFFFF);
-	        _this.shape.drawRect(-_this.radius, -_this.bounds.height, _this.radius * 2, _this.bounds.height);
-	        _this.container.addChild(_this.shape);
-	
-	        // }
-	
-	
-	        return _this;
-	    }
-	
-	    _createClass(Obstacle, [{
-	        key: 'reset',
-	        value: function reset() {
-	
-	            this.killed = false;
-	
-	            this.collided = false;
-	
-	            this.virtualVelocity = { x: 0, y: 0 };
-	            this.velocity = { x: 0, y: 0 };
-	
-	            this.rotationInfluence = { x: 0, y: 0 };
-	            this.rotationSpeed = 0;
-	
-	            this.sprite.rotation = 0;
-	        }
-	    }, {
-	        key: 'startUpdate',
-	        value: function startUpdate() {
-	            this.updateable = true;
-	        }
-	    }, {
-	        key: 'getBounds',
-	        value: function getBounds() {
-	            // this.standardScale
-	            return { width: this.getRadius() * 2, height: this.scale.y * this.bounds.height };
-	        }
-	    }, {
-	        key: 'getRadius',
-	        value: function getRadius() {
-	            // this.standardScale
-	            return this.scale.x * this.radius;
-	        }
-	    }, {
-	        key: 'getExternalRadius',
-	        value: function getExternalRadius() {
-	            return this.scale.x * this.externalRadius;
-	        }
-	    }, {
-	        key: 'update',
-	        value: function update(delta) {
-	            // delta*= 0.2
-	            if (this.killed) {
-	                return;
-	            }
-	            if (!this.updateable) {
-	                return;
-	            }
-	
-	            this.x += this.velocity.x * delta * this.scale.x;
-	            this.y += this.velocity.y * delta * this.scale.y;
-	
-	            if (this.rotationInfluence.x < 0) {
-	                this.rotationInfluence.x += this.friction.x * delta;
-	                if (this.rotationInfluence.x > 0) {
-	                    this.rotationInfluence.x = 0;
-	                }
-	            } else if (this.rotationInfluence.x > 0) {
-	                this.rotationInfluence.x -= this.friction.x * delta;
-	                if (this.rotationInfluence.x < 0) {
-	                    this.rotationInfluence.x = 0;
-	                }
-	            }
-	
-	            if (this.velocity.x < this.virtualVelocity.x) {
-	                this.velocity.x += this.friction.x * delta;
-	                if (this.velocity.x > this.virtualVelocity.x) {
-	                    this.velocity.x = this.virtualVelocity.x;
-	                }
-	            } else if (this.velocity.x > this.virtualVelocity.x) {
-	                this.velocity.x -= this.friction.x * delta;
-	                if (this.velocity.x < this.virtualVelocity.x) {
-	                    this.velocity.x = this.virtualVelocity.x;
-	                }
-	            }
-	
-	            if (this.velocity.y < this.virtualVelocity.y) {
-	                this.velocity.y += this.friction.y * delta;
-	                if (this.velocity.y > this.virtualVelocity.y) {
-	                    this.velocity.y = this.virtualVelocity.y;
-	                }
-	            } else if (this.velocity.y > this.virtualVelocity.y) {
-	                this.velocity.y -= this.friction.y * delta;
-	                if (this.velocity.y < this.virtualVelocity.y) {
-	                    this.velocity.y = this.virtualVelocity.y;
-	                }
-	            }
-	        }
-	    }]);
-	
-	    return Obstacle;
-	}(PIXI.Container);
-	
-	exports.default = Obstacle;
 
 /***/ }
 /******/ ]);
