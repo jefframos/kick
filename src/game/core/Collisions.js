@@ -14,14 +14,78 @@ export default class Collisions{
 		return {interception:interception, p1:target.p1, p2:target.p2, type:'side'}	
 	}
 	collideEntities(delta, entity, toCollide){
-		let distance = utils.distance(toCollide.x, toCollide.y, entity.x, entity.y) < toCollide.getRadius() + entity.getRadius();
-		console.log(toCollide, toCollide.getRadius());
-		if(distance){
+		if(entity.obstacleCollided){
+			for (var i = entity.obstacleCollided.length - 1; i >= 0; i--) {
+				if(entity.obstacleCollided[i] == toCollide){
+					return
+				}
+			}
+		}
+		let distance = utils.distance(toCollide.x, toCollide.y, entity.x, entity.y);
+		let circleCollide = distance < toCollide.getRadius() + entity.getRadius();
+		let realCollide = false;
+		let headCollide = false;
+		let headDistance = 0;
+		if(circleCollide){
+				let ballPosition = {
+					x: entity.x,
+					y: entity.y + entity.spriteContainer.y * entity.scale.y
+				}
+				let hDistance = utils.distance(0, toCollide.y, 0, ballPosition.y)
+			// if(utils.distance(toCollide.x, toCollide.y - toCollide.bounds.height, entity.x, entity.y) < toCollide.bounds.height){
+				let toCompare = toCollide.getBounds().height - entity.getRadius()/2
+				realCollide = hDistance < toCompare;
+
+				if(!realCollide){
+					headDistance = utils.distance(0, toCollide.y - toCollide.getBounds().height, 0, ballPosition.y)
+					if(headDistance < entity.getRadius()){
+						console.log('NA CABECA');
+						realCollide = true;
+						headCollide = true;
+					}
+				}
+
+
+				// console.log(realCollide, 'REAL COLLIDE', hDistance, toCompare, headDistance);
+			// }
+		}
+		// console.log(toCollide, toCollide.getRadius());
+		if(realCollide){
+			let distPercent =  distance / (toCollide.getRadius() + entity.getRadius());
+			console.log(distPercent)//, angle * 180 / 3.14);
 			let angle = -Math.atan2(toCollide.y - entity.y, toCollide.x - entity.x);
 			angle += 90 / 180 * 3.14;
-			let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))
-			entity.velocity.x = Math.sin(angle) * - Math.abs(entity.speed.x * percent);
-			entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y * percent);
+
+// angle *= angle
+			entity.velocity.x = Math.sin(angle) * - Math.abs(entity.speed.x);
+			if(headCollide){
+				let headDistPercent = headDistance / entity.getRadius() 
+				// console.log('HEAD COLLIDE AQUI', headDistPercent, entity.verticalVelocity.y);
+				entity.velocity.y *= (headDistPercent * 2);
+				entity.verticalVelocity.y *= (headDistPercent  * 5)
+				entity.update(1/60)
+			}else{
+				entity.velocity.y = Math.cos(angle) * entity.velocity.y  + (entity.velocity.y * distPercent) //+ entity.velocity.y;
+			}
+			// entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y) + entity.velocity.y - (entity.velocity.y * distPercent) //+ entity.velocity.y;
+
+
+			// let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))
+			// entity.rotationInfluence.x *= Math.sin(angle)
+			// entity.velocity.x = Math.sin(angle) * -Math.abs(entity.speed.x) * percent;
+
+			// //esquisito, mas por enquanto funciona
+			// angle += 90 / 180 * 3.14
+			// entity.velocity.y = Math.cos(angle) * (Math.abs(entity.speed.y )) + Math.cos(angle) * entity.velocity.y;//(entity.velocity.y);
+			entity.obstacleCollided.push(toCollide);
+
+
+			//ORIGINAL
+			// let angle = -Math.atan2(entity.y - this.y, entity.x - this.x) //* 180 / 3.14
+			// angle += 90 / 180 * 3.14
+			// entity.velocity.x = Math.sin(angle) * - Math.abs(entity.speed.x);
+			// entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y);
+			// entity.update(1/60)
 		}
 	}
 

@@ -4,6 +4,7 @@ import config  from '../../config';
 import utils  from '../../utils';
 import Screen from '../../screenManager/Screen'
 import Ball from '../entity/Ball'
+import Obstacle from '../entity/Obstacle'
 import Target from '../entity/Target'
 
 import Collisions from '../core/Collisions';
@@ -42,6 +43,7 @@ export default class InitScreen extends Screen{
 		this.targetPool = [];
 		this.targets = [];
 		this.currentBalls = [];
+		this.obstacles = [];
 
 
         // this.currentBalls.push(this.getBall());
@@ -52,6 +54,42 @@ export default class InitScreen extends Screen{
 		this.backgroundIngameUI = new PIXI.Graphics().beginFill(0x023548).drawRect(0,0,config.width, config.height);
 		this.backgroundIngameUI.alpha = 0;
 		this.ingameUIContainer.addChild(this.backgroundIngameUI)
+
+		let obstacle = new Obstacle(this, 50, {height:380});
+		obstacle.x = config.width / 2-100;
+		obstacle.y = 250;
+		this.updateList.push(obstacle);
+		this.obstacles.push(obstacle);
+
+		this.gameContainer.addChild(obstacle)
+
+		obstacle = new Obstacle(this, 50, {height:375});
+		obstacle.x = config.width / 2-60;
+		obstacle.y = 250;
+		this.updateList.push(obstacle);
+		this.obstacles.push(obstacle);
+
+		this.gameContainer.addChild(obstacle)
+
+		obstacle = new Obstacle(this, 50, {height:400});
+		obstacle.x = config.width / 2-20;
+		obstacle.y = 250;
+		this.updateList.push(obstacle);
+		this.obstacles.push(obstacle);
+
+		this.gameContainer.addChild(obstacle)
+
+
+		obstacle = new Obstacle(this, 50, {height:375});
+		obstacle.x = config.width / 2+100
+		obstacle.y = 160;
+		this.updateList.push(obstacle);
+		this.obstacles.push(obstacle);
+
+		this.gameContainer.addChild(obstacle)
+
+
+		
 
 
 		this.addEvents();
@@ -344,12 +382,14 @@ export default class InitScreen extends Screen{
 		// if(this.currentTrail)
 
 		// this.collide(delta, this.currentBalls, this.currentBalls2)
-		// this.collide(delta, this.currentBalls, this.currentBalls3)
 		// console.log(this.currentBalls.length);
 		if(this.debug2.text != this.currentBalls.length){
 			this.debug2.text = this.currentBalls.length;
 		}
 		for (var i = this.currentBalls.length - 1; i >= 0; i--) {	
+			for (var j = this.obstacles.length - 1; j >= 0; j--) {
+				this.collisions.collideEntities(delta, this.currentBalls[i], this.obstacles[j])
+			}
 			if(
 				(this.mousePosition.x > 0 && this.mousePosition.x < config.width) &&
 				(this.mousePosition.y > 0 && this.mousePosition.y < config.height)
@@ -446,6 +486,13 @@ export default class InitScreen extends Screen{
 		this.currentBalls.push(tempBall)
 		tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
 	}
+
+	shootMiddle(){
+		let tempBall = this.getBall()
+		this.currentBalls.push(tempBall)
+		tempBall.shoot(5 + Math.random() * 0.5, Math.random() * 0.4 - 0.2,   Math.random() * 0.1 - 0.05);
+	}
+
 	onTapDown(){
 		// this.currentBalls.shoot(6.5 , 0,  0);
 		// for (var i = 51; i >= 0; i--) {
@@ -456,7 +503,7 @@ export default class InitScreen extends Screen{
 				// this.shootLeft()
 		// 	}else{
 		// 		this.shootRight()
-
+		// this.shootMiddle();
 		// 	}
 		// }
 		// this.shootLeft()

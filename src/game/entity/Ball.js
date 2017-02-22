@@ -55,6 +55,7 @@ export default class Ball extends PIXI.Container {
 
         this.shooting = false;
         this.killed = false;
+        this.obstacleCollided = [];
     }
    
 
@@ -100,6 +101,7 @@ export default class Ball extends PIXI.Container {
 
         // console.log('RESET');
         //this.updateable = true;
+        this.obstacleCollided = [];
         this.shooting = false;
         this.killed = false;
 
@@ -213,7 +215,7 @@ export default class Ball extends PIXI.Container {
         }
         // console.log('2',this.verticalVelocity.y);
 
-        this.velocity.x *= 0.85
+        this.velocity.x *= 0.9
 
         // console.log(this.verticalVelocity.y);
 
