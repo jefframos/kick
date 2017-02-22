@@ -46925,7 +46925,8 @@
 	        _this.virtualVelocity = { x: 0, y: 0 };
 	        _this.velocity = { x: 0, y: 0 };
 	        _this.speed = { x: 230, y: 230 };
-	        _this.friction = { x: 350, y: 200 };
+	        _this.friction = { x: 275, y: 200 };
+	        _this.standardFriction = { x: 275, y: 200 };
 	        // this.rotationFriction = {x:100,y:200};
 	        _this.rotationInfluence = { x: 0, y: 0 };
 	        _this.rotationSpeed = 0;
@@ -46983,6 +46984,9 @@
 	            if (force > 9) {
 	                force = 9;
 	            }
+	
+	            this.friction.x = this.standardFriction.x * force * 0.1;
+	            console.log(this.friction.x);
 	            // let angSpeed = this.ball.rotation - angleColision;
 	            // this.ball.rotation += angleColision// * 0.5;
 	            // console.log(force);
@@ -47142,7 +47146,7 @@
 	            }
 	            // console.log('2',this.verticalVelocity.y);
 	
-	            this.velocity.x *= 0.9;
+	            // this.velocity.x *= 0.9
 	
 	            // console.log(this.verticalVelocity.y);
 	
@@ -47225,6 +47229,8 @@
 	            // }
 	            // if(percentage){
 	            this.velocity.x += this.rotationInfluence.x * delta * percentage;
+	            // console.log(this.velocity.x);
+	
 	
 	            // console.log(this.rotationInfluence.x);
 	            this.spriteContainer.x += this.verticalVelocity.x * delta * this.scale.x;
