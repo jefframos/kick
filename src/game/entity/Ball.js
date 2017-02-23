@@ -101,11 +101,12 @@ export default class Ball extends PIXI.Container {
         this.verticalVelocity.y += this.shootYSpeed * force2;
         this.spriteDirection = 1;
         this.shooting = true;
+        this.killTimer = 4;
         //this.sprite.y = 0;
     }
     reset() {
 
-        // console.log('RESET');
+        console.log('RESET');
         //this.updateable = true;
         this.obstacleCollided = [];
         this.shooting = false;
@@ -120,14 +121,14 @@ export default class Ball extends PIXI.Container {
         this.rotationSpeed = 0;
 
         this.sprite.rotation = 0;
-        this.killTimer = 4;
+        this.killTimer = 3;
         this.spriteGravity = this.spriteGravityStandard;
         this.onGoal = false;
         this.spriteContainer.y = 0;
 
         this.y = config.height - 180;
 
-        if(Math.random() < 0.9995){
+        if(Math.random() < 0.09995){
             this.verticalVelocity = {x:0, y:0};
             // this.spriteContainer.y = - Math.random() * 80;
             this.spriteContainer.y = 0//- Math.random() * 250;
@@ -152,10 +153,11 @@ export default class Ball extends PIXI.Container {
         }
         this.spriteContainer.scale.set(2,0);
 
-        TweenLite.to(this.spriteContainer.scale, 0.8, {delay:0.75, x:1, y:1, ease:'easeOutElastic', onComplete:this.startUpdate, onCompleteScope:this})
-        TweenLite.to(this.shadow, 0.5, {alpha:0.1})
+        console.log(this.x, this.velocity);
+        //TweenLite.to(this.spriteContainer.scale, 0.8, {delay:0.75, x:1, y:1, ease:'easeOutElastic', onComplete:this.startUpdate, onCompleteScope:this})
+        //TweenLite.to(this.shadow, 0.5, {alpha:0.1})
         // this.sprite.scale.set(1)
-
+        this.startUpdate();
         // console.log(this.verticalVelocity);
         // this.updateable = true;
     }
@@ -234,12 +236,19 @@ export default class Ball extends PIXI.Container {
         this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
     }
     killBall ( ) {
-        this.killTimer = 99999;
+        // this.killTimer = 99999;
+        // console.log('kill ball');
+        
         this.updateable = false;
         TweenLite.to(this.shadow, 0.2, {alpha:0})
 
         TweenLite.to(this.spriteContainer.scale, 0.2, {x:0,y:0, onComplete:function(){
             this.killed = true;
+
+            if(!this.shooting){
+                this.game.reset();
+            }
+
         }, onCompleteScope:this})
     }
     updateScale ( ) {
@@ -269,19 +278,21 @@ export default class Ball extends PIXI.Container {
             return
         }
 
+        // console.log(delta);
+
         this.updateScale();
 
         this.x += this.velocity.x * delta * this.scale.x;
         this.y += this.velocity.y * delta * this.scale.y;
 
         // console.log(this.killTimer);
-        if(this.shooting){
+        // if(this.shooting){
             this.killTimer -= delta;
             if(this.killTimer <= 0){
                 this.killBall();
                 
             }
-        }
+        // }
         //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
 
         let percentage = Math.abs((Math.abs(this.velocity.x) + Math.abs(this.velocity.y)) / 

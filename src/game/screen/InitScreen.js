@@ -44,6 +44,7 @@ export default class InitScreen extends Screen{
 		this.targets = [];
 		this.currentBalls = [];
 		this.obstacles = [];
+		this.lifes = 5;
 
 
         // this.currentBalls.push(this.getBall());
@@ -55,42 +56,7 @@ export default class InitScreen extends Screen{
 		this.backgroundIngameUI.alpha = 0;
 		this.ingameUIContainer.addChild(this.backgroundIngameUI)
 
-		let obstacle = new Obstacle(this, 50, {height:380});
-		obstacle.x = config.width / 2-100;
-		obstacle.y = 250;
-		this.updateList.push(obstacle);
-		this.obstacles.push(obstacle);
-
-		this.gameContainer.addChild(obstacle)
-
-		obstacle = new Obstacle(this, 50, {height:375});
-		obstacle.x = config.width / 2-60;
-		obstacle.y = 250;
-		this.updateList.push(obstacle);
-		this.obstacles.push(obstacle);
-
-		this.gameContainer.addChild(obstacle)
-
-		obstacle = new Obstacle(this, 50, {height:400});
-		obstacle.x = config.width / 2-20;
-		obstacle.y = 250;
-		this.updateList.push(obstacle);
-		this.obstacles.push(obstacle);
-
-		this.gameContainer.addChild(obstacle)
-
-
-		obstacle = new Obstacle(this, 50, {height:375});
-		obstacle.x = config.width / 2+100
-		obstacle.y = 160;
-		this.updateList.push(obstacle);
-		this.obstacles.push(obstacle);
-
-		this.gameContainer.addChild(obstacle)
-
-
 		
-
 
 		this.addEvents();
 		this.currentTrail = false;
@@ -106,6 +72,11 @@ export default class InitScreen extends Screen{
 		this.textLabel = new PIXI.Text('---',{font : '20px', fill : 0x000000, align : 'right'});
 		this.addChild(this.textLabel)
 
+		this.textScore = new PIXI.Text('0',{font : '50px', fill : 0x000000, align : 'right'});
+		this.addChild(this.textScore)
+		this.textScore.x = config.width / 2 - this.textScore.width / 2;
+		this.textScore.y = config.height - this.textScore.height - 20
+
 		this.debug2 = new PIXI.Text('---',{font : '20px', fill : 0x000000, align : 'right'});
 		this.addChild(this.debug2)
 		this.debug2.y = config.height - 20;
@@ -117,11 +88,94 @@ export default class InitScreen extends Screen{
         // this.updateList.push(this.currentBalls)
         this.updateList.push(this.goleira)
 
-        this.reset();
+
+        this.lifes = 5;
+		this.startGame();
+		this.createObstacles();
+
+        // this.reset();
 
         this.addTargets();
 	}
 
+	createObstacles(){
+
+		for (var i = this.obstacles.length - 1; i >= 0; i--) {
+			for (var j = this.updateList.length - 1; j >= 0; j--) {
+				if(this.obstacles[i] == this.updateList[j]){
+					this.updateList.splice(j,1);
+				}
+			}
+			if(this.obstacles[i].parent)
+				this.obstacles[i].parent.removeChild(this.obstacles[i])
+		}
+		this.obstacles = [];
+		let obstacle = null;
+		let rnd = Math.random();
+
+		if(rnd < 0.25){
+			obstacle = new Obstacle(this, 50, {height:380});
+			obstacle.x = config.width / 2-100;
+			obstacle.y = 250;
+			this.updateList.push(obstacle);
+			this.obstacles.push(obstacle);
+
+			this.gameContainer.addChild(obstacle)
+
+			obstacle = new Obstacle(this, 50, {height:375});
+			obstacle.x = config.width / 2-60;
+			obstacle.y = 250;
+			this.updateList.push(obstacle);
+			this.obstacles.push(obstacle);
+
+			this.gameContainer.addChild(obstacle)
+
+			obstacle = new Obstacle(this, 50, {height:400});
+			obstacle.x = config.width / 2-20;
+			obstacle.y = 250;
+			this.updateList.push(obstacle);
+			this.obstacles.push(obstacle);
+
+			this.gameContainer.addChild(obstacle)
+
+
+			obstacle = new Obstacle(this, 50, {height:375});
+			obstacle.x = config.width / 2+100
+			obstacle.y = 160;
+			this.updateList.push(obstacle);
+			this.obstacles.push(obstacle);
+		}else if(rnd < 0.5){
+			obstacle = new Obstacle(this, 50, {height:400});
+			obstacle.x = config.width / 2;
+			obstacle.y = 160;
+			this.updateList.push(obstacle);
+			this.obstacles.push(obstacle);
+
+			this.gameContainer.addChild(obstacle)
+		}else if(rnd < 0.75){
+			obstacle = new Obstacle(this, 50, {height:380});
+			obstacle.x = config.width / 2-100;
+			obstacle.y = 250;
+			this.updateList.push(obstacle);
+			this.obstacles.push(obstacle);
+
+			this.gameContainer.addChild(obstacle)
+
+			obstacle = new Obstacle(this, 50, {height:375});
+			obstacle.x = config.width / 2+100;
+			obstacle.y = 250;
+			this.updateList.push(obstacle);
+			this.obstacles.push(obstacle);
+
+			this.gameContainer.addChild(obstacle)
+		}
+
+		for (var i = this.obstacles.length - 1; i >= 0; i--) {			
+			this.viewManager.updateObjectScale(this.obstacles[i]);
+		}
+
+		// this.gameContainer.addChild(obstacle)
+	}
 	getBall(){
 		for (var i = this.ballPool.length - 1; i >= 0; i--) {
 			if((!this.ballPool[i].killed && !this.ballPool[i].shooting) || (this.ballPool[i].shooting && this.ballPool[i].killed)){
@@ -175,11 +229,47 @@ export default class InitScreen extends Screen{
 		this.goleira.addTargets();
 		
 	}
+	createLifes(){
+		this.textScore.text = 0;
+		if(this.lifesUI){
+			for (var i = this.lifesUI.length - 1; i >= 0; i--) {
+				if(this.lifesUI[i].parent){
+					this.lifesUI[i].parent.removeChild(this.lifesUI[i]);
+				}
+			}
+		}
+		this.lifesUI = [];
+		for (var i = 0; i < this.lifes; i++) {
+			let hearthUI = PIXI.Sprite.fromImage('assets/images/onion.png');
+			this.lifesUI.push(hearthUI)
+			hearthUI.x = config.width - 25 * i - 20;
+			hearthUI.y = 25;
+			hearthUI.anchor.set(0.5);
+			hearthUI.width = 20
+			hearthUI.height = 20
+			
+			this.addChild(hearthUI)
+		}
+	}
+	updateLifes(){
+		this.textScore.text = this.points;
+		for (var i = this.lifesUI.length - 1; i >= 0; i--) {
+			if((i + 1) > this.lifes){
+				this.lifesUI[i].tint = 0x000000;
+			}
+		}
+	}
+	startGame(){
+		this.lifes = 5;
+		this.points = 0;
+        this.currentBalls.push(this.getBall())
+        this.createLifes();
+	}
 	reset(){
 		console.log('reset');
+		this.currentBalls.push(this.getBall())
 		this.paused = false;		
 		this.colliding = false;
-        this.currentBalls.push(this.getBall())
         
 	}
 	debugBall(ballPosition, entity){
@@ -193,26 +283,6 @@ export default class InitScreen extends Screen{
 		if(entity.collided){
 			return;
 		}
-
-		//if is out of bounds
-		// if(entity.velocity.x > 0){
-		// 		if(entity.x > config.width + entity.getRadius() * 2){
-		// 			this.reset();
-		// 		}
-		// 	}else if(entity.velocity.x < 0){
-		// 		if(entity.x < -entity.getRadius() * 2){
-		// 			this.reset();
-		// 			// entity.virtualVelocity.x *= -0.1;
-		// 		}
-		// 	}
-
-
-		// if(entity.velocity.y > 0){
-		// 	if(entity.y > config.height * 0.8){
-		// 		// entity.velocity.y *= -0.5;
-		// 		// entity.y += entity.velocity.y * delta;
-		// 	}
-		// }else 
 
 		if(entity.velocity.y < 0){
 			if(entity.y < this.goleira.y -10){
@@ -284,18 +354,19 @@ export default class InitScreen extends Screen{
 				if(onGoal && entity.velocity.y < 0){
 					entity.verticalVelocity.y += 2000 //-entity.velocity.y// / -entity.velocity.y
 					this.textLabel.text = 'GOAL'
+					this.points ++;
 					if(travessao){
 						this.textLabel.text = this.textLabel.text+ ' - travetop'
 						entity.verticalVelocity.y += 5000 //-entity.velocity.y// / -entity.velocity.y
 					}
 					if(traveLeft){
-						entity.velocity.y *= 2;
+						entity.velocity.y = 2 * Math.abs(entity.velocity.x);
 						entity.rotationInfluence.x *= 10;
 						entity.velocity.x += -entity.velocity.y
 						this.textLabel.text = this.textLabel.text+ ' - traveLeft'
 					}
 					if(traveRight){
-						entity.velocity.y *= 2;
+						entity.velocity.y = 2 * -Math.abs(entity.velocity.x);
 						entity.rotationInfluence.x *= -10;
 						entity.velocity.x -= -entity.velocity.y
 						this.textLabel.text = this.textLabel.text+ ' - traveRight'
@@ -313,15 +384,19 @@ export default class InitScreen extends Screen{
 						let radiusDistanceInner = targets[i].r/2 + entity.getRadius()/2
 						if(dist < radiusDistanceInner){
 							this.textLabel.text = 'na mosca'
+							if(this.lifes < 5)
+								this.lifes ++
+							this.points += 4;
 						}else if(dist < radiusDistance){
 							this.textLabel.text = 'no angulo'
+							this.points += 2;
 						}
 					}
 
 
 				}else{
 					this.textLabel.text = 'NO GOAL'
-
+					this.lifes -- ;
 					entity.velocity.y *= 0.6
 					if(travessao && distance > 5){
 						this.textLabel.text = this.textLabel.text+ ' - travetop - '+distance
@@ -329,12 +404,12 @@ export default class InitScreen extends Screen{
 					}
 					if(traveLeft){
 						entity.rotationInfluence.x *= 10;
-						entity.velocity.x *= 3
+						entity.velocity.x = 3 * -Math.abs(entity.velocity.x);
 						this.textLabel.text = this.textLabel.text+ ' - traveLeft NO'
 					}
 					if(traveRight){
 						entity.rotationInfluence.x *= -10;
-						entity.velocity.x *= -3
+						entity.velocity.x = 3 * Math.abs(entity.velocity.x);
 						this.textLabel.text = this.textLabel.text+ ' - traveRight NO'
 					}
 
@@ -342,7 +417,10 @@ export default class InitScreen extends Screen{
 					entity.rotationInfluence.x *= 0.25;
 				}
 				
-
+				if(this.lifes <= 0){
+					this.startGame();
+					// this.reset();
+				}
 				
 
 				
@@ -356,8 +434,12 @@ export default class InitScreen extends Screen{
 				// }
 				
 				this.colliding = true;
+				this.updateLifes();
+				this.createObstacles();
+
 			}
 		}
+
 	}
 
 	
@@ -388,7 +470,11 @@ export default class InitScreen extends Screen{
 		}
 		for (var i = this.currentBalls.length - 1; i >= 0; i--) {	
 			for (var j = this.obstacles.length - 1; j >= 0; j--) {
-				this.collisions.collideEntities(delta, this.currentBalls[i], this.obstacles[j])
+				if(this.collisions.collideEntities(delta, this.currentBalls[i], this.obstacles[j])){
+					// if(this.currentBalls[i].velocity.y < 0){
+					// 	this.lifes --;
+					// }
+				}
 			}
 			if(
 				(this.mousePosition.x > 0 && this.mousePosition.x < config.width) &&
@@ -405,6 +491,11 @@ export default class InitScreen extends Screen{
 
 
 
+	}
+
+	noGoal(){
+		this.lifes --;
+		this.updateLifes();
 	}
 
 	debugGoal(rect){

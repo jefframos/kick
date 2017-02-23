@@ -87,6 +87,8 @@ export default class Collisions{
 			// entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y);
 			// entity.update(1/60)
 		}
+
+		return realCollide
 	}
 
 	collideSticks(delta, entity, toCollide, ballPosition){
