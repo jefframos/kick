@@ -104,6 +104,16 @@ export default class Ball extends PIXI.Container {
         this.killTimer = 4;
         //this.sprite.y = 0;
     }
+    stopMiddle() {
+        this.virtualVelocity = {x:0,y:0};
+        this.velocity = {x:0,y:0};
+
+        this.rotationInfluence = {x:0,y:0};
+        this.rotationSpeed = 0;
+        this.spriteContainer.y = 0//- Math.random() * 250;
+        this.x = config.width / 2;
+        this.startUpdate();
+    }
     reset() {
 
         console.log('RESET');

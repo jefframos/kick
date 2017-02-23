@@ -38197,6 +38197,8 @@
 					obstacle.y = 160;
 					this.updateList.push(obstacle);
 					this.obstacles.push(obstacle);
+	
+					this.gameContainer.addChild(obstacle);
 				} else if (rnd < 0.5) {
 					obstacle = new _Obstacle2.default(this, 50, { height: 400 });
 					obstacle.x = _config2.default.width / 2;
@@ -38431,15 +38433,15 @@
 								entity.verticalVelocity.y += 5000; //-entity.velocity.y// / -entity.velocity.y
 							}
 							if (traveLeft) {
-								entity.velocity.y = 2 * Math.abs(entity.velocity.x);
+								entity.velocity.y *= 2; //2 * Math.abs(entity.velocity.x);
 								entity.rotationInfluence.x *= 10;
-								entity.velocity.x += -entity.velocity.y;
+								entity.velocity.x = 1.5 * Math.abs(entity.velocity.y); //-entity.velocity.y
 								this.textLabel.text = this.textLabel.text + ' - traveLeft';
 							}
 							if (traveRight) {
-								entity.velocity.y = 2 * -Math.abs(entity.velocity.x);
+								entity.velocity.y *= 2;
 								entity.rotationInfluence.x *= -10;
-								entity.velocity.x -= -entity.velocity.y;
+								entity.velocity.x = 1.5 * -Math.abs(entity.velocity.y); //-= -entity.velocity.y
 								this.textLabel.text = this.textLabel.text + ' - traveRight';
 							}
 							entity.velocity.y *= 0.15;
@@ -38471,12 +38473,12 @@
 							}
 							if (traveLeft) {
 								entity.rotationInfluence.x *= 10;
-								entity.velocity.x = 3 * -Math.abs(entity.velocity.x);
+								entity.velocity.x = 3 * -Math.abs(entity.velocity.y);
 								this.textLabel.text = this.textLabel.text + ' - traveLeft NO';
 							}
 							if (traveRight) {
 								entity.rotationInfluence.x *= -10;
-								entity.velocity.x = 3 * Math.abs(entity.velocity.x);
+								entity.velocity.x = 3 * Math.abs(entity.velocity.y);
 								this.textLabel.text = this.textLabel.text + ' - traveRight NO';
 							}
 	
@@ -38527,9 +38529,9 @@
 	
 				// this.collide(delta, this.currentBalls, this.currentBalls2)
 				// console.log(this.currentBalls.length);
-				if (this.debug2.text != this.currentBalls.length) {
-					this.debug2.text = this.currentBalls.length;
-				}
+				// if(this.debug2.text != this.currentBalls.length){
+				// 	this.debug2.text = this.currentBalls.length;
+				// }
 				for (var i = this.currentBalls.length - 1; i >= 0; i--) {
 					for (var j = this.obstacles.length - 1; j >= 0; j--) {
 						if (this.collisions.collideEntities(delta, this.currentBalls[i], this.obstacles[j])) {
@@ -38599,6 +38601,8 @@
 	
 				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025;
 	
+				this.debug2.text = force;
+	
 				entity.shoot(force, angle, angleColision);
 	
 				this.reset();
@@ -38631,20 +38635,23 @@
 			value: function shootLeft() {
 				var tempBall = this.getBall();
 				this.currentBalls.push(tempBall);
-				tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.4);
+				tempBall.stopMiddle();
+				tempBall.shoot(4.5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.35);
 			}
 		}, {
 			key: 'shootRight',
 			value: function shootRight() {
 				var tempBall = this.getBall();
 				this.currentBalls.push(tempBall);
-				tempBall.shoot(5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 - 0.4);
+				tempBall.stopMiddle();
+				tempBall.shoot(4.5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 - 0.35);
 			}
 		}, {
 			key: 'shootTop',
 			value: function shootTop() {
 				var tempBall = this.getBall();
 				this.currentBalls.push(tempBall);
+				tempBall.stopMiddle();
 				tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
 			}
 		}, {
@@ -38652,6 +38659,7 @@
 			value: function shootMiddle() {
 				var tempBall = this.getBall();
 				this.currentBalls.push(tempBall);
+				tempBall.stopMiddle();
 				tempBall.shoot(5 + Math.random() * 0.5, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
 			}
 		}, {
@@ -38670,6 +38678,7 @@
 				// 	}
 				// }
 				// this.shootLeft()
+				// this.shootRight()
 				// this.shootTop()
 				// // //TOP SHOOT
 				// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
@@ -47116,6 +47125,18 @@
 	            //this.sprite.y = 0;
 	        }
 	    }, {
+	        key: 'stopMiddle',
+	        value: function stopMiddle() {
+	            this.virtualVelocity = { x: 0, y: 0 };
+	            this.velocity = { x: 0, y: 0 };
+	
+	            this.rotationInfluence = { x: 0, y: 0 };
+	            this.rotationSpeed = 0;
+	            this.spriteContainer.y = 0; //- Math.random() * 250;
+	            this.x = _config2.default.width / 2;
+	            this.startUpdate();
+	        }
+	    }, {
 	        key: 'reset',
 	        value: function reset() {
 	
@@ -47476,6 +47497,8 @@
 	        _this.shape.drawRect(-_this.radius, -_this.bounds.height, _this.radius * 2, _this.bounds.height);
 	        _this.container.addChild(_this.shape);
 	
+	        _this.shape.scale.set(1.5, 0);
+	        TweenLite.to(_this.shape.scale, 0.8, { x: 1, y: 1, ease: 'easeOutElastic' });
 	        // }
 	
 	

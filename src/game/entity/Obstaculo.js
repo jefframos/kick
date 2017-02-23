@@ -30,7 +30,7 @@ export default class Obstaculo extends PIXI.Container {
 
 		this.displaceAccum = 0.2;
 		this.lifeTime = 1.5;
-
+		
 
 
 

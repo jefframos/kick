@@ -38,6 +38,8 @@ export default class Obstacle extends PIXI.Container {
         this.shape.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
         this.container.addChild(this.shape);
 
+        this.shape.scale.set(1.5, 0);
+        TweenLite.to(this.shape.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'});
         // }
 
        
@@ -56,6 +58,7 @@ export default class Obstacle extends PIXI.Container {
         this.rotationSpeed = 0;
 
         this.sprite.rotation = 0;
+
        
     }
     startUpdate(){
