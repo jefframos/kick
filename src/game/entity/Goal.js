@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import config  from '../../config';
 import Target from '../entity/Target'
-export default class GoalView extends PIXI.Container {
+export default class Goal extends PIXI.Container {
 
     constructor(game) {
     	super();
@@ -42,6 +42,14 @@ export default class GoalView extends PIXI.Container {
 		// this.goleira.addChild(this.trave4);
 
     }
+    reset(){
+    	for (var i = this.targets.length - 1; i >= 0; i--) {
+    		if(this.targets[i].parent){
+    			this.targets[i].parent.removeChild(this.targets[i]);
+    		}
+    	}
+    	this.targets = [];
+    }
     addTargets(){
 		let target = this.getTarget();
 		target.x = -this.goleira.width / 2 + target.radius 
@@ -52,6 +60,14 @@ export default class GoalView extends PIXI.Container {
 		target = this.getTarget();
 		target.x = this.goleira.width / 2 - target.radius 
 		target.y = -this.goleira.height + target.radius 
+		this.goleira.addChild(target);
+		this.targets.push(target);
+
+		target = this.getTarget();
+		target.x = 0//this.goleira.width / 2
+		target.y = -this.goleira.height /2
+		target.moveBounds = {x1:-350, x2:350}
+		target.updateable = true;
 		this.goleira.addChild(target);
 		this.targets.push(target);
 
@@ -73,6 +89,7 @@ export default class GoalView extends PIXI.Container {
 		for (var i = this.targets.length - 1; i >= 0; i--) {
 			let target = this.targets[i];
 	    	let p = {
+	    		target:target,
 				x:this.x + this.goleira.x + (target.x * this.scale.x),
 				y:this.y + this.goleira.y +(target.y * this.scale.y) ,
 				r: target.radius * this.scale.x 
@@ -110,6 +127,11 @@ export default class GoalView extends PIXI.Container {
 
     getRightStick(){
     	return this.getStickSide(this.traveRight, 1)
+    }
+    update(delta){
+    	for (var i = this.targets.length - 1; i >= 0; i--) {
+    		this.targets[i].update(delta)
+    	}
     }
     getTopStick(){
     	let target = this.traveTop;

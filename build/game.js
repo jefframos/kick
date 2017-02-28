@@ -38030,19 +38030,19 @@
 	
 	var _Ball2 = _interopRequireDefault(_Ball);
 	
-	var _Obstacle = __webpack_require__(193);
+	var _Obstacle = __webpack_require__(194);
 	
 	var _Obstacle2 = _interopRequireDefault(_Obstacle);
 	
-	var _Target = __webpack_require__(194);
+	var _Target = __webpack_require__(195);
 	
 	var _Target2 = _interopRequireDefault(_Target);
 	
-	var _Collisions = __webpack_require__(195);
+	var _Collisions = __webpack_require__(196);
 	
 	var _Collisions2 = _interopRequireDefault(_Collisions);
 	
-	var _TrailManager = __webpack_require__(196);
+	var _TrailManager = __webpack_require__(197);
 	
 	var _TrailManager2 = _interopRequireDefault(_TrailManager);
 	
@@ -38050,9 +38050,9 @@
 	
 	var _ViewManager2 = _interopRequireDefault(_ViewManager);
 	
-	var _GoalView = __webpack_require__(199);
+	var _Goal = __webpack_require__(201);
 	
-	var _GoalView2 = _interopRequireDefault(_GoalView);
+	var _Goal2 = _interopRequireDefault(_Goal);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -38114,10 +38114,9 @@
 				this.backgroundIngameUI.alpha = 0;
 				this.ingameUIContainer.addChild(this.backgroundIngameUI);
 	
-				this.addEvents();
 				this.currentTrail = false;
 	
-				this.goleira = new _GoalView2.default(this);
+				this.goleira = new _Goal2.default(this);
 				this.goleira.build();
 				this.goleira.x = _config2.default.width / 2;
 				this.goleira.y = 150;
@@ -38144,12 +38143,18 @@
 				this.updateList.push(this.goleira);
 	
 				this.lifes = 5;
-				this.startGame();
-				this.createObstacles();
+				// this.startGame();
 	
-				// this.reset();
 	
-				this.addTargets();
+				this.button = new PIXI.Container();
+				this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
+				this.button.addChild(this.shape);
+				this.addChild(this.button);
+				this.button.x = _config2.default.width / 2;
+				this.button.y = _config2.default.height / 2;
+				this.button.interactive = true;
+	
+				this.addEvents();
 			}
 		}, {
 			key: 'createObstacles',
@@ -38326,16 +38331,48 @@
 				}
 			}
 		}, {
+			key: 'gameOver',
+			value: function gameOver() {
+				this.button.visible = true;
+	
+				for (var i = this.obstacles.length - 1; i >= 0; i--) {
+					if (this.obstacles[i].parent) {
+						this.obstacles[i].parent.removeChild(this.obstacles[i]);
+					}
+				}
+	
+				// for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+				// 	if(this.currentBalls[i].parent){
+				// 		this.currentBalls[i].parent.removeChild(this.currentBalls[i])
+				// 	}
+				// }
+				this.goleira.reset();
+				// this.currentBalls = [];
+				this.obstacles = [];
+	
+				this.gameStarted = false;
+	
+				// this.paused = true;
+			}
+		}, {
 			key: 'startGame',
 			value: function startGame() {
 				this.lifes = 5;
 				this.points = 0;
 				this.currentBalls.push(this.getBall());
 				this.createLifes();
+				this.createObstacles();
+				this.addTargets();
+				this.button.visible = false;
+				this.gameStarted = true;
+				// this.paused = false;
 			}
 		}, {
 			key: 'reset',
 			value: function reset() {
+				if (!this.gameStarted) {
+					return;
+				}
 				console.log('reset');
 				this.currentBalls.push(this.getBall());
 				this.paused = false;
@@ -38359,15 +38396,11 @@
 	
 				if (entity.velocity.y < 0) {
 					if (entity.y < this.goleira.y - 10) {
-	
-						// if(this.colliding){
-						// 	return
-						// }
 						var ballPosition = {
 							x: entity.x,
 							y: entity.y + entity.spriteContainer.y * entity.scale.y
 						};
-						this.debugBall(ballPosition, entity);
+						// this.debugBall(ballPosition, entity);
 						this.textLabel.text = ''; //'NOT GOAL'
 						var collisions = [];
 						var topStickPoint = this.goleira.getTopStick();
@@ -38416,12 +38449,6 @@
 	
 						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.9 };
 						var rect = this.goleira.getGoalRect();
-						// this.debugGoal(rect);
-	
-						// console.log(this.goleira.getTargetList());
-	
-						// console.log(rect);
-	
 						var onGoal = this.collisions.rectCircleColliding(circle, rect);
 	
 						if (onGoal && entity.velocity.y < 0) {
@@ -38456,16 +38483,18 @@
 								var radiusDistanceInner = targets[i].r / 2 + entity.getRadius() / 2;
 								if (dist < radiusDistanceInner) {
 									this.textLabel.text = 'na mosca';
+									targets[i].target.onTarget();
 									if (this.lifes < 5) this.lifes++;
 									this.points += 4;
 								} else if (dist < radiusDistance) {
+									targets[i].target.onTarget();
 									this.textLabel.text = 'no angulo';
 									this.points += 2;
 								}
 							}
 						} else {
 							this.textLabel.text = 'NO GOAL';
-							this.lifes--;
+							this.missShoot();
 							entity.velocity.y *= 0.6;
 							if (travessao && distance > 5) {
 								this.textLabel.text = this.textLabel.text + ' - travetop - ' + distance;
@@ -38485,12 +38514,6 @@
 							entity.spriteGravity *= 5;
 							entity.rotationInfluence.x *= 0.25;
 						}
-	
-						if (this.lifes <= 0) {
-							this.startGame();
-							// this.reset();
-						}
-	
 						// if(!this.colliding){
 						// if(killStandard){
 						// 	setTimeout(function() {this.reset();}.bind(this), 2000);
@@ -38498,12 +38521,22 @@
 						// 	// this.paused = true;
 						// 	setTimeout(function() {this.reset();}.bind(this), 1500);
 						// }
-						// }
-	
+						// }				
 						this.colliding = true;
 						this.updateLifes();
-						this.createObstacles();
+						if (this.lifes) {
+							this.createObstacles();
+						}
 					}
+				}
+			}
+		}, {
+			key: 'missShoot',
+			value: function missShoot() {
+				this.lifes--;
+				this.updateLifes();
+				if (this.lifes <= 0) {
+					this.gameOver();
 				}
 			}
 		}, {
@@ -38532,22 +38565,37 @@
 				// if(this.debug2.text != this.currentBalls.length){
 				// 	this.debug2.text = this.currentBalls.length;
 				// }
-				for (var i = this.currentBalls.length - 1; i >= 0; i--) {
-					for (var j = this.obstacles.length - 1; j >= 0; j--) {
-						if (this.collisions.collideEntities(delta, this.currentBalls[i], this.obstacles[j])) {
-							// if(this.currentBalls[i].velocity.y < 0){
-							// 	this.lifes --;
-							// }
+				this.goleira.update(delta);
+	
+				if (this.gameStarted) {
+					var collideObs = false;
+					for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+						if (!this.currentBalls[i].collided) {
+							for (var j = this.obstacles.length - 1; j >= 0; j--) {
+								if (this.collisions.collideEntities(delta, this.currentBalls[i], this.obstacles[j])) {
+	
+									//collideObs = this.currentBalls[i];				
+									// alert('collide')		
+								}
+							}
+						}
+	
+						if (this.mousePosition.x > 0 && this.mousePosition.x < _config2.default.width && this.mousePosition.y > 0 && this.mousePosition.y < _config2.default.height) {
+							this.verifyInterception(this.currentBalls[i]);
+						}
+						this.collideBounds(delta, this.currentBalls[i]);
+	
+						if (this.currentBalls[i].killed) {
+							this.currentBalls.splice(i, 1);
 						}
 					}
-					if (this.mousePosition.x > 0 && this.mousePosition.x < _config2.default.width && this.mousePosition.y > 0 && this.mousePosition.y < _config2.default.height) {
-						this.verifyInterception(this.currentBalls[i]);
-					}
-					this.collideBounds(delta, this.currentBalls[i]);
 	
-					if (this.currentBalls[i].killed) {
-						this.currentBalls.splice(i, 1);
-					}
+					// if(collideObs){// && collideObs.velocity.y <= 10){
+					// 	collideObs.stickCollide();
+					// 	this.missShoot();
+					// 	alert(collideObs.virtualVelocity.y)
+					// 	collideObs = false;
+					// }
 				}
 			}
 		}, {
@@ -38595,6 +38643,7 @@
 				var frontBall = { x: entity.x, y: entity.y - entity.getRadius() };
 	
 				//angle btw front of the ball and the points
+				//let mid = this.getMiddlePoint(this.firstPoint.x,this.firstPoint.y, this.secPoint.x,this.secPoint.y);
 				var angle = -Math.atan2(this.firstPoint.y - frontBall.y, this.secPoint.x - frontBall.x);
 				// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
 				angle += 90 / 180 * 3.14;
@@ -38611,6 +38660,16 @@
 				setTimeout(function () {
 					this.paused = false;
 				}.bind(this), 100);
+			}
+		}, {
+			key: 'getMiddlePoint',
+			value: function getMiddlePoint(x0, y0, x1, y1) {
+				var dx = x1 - x0;
+				var dy = y1 - y0;
+				var midX = x0 + dx * 0.50;
+				var midY = y0 + dy * 0.50;
+	
+				return { x: midX, y: midY };
 			}
 		}, {
 			key: 'detectTopCollision',
@@ -38692,6 +38751,7 @@
 				this.ingameUIContainer.interactive = false;
 				this.ingameUIContainer.off('touchstart').off('mousedown');
 				this.ingameUIContainer.off('touchend').off('mouseup');
+				this.button.off('touchend').off('mouseup');
 			}
 		}, {
 			key: 'addEvents',
@@ -38700,6 +38760,7 @@
 				this.ingameUIContainer.interactive = true;
 				this.ingameUIContainer.on('mousedown', this.onTapDown.bind(this)).on('touchstart', this.onTapDown.bind(this));
 				this.ingameUIContainer.on('mouseup', this.onTapUp.bind(this)).on('touchend', this.onTapUp.bind(this));
+				this.button.on('mouseup', this.startGame.bind(this)).on('touchend', this.startGame.bind(this));
 			}
 		}]);
 	
@@ -47009,6 +47070,10 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
+	var _Trail = __webpack_require__(193);
+	
+	var _Trail2 = _interopRequireDefault(_Trail);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -47080,6 +47145,11 @@
 	        _this.shooting = false;
 	        _this.killed = false;
 	        _this.obstacleCollided = [];
+	
+	        // this.trail = new Trail(this.container, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+	        // this.trail.trailTick = 15;
+	        // this.trail.speed = 0.01;
+	        // this.trail.frequency = 0.001
 	        return _this;
 	    }
 	
@@ -47132,7 +47202,7 @@
 	
 	            this.rotationInfluence = { x: 0, y: 0 };
 	            this.rotationSpeed = 0;
-	            this.spriteContainer.y = 0; //- Math.random() * 250;
+	            this.spriteContainer.y = -Math.random() * 250;
 	            this.x = _config2.default.width / 2;
 	            this.startUpdate();
 	        }
@@ -47162,13 +47232,13 @@
 	
 	            this.y = _config2.default.height - 180;
 	
-	            if (Math.random() < 0.09995) {
+	            if (Math.random() < 0.5) {
 	                this.verticalVelocity = { x: 0, y: 0 };
 	                // this.spriteContainer.y = - Math.random() * 80;
-	                this.spriteContainer.y = 0; //- Math.random() * 250;
+	                this.spriteContainer.y = -Math.random() * 250;
 	                this.x = _config2.default.width / 2;
 	                // this.verticalVelocity.y = Math.random() * this.shootYSpeed;
-	                this.verticalVelocity.y = 0; //this.shootYSpeed;
+	                this.verticalVelocity.y = this.shootYSpeed;
 	            } else {
 	                this.spriteContainer.y = -Math.random() * 250;
 	
@@ -47192,6 +47262,7 @@
 	            //TweenLite.to(this.shadow, 0.5, {alpha:0.1})
 	            // this.sprite.scale.set(1)
 	            this.startUpdate();
+	
 	            // console.log(this.verticalVelocity);
 	            // this.updateable = true;
 	        }
@@ -47200,39 +47271,39 @@
 	        value: function startUpdate() {
 	            this.updateable = true;
 	        }
-	    }, {
-	        key: 'backSide',
-	        value: function backSide(force, force2) {
-	            var t = Math.abs(force2) - 0.5;
-	            // force2 = 1 - force2
+	        // backSide(force, force2) {
+	        //     let t = Math.abs(force2) - 0.5
+	        //     // force2 = 1 - force2
 	
-	            // console.log('backSide', this.velocity.y);
-	            this.velocity.x += -t * this.velocity.x; //force2
-	            this.velocity.y *= -0.8; //force2
-	            // this.velocity.y +=  t * this.velocity.y//force2
-	            // console.log('backSide2', this.velocity.y, t);
+	        //     // console.log('backSide', this.velocity.y);
+	        //     this.velocity.x +=  -t * this.velocity.x//force2
+	        //     this.velocity.y *=  -0.8//force2
+	        //     // this.velocity.y +=  t * this.velocity.y//force2
+	        //     // console.log('backSide2', this.velocity.y, t);
 	
-	            this.verticalVelocity.y = -this.velocity.y * force2 * force * 2;
-	        }
-	    }, {
-	        key: 'back',
-	        value: function back(force, force2, forceDown) {
+	        //     this.verticalVelocity.y = -this.velocity.y * force2 * force*2
+	        // }
+	        // back(force, force2, forceDown) {
 	
-	            // force2 > 
-	            //0 eh no meio
-	            //>0 embaixo
-	            //<acima
-	            var t = Math.abs(force2) - 0.5;
-	            // force2 = 1 - force2
-	            this.velocity.y *= t; //force2
-	            if (forceDown) {
-	                this.verticalVelocity.y += 3500;
-	                this.velocity.y = -Math.abs(this.velocity.y) * 0.3 - 250;
-	            } else {
-	                this.velocity.y += 600;
-	                this.verticalVelocity.y = -this.velocity.y * force2 * force;
-	            }
-	        }
+	        //     // force2 > 
+	        //     //0 eh no meio
+	        //     //>0 embaixo
+	        //     //<acima
+	        //     let t = Math.abs(force2) - 0.5
+	        //     // force2 = 1 - force2
+	        //     this.velocity.y *=  t//force2
+	        //     if(forceDown){
+	        //         this.verticalVelocity.y += 3500
+	        //         this.velocity.y = -Math.abs(this.velocity.y) * 0.3-250;
+	        //     }else{
+	        //         this.velocity.y += 600
+	        //         this.verticalVelocity.y = -this.velocity.y * force2 * force
+	
+	        //     }
+	
+	
+	        // }
+	
 	    }, {
 	        key: 'stickCollide',
 	        value: function stickCollide() {
@@ -47272,7 +47343,7 @@
 	
 	            // console.log(this.verticalVelocity.y);
 	
-	            if (Math.abs(this.verticalVelocity.y) < 2500) {
+	            if (Math.abs(this.verticalVelocity.y) < 800) {
 	                // console.log(this.verticalVelocity);
 	                this.verticalVelocity.y = 0;
 	                this.spriteContainer.y = 0;
@@ -47335,6 +47406,14 @@
 	            this.x += this.velocity.x * delta * this.scale.x;
 	            this.y += this.velocity.y * delta * this.scale.y;
 	
+	            // if(this.parent && !this.trail.parent){
+	            //     this.parent.addChild(this.trail);
+	            // }
+	            // if(this.shooting){
+	            //     let point = this.toGlobal(new PIXI.Point())
+	            //     let point2 = this.trail.parent.toLocal(point)
+	            //     //this.trail.update(delta, {x:point2.x, y:point2.y})
+	            // }
 	            // console.log(this.killTimer);
 	            // if(this.shooting){
 	            this.killTimer -= delta;
@@ -47426,612 +47505,6 @@
 
 /***/ },
 /* 193 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Obstacle = function (_PIXI$Container) {
-	    _inherits(Obstacle, _PIXI$Container);
-	
-	    function Obstacle(game) {
-	        var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
-	        var bounds = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : { height: 400 };
-	
-	        _classCallCheck(this, Obstacle);
-	
-	        var _this = _possibleConstructorReturn(this, (Obstacle.__proto__ || Object.getPrototypeOf(Obstacle)).call(this));
-	
-	        _this.game = game;
-	
-	        _this.radius = radius;
-	        _this.externalRadius = _this.radius * 1;
-	
-	        _this.bounds = bounds;
-	
-	        _this.container = new PIXI.Container();
-	        _this.addChild(_this.container);
-	
-	        _this.shadow = new PIXI.Graphics();
-	        _this.shadow.beginFill(0x0000);
-	        _this.shadow.drawCircle(0, _this.radius, _this.radius);
-	        _this.shadow.alpha = 0.1;
-	        _this.container.addChild(_this.shadow);
-	        _this.shadow.scale.y = 0.5;
-	
-	        _this.spriteContainer = new PIXI.Container();
-	        _this.container.addChild(_this.spriteContainer);
-	
-	        // if(this.radius > 20){
-	
-	        _this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
-	        //this.spriteContainer.addChild(this.sprite);
-	        _this.sprite.anchor.set(0.5);
-	        _this.sprite.scale.set(_this.radius / 150);
-	
-	        _this.shape = new PIXI.Graphics();
-	        _this.shape.beginFill(Math.random() * 0xFFFFFF);
-	        _this.shape.drawRect(-_this.radius, -_this.bounds.height, _this.radius * 2, _this.bounds.height);
-	        _this.container.addChild(_this.shape);
-	
-	        _this.shape.scale.set(1.5, 0);
-	        TweenLite.to(_this.shape.scale, 0.8, { x: 1, y: 1, ease: 'easeOutElastic' });
-	        // }
-	
-	
-	        return _this;
-	    }
-	
-	    _createClass(Obstacle, [{
-	        key: 'reset',
-	        value: function reset() {
-	
-	            this.killed = false;
-	
-	            this.collided = false;
-	
-	            this.virtualVelocity = { x: 0, y: 0 };
-	            this.velocity = { x: 0, y: 0 };
-	
-	            this.rotationInfluence = { x: 0, y: 0 };
-	            this.rotationSpeed = 0;
-	
-	            this.sprite.rotation = 0;
-	        }
-	    }, {
-	        key: 'startUpdate',
-	        value: function startUpdate() {
-	            this.updateable = true;
-	        }
-	    }, {
-	        key: 'getBounds',
-	        value: function getBounds() {
-	            // this.standardScale
-	            return { width: this.getRadius() * 2, height: this.scale.y * this.bounds.height };
-	        }
-	    }, {
-	        key: 'getRadius',
-	        value: function getRadius() {
-	            // this.standardScale
-	            return this.scale.x * this.radius;
-	        }
-	    }, {
-	        key: 'getExternalRadius',
-	        value: function getExternalRadius() {
-	            return this.scale.x * this.externalRadius;
-	        }
-	    }, {
-	        key: 'update',
-	        value: function update(delta) {
-	            // delta*= 0.2
-	            if (this.killed) {
-	                return;
-	            }
-	            if (!this.updateable) {
-	                return;
-	            }
-	
-	            this.x += this.velocity.x * delta * this.scale.x;
-	            this.y += this.velocity.y * delta * this.scale.y;
-	
-	            if (this.rotationInfluence.x < 0) {
-	                this.rotationInfluence.x += this.friction.x * delta;
-	                if (this.rotationInfluence.x > 0) {
-	                    this.rotationInfluence.x = 0;
-	                }
-	            } else if (this.rotationInfluence.x > 0) {
-	                this.rotationInfluence.x -= this.friction.x * delta;
-	                if (this.rotationInfluence.x < 0) {
-	                    this.rotationInfluence.x = 0;
-	                }
-	            }
-	
-	            if (this.velocity.x < this.virtualVelocity.x) {
-	                this.velocity.x += this.friction.x * delta;
-	                if (this.velocity.x > this.virtualVelocity.x) {
-	                    this.velocity.x = this.virtualVelocity.x;
-	                }
-	            } else if (this.velocity.x > this.virtualVelocity.x) {
-	                this.velocity.x -= this.friction.x * delta;
-	                if (this.velocity.x < this.virtualVelocity.x) {
-	                    this.velocity.x = this.virtualVelocity.x;
-	                }
-	            }
-	
-	            if (this.velocity.y < this.virtualVelocity.y) {
-	                this.velocity.y += this.friction.y * delta;
-	                if (this.velocity.y > this.virtualVelocity.y) {
-	                    this.velocity.y = this.virtualVelocity.y;
-	                }
-	            } else if (this.velocity.y > this.virtualVelocity.y) {
-	                this.velocity.y -= this.friction.y * delta;
-	                if (this.velocity.y < this.virtualVelocity.y) {
-	                    this.velocity.y = this.virtualVelocity.y;
-	                }
-	            }
-	        }
-	    }]);
-	
-	    return Obstacle;
-	}(PIXI.Container);
-	
-	exports.default = Obstacle;
-
-/***/ },
-/* 194 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	        value: true
-	});
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var Target = function (_PIXI$Container) {
-	        _inherits(Target, _PIXI$Container);
-	
-	        function Target(game) {
-	                var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
-	
-	                _classCallCheck(this, Target);
-	
-	                var _this = _possibleConstructorReturn(this, (Target.__proto__ || Object.getPrototypeOf(Target)).call(this));
-	
-	                _this.game = game;
-	                _this.radius = radius;
-	
-	                _this.container = new PIXI.Container();
-	                _this.addChild(_this.container);
-	
-	                _this.shadow = new PIXI.Graphics();
-	                _this.shadow.beginFill(0x0000FF);
-	                _this.shadow.drawCircle(0, 0, _this.radius);
-	                // this.shadow.alpha = 0.1;
-	                _this.container.addChild(_this.shadow);
-	
-	                return _this;
-	        }
-	
-	        return Target;
-	}(PIXI.Container);
-	
-	exports.default = Target;
-
-/***/ },
-/* 195 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _utils = __webpack_require__(190);
-	
-	var _utils2 = _interopRequireDefault(_utils);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Collisions = function () {
-		function Collisions() {
-			_classCallCheck(this, Collisions);
-		}
-	
-		_createClass(Collisions, [{
-			key: 'detectTopCollision',
-			value: function detectTopCollision(target, entity, ballPosition) {
-				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: target.p1, p2: target.p2 }, entity.getRadius());
-				return { interception: interception, p1: target.p1, p2: target.p2, type: 'top' };
-			}
-		}, {
-			key: 'detectSideCollision',
-			value: function detectSideCollision(target, entity, ballPosition) {
-				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: target.p1, p2: target.p2 }, entity.getRadius());
-				return { interception: interception, p1: target.p1, p2: target.p2, type: 'side' };
-			}
-		}, {
-			key: 'collideEntities',
-			value: function collideEntities(delta, entity, toCollide) {
-				if (entity.obstacleCollided) {
-					for (var i = entity.obstacleCollided.length - 1; i >= 0; i--) {
-						if (entity.obstacleCollided[i] == toCollide) {
-							return;
-						}
-					}
-				}
-				var distance = _utils2.default.distance(toCollide.x, toCollide.y, entity.x, entity.y);
-				var circleCollide = distance < toCollide.getRadius() + entity.getRadius();
-				var realCollide = false;
-				var headCollide = false;
-				var headDistance = 0;
-				if (circleCollide) {
-					var ballPosition = {
-						x: entity.x,
-						y: entity.y + entity.spriteContainer.y * entity.scale.y
-					};
-					var hDistance = _utils2.default.distance(0, toCollide.y, 0, ballPosition.y);
-					// if(utils.distance(toCollide.x, toCollide.y - toCollide.bounds.height, entity.x, entity.y) < toCollide.bounds.height){
-					var toCompare = toCollide.getBounds().height - entity.getRadius() / 2;
-					realCollide = hDistance < toCompare;
-	
-					if (!realCollide) {
-						headDistance = _utils2.default.distance(0, toCollide.y - toCollide.getBounds().height, 0, ballPosition.y);
-						if (headDistance < entity.getRadius()) {
-							console.log('NA CABECA');
-							realCollide = true;
-							headCollide = true;
-						}
-					}
-	
-					// console.log(realCollide, 'REAL COLLIDE', hDistance, toCompare, headDistance);
-					// }
-				}
-				// console.log(toCollide, toCollide.getRadius());
-				if (realCollide) {
-					var distPercent = distance / (toCollide.getRadius() + entity.getRadius());
-					console.log(distPercent); //, angle * 180 / 3.14);
-					var angle = -Math.atan2(toCollide.y - entity.y, toCollide.x - entity.x);
-					angle += 90 / 180 * 3.14;
-	
-					// angle *= angle
-					entity.velocity.x = Math.sin(angle) * -Math.abs(entity.speed.x);
-					if (headCollide) {
-						var headDistPercent = headDistance / entity.getRadius();
-						// console.log('HEAD COLLIDE AQUI', headDistPercent, entity.verticalVelocity.y);
-						entity.velocity.y *= headDistPercent * 2;
-						entity.verticalVelocity.y *= headDistPercent * 5;
-						entity.update(1 / 60);
-					} else {
-						entity.velocity.y = Math.cos(angle) * entity.velocity.y + entity.velocity.y * distPercent; //+ entity.velocity.y;
-					}
-					// entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y) + entity.velocity.y - (entity.velocity.y * distPercent) //+ entity.velocity.y;
-	
-	
-					// let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))
-					// entity.rotationInfluence.x *= Math.sin(angle)
-					// entity.velocity.x = Math.sin(angle) * -Math.abs(entity.speed.x) * percent;
-	
-					// //esquisito, mas por enquanto funciona
-					// angle += 90 / 180 * 3.14
-					// entity.velocity.y = Math.cos(angle) * (Math.abs(entity.speed.y )) + Math.cos(angle) * entity.velocity.y;//(entity.velocity.y);
-					entity.obstacleCollided.push(toCollide);
-	
-					//ORIGINAL
-					// let angle = -Math.atan2(entity.y - this.y, entity.x - this.x) //* 180 / 3.14
-					// angle += 90 / 180 * 3.14
-					// entity.velocity.x = Math.sin(angle) * - Math.abs(entity.speed.x);
-					// entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y);
-					// entity.update(1/60)
-				}
-	
-				return realCollide;
-			}
-		}, {
-			key: 'collideSticks',
-			value: function collideSticks(delta, entity, toCollide, ballPosition) {
-				var distance = _utils2.default.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
-				//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
-				if (distance) {
-	
-					entity.stickCollide();
-	
-					var angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
-					//angle -= 30 / 180 * 3.14;
-					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
-					angle -= 180 / 180 * 3.14;
-					// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
-					// console.log('1',entity.velocity.y);	
-					//TROCAR ENTRE SENOS E COSSENOS AQUI
-	
-					entity.velocity.y = (Math.sin(angle) * Math.abs(entity.velocity.y * 2) - entity.velocity.y) / percent;
-					// entity.velocity.y =Math.sin(angle) * Math.abs(entity.velocity.y*2) + entity.velocity.y
-	
-					// entity.velocity.y = Math.sin(angle) * (entity.velocity.y)// * percent);
-					// angle += 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
-					entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent); //(entity.shootYSpeed * percent);
-					// console.log('2', Math.sin(angle), entity.velocity.y);	
-					// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
-					// console.log('angle --', angle * 180 / 3.14);
-					// console.log('-----');	
-				}
-			}
-		}, {
-			key: 'collideSticksSide',
-			value: function collideSticksSide(delta, entity, toCollide, ballPosition) {
-				var distance = _utils2.default.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
-				//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
-				if (distance) {
-	
-					entity.stickCollide();
-	
-					var angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
-					//angle -= 30 / 180 * 3.14;
-					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
-					angle -= 180 / 180 * 3.14;
-					// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
-					// console.log('1',entity.velocity.y);	
-					//TROCAR ENTRE SENOS E COSSENOS AQUI
-					entity.velocity.x = -Math.cos(angle) * (entity.velocity.x * 2); // * percent);
-					// angle -= 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
-					entity.velocity.y = Math.sin(angle) * Math.abs(entity.velocity.y * 2) + entity.velocity.y; // * percent);
-					//entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
-					// console.log('2', Math.sin(angle), entity.velocity.y);	
-					// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
-					// console.log('angle --', angle * 180 / 3.14);
-					// console.log('-----');	
-				}
-			}
-		}, {
-			key: 'rectCircleColliding',
-			value: function rectCircleColliding(circle, rect) {
-				var distX = Math.abs(circle.x - rect.x - rect.w / 2);
-				var distY = Math.abs(circle.y - rect.y - rect.h / 2);
-	
-				if (distX > rect.w / 2 + circle.r) {
-					return false;
-				}
-				if (distY > rect.h / 2 + circle.r) {
-					return false;
-				}
-	
-				if (distX <= rect.w / 2) {
-					return true;
-				}
-				if (distY <= rect.h / 2) {
-					return true;
-				}
-	
-				var dx = distX - rect.w / 2;
-				var dy = distY - rect.h / 2;
-				return dx * dx + dy * dy <= circle.r * circle.r;
-			}
-		}, {
-			key: 'inteceptCircleLineSeg2',
-			value: function inteceptCircleLineSeg2(circle, line, radius) {
-				var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
-				v1 = {};
-				v2 = {};
-				v1.x = line.p2.x - line.p1.x;
-				v1.y = line.p2.y - line.p1.y;
-				v2.x = line.p1.x - circle.x;
-				v2.y = line.p1.y - circle.y;
-				b = v1.x * v2.x + v1.y * v2.y;
-				c = 2 * (v1.x * v1.x + v1.y * v1.y);
-				b *= -2;
-				d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius));
-				if (isNaN(d)) {
-					// no intercept
-					return [];
-				}
-				u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
-				u2 = (b + d) / c;
-				retP1 = {}; // return points
-				retP2 = {};
-				ret = []; // return array
-				if (u1 <= 1 && u1 >= 0) {
-					// add point if on the line segment
-					retP1.x = line.p1.x + v1.x * u1;
-					retP1.y = line.p1.y + v1.y * u1;
-					ret[0] = retP1;
-				}
-				if (u2 <= 1 && u2 >= 0) {
-					// second add point if on the line segment
-					retP2.x = line.p1.x + v1.x * u2;
-					retP2.y = line.p1.y + v1.y * u2;
-					ret[ret.length] = retP2;
-				}
-				return ret;
-			}
-		}, {
-			key: 'inteceptCircleLineSeg',
-			value: function inteceptCircleLineSeg(circle, line) {
-				var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
-				v1 = {};
-				v2 = {};
-				v1.x = line.p2.x - line.p1.x;
-				v1.y = line.p2.y - line.p1.y;
-				v2.x = line.p1.x - circle.x;
-				v2.y = line.p1.y - circle.y;
-				b = v1.x * v2.x + v1.y * v2.y;
-				c = 2 * (v1.x * v1.x + v1.y * v1.y);
-				b *= -2;
-				d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.getExternalRadius() * circle.getExternalRadius()));
-				if (isNaN(d)) {
-					// no intercept
-					return [];
-				}
-				u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
-				u2 = (b + d) / c;
-				retP1 = {}; // return points
-				retP2 = {};
-				ret = []; // return array
-				if (u1 <= 1 && u1 >= 0) {
-					// add point if on the line segment
-					retP1.x = line.p1.x + v1.x * u1;
-					retP1.y = line.p1.y + v1.y * u1;
-					ret[0] = retP1;
-				}
-				if (u2 <= 1 && u2 >= 0) {
-					// second add point if on the line segment
-					retP2.x = line.p1.x + v1.x * u2;
-					retP2.y = line.p1.y + v1.y * u2;
-					ret[ret.length] = retP2;
-				}
-				return ret;
-			}
-		}]);
-	
-		return Collisions;
-	}();
-	
-	exports.default = Collisions;
-
-/***/ },
-/* 196 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _Trail = __webpack_require__(197);
-	
-	var _Trail2 = _interopRequireDefault(_Trail);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var TrailManager = function () {
-		function TrailManager(container) {
-			_classCallCheck(this, TrailManager);
-	
-			this.container = container;
-			this.currentTrail = false;
-			this.trailPool = [];
-		}
-	
-		_createClass(TrailManager, [{
-			key: 'getTrail',
-			value: function getTrail(position) {
-				for (var i = this.trailPool.length - 1; i >= 0; i--) {
-					if (this.trailPool[i].killed) {
-						this.trailPool[i].reset(position);
-						return this.trailPool[i];
-					}
-				}
-				var trail = new _Trail2.default(this.container, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
-				trail.trailTick = 15;
-				trail.speed = 0.01;
-				trail.frequency = 0.0001;
-				this.trailPool.push(trail);
-				return trail;
-			}
-		}, {
-			key: 'removeTrail',
-			value: function removeTrail() {
-				this.currentTrail = false;
-			}
-		}, {
-			key: 'startNewTrail',
-			value: function startNewTrail(position) {
-				this.currentTrail = this.getTrail(position);
-				this.currentTrail.mesh.alpha = 0.2;
-				this.currentTrail.mesh.blendMode = PIXI.BLEND_MODES.ADD;
-				this.currentTrail.speed = 0.1;
-				this.currentTrail.update(0, position);
-			}
-		}, {
-			key: 'update',
-			value: function update(delta, position) {
-				if (this.currentTrail) {
-					this.currentTrail.update(delta, position);
-				}
-				for (var i = this.trailPool.length - 1; i >= 0; i--) {
-					if (!this.trailPool[i].killed && this.trailPool[i] != this.currentTrail) {
-						this.trailPool[i].update(delta, null);
-					}
-				}
-			}
-		}]);
-	
-		return TrailManager;
-	}();
-	
-	exports.default = TrailManager;
-
-/***/ },
-/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48354,6 +47827,642 @@
 	exports.default = Trail;
 
 /***/ },
+/* 194 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Obstacle = function (_PIXI$Container) {
+	    _inherits(Obstacle, _PIXI$Container);
+	
+	    function Obstacle(game) {
+	        var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+	        var bounds = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : { height: 400 };
+	
+	        _classCallCheck(this, Obstacle);
+	
+	        var _this = _possibleConstructorReturn(this, (Obstacle.__proto__ || Object.getPrototypeOf(Obstacle)).call(this));
+	
+	        _this.game = game;
+	
+	        _this.radius = radius;
+	        _this.externalRadius = _this.radius * 1;
+	
+	        _this.bounds = bounds;
+	
+	        _this.container = new PIXI.Container();
+	        _this.addChild(_this.container);
+	
+	        _this.shadow = new PIXI.Graphics();
+	        _this.shadow.beginFill(0x0000);
+	        _this.shadow.drawCircle(0, _this.radius, _this.radius);
+	        _this.shadow.alpha = 0.1;
+	        _this.container.addChild(_this.shadow);
+	        _this.shadow.scale.y = 0.5;
+	
+	        _this.spriteContainer = new PIXI.Container();
+	        _this.container.addChild(_this.spriteContainer);
+	
+	        // if(this.radius > 20){
+	
+	        _this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
+	        //this.spriteContainer.addChild(this.sprite);
+	        _this.sprite.anchor.set(0.5);
+	        _this.sprite.scale.set(_this.radius / 150);
+	
+	        _this.shape = new PIXI.Graphics();
+	        _this.shape.beginFill(Math.random() * 0xFFFFFF);
+	        _this.shape.drawRect(-_this.radius, -_this.bounds.height, _this.radius * 2, _this.bounds.height);
+	        _this.container.addChild(_this.shape);
+	
+	        _this.shape.scale.set(1.5, 0);
+	        TweenLite.to(_this.shape.scale, 0.8, { x: 1, y: 1, ease: 'easeOutElastic' });
+	        // }
+	
+	
+	        return _this;
+	    }
+	
+	    _createClass(Obstacle, [{
+	        key: 'reset',
+	        value: function reset() {
+	
+	            this.killed = false;
+	
+	            this.collided = false;
+	
+	            this.virtualVelocity = { x: 0, y: 0 };
+	            this.velocity = { x: 0, y: 0 };
+	
+	            this.rotationInfluence = { x: 0, y: 0 };
+	            this.rotationSpeed = 0;
+	
+	            this.sprite.rotation = 0;
+	        }
+	    }, {
+	        key: 'startUpdate',
+	        value: function startUpdate() {
+	            this.updateable = true;
+	        }
+	    }, {
+	        key: 'getBounds',
+	        value: function getBounds() {
+	            // this.standardScale
+	            return { width: this.getRadius() * 2, height: this.scale.y * this.bounds.height };
+	        }
+	    }, {
+	        key: 'getRadius',
+	        value: function getRadius() {
+	            // this.standardScale
+	            return this.scale.x * this.radius;
+	        }
+	    }, {
+	        key: 'getExternalRadius',
+	        value: function getExternalRadius() {
+	            return this.scale.x * this.externalRadius;
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update(delta) {
+	            // delta*= 0.2
+	            if (this.killed) {
+	                return;
+	            }
+	            if (!this.updateable) {
+	                return;
+	            }
+	
+	            this.x += this.velocity.x * delta * this.scale.x;
+	            this.y += this.velocity.y * delta * this.scale.y;
+	
+	            if (this.rotationInfluence.x < 0) {
+	                this.rotationInfluence.x += this.friction.x * delta;
+	                if (this.rotationInfluence.x > 0) {
+	                    this.rotationInfluence.x = 0;
+	                }
+	            } else if (this.rotationInfluence.x > 0) {
+	                this.rotationInfluence.x -= this.friction.x * delta;
+	                if (this.rotationInfluence.x < 0) {
+	                    this.rotationInfluence.x = 0;
+	                }
+	            }
+	
+	            if (this.velocity.x < this.virtualVelocity.x) {
+	                this.velocity.x += this.friction.x * delta;
+	                if (this.velocity.x > this.virtualVelocity.x) {
+	                    this.velocity.x = this.virtualVelocity.x;
+	                }
+	            } else if (this.velocity.x > this.virtualVelocity.x) {
+	                this.velocity.x -= this.friction.x * delta;
+	                if (this.velocity.x < this.virtualVelocity.x) {
+	                    this.velocity.x = this.virtualVelocity.x;
+	                }
+	            }
+	
+	            if (this.velocity.y < this.virtualVelocity.y) {
+	                this.velocity.y += this.friction.y * delta;
+	                if (this.velocity.y > this.virtualVelocity.y) {
+	                    this.velocity.y = this.virtualVelocity.y;
+	                }
+	            } else if (this.velocity.y > this.virtualVelocity.y) {
+	                this.velocity.y -= this.friction.y * delta;
+	                if (this.velocity.y < this.virtualVelocity.y) {
+	                    this.velocity.y = this.virtualVelocity.y;
+	                }
+	            }
+	        }
+	    }]);
+	
+	    return Obstacle;
+	}(PIXI.Container);
+	
+	exports.default = Obstacle;
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Target = function (_PIXI$Container) {
+	    _inherits(Target, _PIXI$Container);
+	
+	    function Target(game) {
+	        var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+	
+	        _classCallCheck(this, Target);
+	
+	        var _this = _possibleConstructorReturn(this, (Target.__proto__ || Object.getPrototypeOf(Target)).call(this));
+	
+	        _this.game = game;
+	        _this.radius = radius;
+	
+	        _this.container = new PIXI.Container();
+	        _this.addChild(_this.container);
+	
+	        _this.shadow = new PIXI.Graphics();
+	        _this.shadow.beginFill(0x0000FF);
+	        _this.shadow.drawCircle(0, 0, _this.radius);
+	        // this.shadow.alpha = 0.1;
+	        _this.container.addChild(_this.shadow);
+	
+	        _this.updateable = false;
+	        _this.moveBounds = { x1: 0, x2: 100 };
+	        _this.velocity = { x: 100, y: 0 };
+	        _this.side = -1;
+	        return _this;
+	    }
+	
+	    _createClass(Target, [{
+	        key: 'onTarget',
+	        value: function onTarget() {
+	            this.updateable = false;
+	            this.scale.set(0);
+	            TweenLite.to(this.scale, 0.75, { delay: 0.5, x: 1, y: 1, ease: 'easeOutElastic', onComplete: function onComplete() {
+	                    this.updateable = true;
+	                } });
+	        }
+	    }, {
+	        key: 'update',
+	        value: function update(delta) {
+	            if (!this.updateable) {
+	                return;
+	            }
+	
+	            if (this.side > 0 && this.x > this.moveBounds.x2 || this.side < 0 && this.x < this.moveBounds.x1) {
+	                this.side *= -1;
+	            }
+	            this.x += this.velocity.x * delta * this.side;
+	            this.y += this.velocity.y * delta * this.side;
+	        }
+	    }]);
+	
+	    return Target;
+	}(PIXI.Container);
+	
+	exports.default = Target;
+
+/***/ },
+/* 196 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(190);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Collisions = function () {
+		function Collisions() {
+			_classCallCheck(this, Collisions);
+		}
+	
+		_createClass(Collisions, [{
+			key: 'detectTopCollision',
+			value: function detectTopCollision(target, entity, ballPosition) {
+				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: target.p1, p2: target.p2 }, entity.getRadius());
+				return { interception: interception, p1: target.p1, p2: target.p2, type: 'top' };
+			}
+		}, {
+			key: 'detectSideCollision',
+			value: function detectSideCollision(target, entity, ballPosition) {
+				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: target.p1, p2: target.p2 }, entity.getRadius());
+				return { interception: interception, p1: target.p1, p2: target.p2, type: 'side' };
+			}
+		}, {
+			key: 'collideEntities',
+			value: function collideEntities(delta, entity, toCollide) {
+				if (entity.obstacleCollided) {
+					for (var i = entity.obstacleCollided.length - 1; i >= 0; i--) {
+						if (entity.obstacleCollided[i] == toCollide) {
+							return;
+						}
+					}
+				}
+				var distance = _utils2.default.distance(toCollide.x, toCollide.y, entity.x, entity.y);
+				var circleCollide = distance < toCollide.getRadius() + entity.getRadius();
+				var realCollide = false;
+				var headCollide = false;
+				var headDistance = 0;
+				if (circleCollide) {
+					var ballPosition = {
+						x: entity.x,
+						y: entity.y + entity.spriteContainer.y * entity.scale.y
+					};
+					var hDistance = _utils2.default.distance(0, toCollide.y, 0, ballPosition.y);
+					// if(utils.distance(toCollide.x, toCollide.y - toCollide.bounds.height, entity.x, entity.y) < toCollide.bounds.height){
+					var toCompare = toCollide.getBounds().height - entity.getRadius() / 2;
+					realCollide = hDistance < toCompare;
+	
+					if (!realCollide) {
+						headDistance = _utils2.default.distance(0, toCollide.y - toCollide.getBounds().height, 0, ballPosition.y);
+						if (headDistance < entity.getRadius()) {
+							console.log('NA CABECA');
+							realCollide = true;
+							headCollide = true;
+						}
+					}
+	
+					// console.log(realCollide, 'REAL COLLIDE', hDistance, toCompare, headDistance);
+					// }
+				}
+				// console.log(toCollide, toCollide.getRadius());
+				if (realCollide) {
+					var distPercent = distance / (toCollide.getRadius() + entity.getRadius());
+					console.log(distPercent); //, angle * 180 / 3.14);
+					var angle = -Math.atan2(toCollide.y - entity.y, toCollide.x - entity.x);
+					angle += 90 / 180 * 3.14;
+	
+					// angle *= angle
+					entity.velocity.x = Math.sin(angle) * -Math.abs(entity.speed.x);
+					if (headCollide) {
+						var headDistPercent = headDistance / entity.getRadius();
+						// console.log('HEAD COLLIDE AQUI', headDistPercent, entity.verticalVelocity.y);
+						entity.velocity.y *= headDistPercent * 2;
+						entity.verticalVelocity.y *= headDistPercent * 5;
+						entity.update(1 / 60);
+					} else {
+						entity.velocity.y = Math.cos(angle) * entity.velocity.y + entity.velocity.y * distPercent; //+ entity.velocity.y;
+					}
+					// entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y) + entity.velocity.y - (entity.velocity.y * distPercent) //+ entity.velocity.y;
+	
+	
+					// let percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y))/(Math.abs(entity.speed.x) + Math.abs(entity.speed.y))
+					// entity.rotationInfluence.x *= Math.sin(angle)
+					// entity.velocity.x = Math.sin(angle) * -Math.abs(entity.speed.x) * percent;
+	
+					// //esquisito, mas por enquanto funciona
+					// angle += 90 / 180 * 3.14
+					// entity.velocity.y = Math.cos(angle) * (Math.abs(entity.speed.y )) + Math.cos(angle) * entity.velocity.y;//(entity.velocity.y);
+					entity.obstacleCollided.push(toCollide);
+	
+					//ORIGINAL
+					// let angle = -Math.atan2(entity.y - this.y, entity.x - this.x) //* 180 / 3.14
+					// angle += 90 / 180 * 3.14
+					// entity.velocity.x = Math.sin(angle) * - Math.abs(entity.speed.x);
+					// entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y);
+					// entity.update(1/60)
+				}
+	
+				return realCollide;
+			}
+		}, {
+			key: 'collideSticks',
+			value: function collideSticks(delta, entity, toCollide, ballPosition) {
+				var distance = _utils2.default.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
+				//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
+				if (distance) {
+	
+					entity.stickCollide();
+	
+					var angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
+					//angle -= 30 / 180 * 3.14;
+					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
+					angle -= 180 / 180 * 3.14;
+					// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
+					// console.log('1',entity.velocity.y);	
+					//TROCAR ENTRE SENOS E COSSENOS AQUI
+	
+					entity.velocity.y = (Math.sin(angle) * Math.abs(entity.velocity.y * 2) - entity.velocity.y) / percent;
+					// entity.velocity.y =Math.sin(angle) * Math.abs(entity.velocity.y*2) + entity.velocity.y
+	
+					// entity.velocity.y = Math.sin(angle) * (entity.velocity.y)// * percent);
+					// angle += 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
+					entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent); //(entity.shootYSpeed * percent);
+					// console.log('2', Math.sin(angle), entity.velocity.y);	
+					// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
+					// console.log('angle --', angle * 180 / 3.14);
+					// console.log('-----');	
+				}
+			}
+		}, {
+			key: 'collideSticksSide',
+			value: function collideSticksSide(delta, entity, toCollide, ballPosition) {
+				var distance = _utils2.default.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
+				//console.log(ballPosition.x,ballPosition.y, toCollide, toCollide.getRadius());
+				if (distance) {
+	
+					entity.stickCollide();
+	
+					var angle = -Math.atan2(toCollide.y - ballPosition.y, toCollide.x - ballPosition.x);
+					//angle -= 30 / 180 * 3.14;
+					var percent = (Math.abs(entity.velocity.x) + Math.abs(entity.velocity.y)) / (Math.abs(entity.speed.x) + Math.abs(entity.speed.y));
+					angle -= 180 / 180 * 3.14;
+					// entity.velocity.y = Math.sin(angle) * - Math.abs(entity.speed.y)// * percent);
+					// console.log('1',entity.velocity.y);	
+					//TROCAR ENTRE SENOS E COSSENOS AQUI
+					entity.velocity.x = -Math.cos(angle) * (entity.velocity.x * 2); // * percent);
+					// angle -= 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
+					entity.velocity.y = Math.sin(angle) * Math.abs(entity.velocity.y * 2) + entity.velocity.y; // * percent);
+					//entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
+					// console.log('2', Math.sin(angle), entity.velocity.y);	
+					// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
+					// console.log('angle --', angle * 180 / 3.14);
+					// console.log('-----');	
+				}
+			}
+		}, {
+			key: 'rectCircleColliding',
+			value: function rectCircleColliding(circle, rect) {
+				var distX = Math.abs(circle.x - rect.x - rect.w / 2);
+				var distY = Math.abs(circle.y - rect.y - rect.h / 2);
+	
+				if (distX > rect.w / 2 + circle.r) {
+					return false;
+				}
+				if (distY > rect.h / 2 + circle.r) {
+					return false;
+				}
+	
+				if (distX <= rect.w / 2) {
+					return true;
+				}
+				if (distY <= rect.h / 2) {
+					return true;
+				}
+	
+				var dx = distX - rect.w / 2;
+				var dy = distY - rect.h / 2;
+				return dx * dx + dy * dy <= circle.r * circle.r;
+			}
+		}, {
+			key: 'inteceptCircleLineSeg2',
+			value: function inteceptCircleLineSeg2(circle, line, radius) {
+				var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
+				v1 = {};
+				v2 = {};
+				v1.x = line.p2.x - line.p1.x;
+				v1.y = line.p2.y - line.p1.y;
+				v2.x = line.p1.x - circle.x;
+				v2.y = line.p1.y - circle.y;
+				b = v1.x * v2.x + v1.y * v2.y;
+				c = 2 * (v1.x * v1.x + v1.y * v1.y);
+				b *= -2;
+				d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius));
+				if (isNaN(d)) {
+					// no intercept
+					return [];
+				}
+				u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
+				u2 = (b + d) / c;
+				retP1 = {}; // return points
+				retP2 = {};
+				ret = []; // return array
+				if (u1 <= 1 && u1 >= 0) {
+					// add point if on the line segment
+					retP1.x = line.p1.x + v1.x * u1;
+					retP1.y = line.p1.y + v1.y * u1;
+					ret[0] = retP1;
+				}
+				if (u2 <= 1 && u2 >= 0) {
+					// second add point if on the line segment
+					retP2.x = line.p1.x + v1.x * u2;
+					retP2.y = line.p1.y + v1.y * u2;
+					ret[ret.length] = retP2;
+				}
+				return ret;
+			}
+		}, {
+			key: 'inteceptCircleLineSeg',
+			value: function inteceptCircleLineSeg(circle, line) {
+				var a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2;
+				v1 = {};
+				v2 = {};
+				v1.x = line.p2.x - line.p1.x;
+				v1.y = line.p2.y - line.p1.y;
+				v2.x = line.p1.x - circle.x;
+				v2.y = line.p1.y - circle.y;
+				b = v1.x * v2.x + v1.y * v2.y;
+				c = 2 * (v1.x * v1.x + v1.y * v1.y);
+				b *= -2;
+				d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.getExternalRadius() * circle.getExternalRadius()));
+				if (isNaN(d)) {
+					// no intercept
+					return [];
+				}
+				u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
+				u2 = (b + d) / c;
+				retP1 = {}; // return points
+				retP2 = {};
+				ret = []; // return array
+				if (u1 <= 1 && u1 >= 0) {
+					// add point if on the line segment
+					retP1.x = line.p1.x + v1.x * u1;
+					retP1.y = line.p1.y + v1.y * u1;
+					ret[0] = retP1;
+				}
+				if (u2 <= 1 && u2 >= 0) {
+					// second add point if on the line segment
+					retP2.x = line.p1.x + v1.x * u2;
+					retP2.y = line.p1.y + v1.y * u2;
+					ret[ret.length] = retP2;
+				}
+				return ret;
+			}
+		}]);
+	
+		return Collisions;
+	}();
+	
+	exports.default = Collisions;
+
+/***/ },
+/* 197 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _Trail = __webpack_require__(193);
+	
+	var _Trail2 = _interopRequireDefault(_Trail);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var TrailManager = function () {
+		function TrailManager(container) {
+			_classCallCheck(this, TrailManager);
+	
+			this.container = container;
+			this.currentTrail = false;
+			this.trailPool = [];
+		}
+	
+		_createClass(TrailManager, [{
+			key: 'getTrail',
+			value: function getTrail(position) {
+				for (var i = this.trailPool.length - 1; i >= 0; i--) {
+					if (this.trailPool[i].killed) {
+						this.trailPool[i].reset(position);
+						return this.trailPool[i];
+					}
+				}
+				var trail = new _Trail2.default(this.container, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+				trail.trailTick = 15;
+				trail.speed = 0.01;
+				trail.frequency = 0.0001;
+				this.trailPool.push(trail);
+				return trail;
+			}
+		}, {
+			key: 'removeTrail',
+			value: function removeTrail() {
+				this.currentTrail = false;
+			}
+		}, {
+			key: 'startNewTrail',
+			value: function startNewTrail(position) {
+				this.currentTrail = this.getTrail(position);
+				this.currentTrail.mesh.alpha = 0.2;
+				this.currentTrail.mesh.blendMode = PIXI.BLEND_MODES.ADD;
+				this.currentTrail.speed = 0.1;
+				this.currentTrail.update(0, position);
+			}
+		}, {
+			key: 'update',
+			value: function update(delta, position) {
+				if (this.currentTrail) {
+					this.currentTrail.update(delta, position);
+				}
+				for (var i = this.trailPool.length - 1; i >= 0; i--) {
+					if (!this.trailPool[i].killed && this.trailPool[i] != this.currentTrail) {
+						this.trailPool[i].update(delta, null);
+					}
+				}
+			}
+		}]);
+	
+		return TrailManager;
+	}();
+	
+	exports.default = TrailManager;
+
+/***/ },
 /* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -48398,192 +48507,7 @@
 	exports.default = ViewManager;
 
 /***/ },
-/* 199 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-			value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _Target = __webpack_require__(194);
-	
-	var _Target2 = _interopRequireDefault(_Target);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var GoalView = function (_PIXI$Container) {
-			_inherits(GoalView, _PIXI$Container);
-	
-			function GoalView(game) {
-					_classCallCheck(this, GoalView);
-	
-					var _this = _possibleConstructorReturn(this, (GoalView.__proto__ || Object.getPrototypeOf(GoalView)).call(this));
-	
-					_this.game = game;
-					_this.targetPool = [];
-					_this.targets = [];
-	
-					return _this;
-			}
-	
-			_createClass(GoalView, [{
-					key: 'build',
-					value: function build() {
-	
-							this.goal = PIXI.Sprite.fromImage('assets/images/goal.png'); //new PIXI.Graphics().beginFill(0x023548).drawRect(-500,-400,1000, 400);
-							// this.addChild(this.goal);
-							this.goal.anchor.set(0.5, 0.9);
-							// this.goal.scale.set(1.3)
-							this.goal.x = _config2.default.width / 2 + 16;
-							this.goal.y = 150;
-							this.goal.alpha = 0.5;
-	
-							this.goleira = new PIXI.Container();
-							this.addChild(this.goleira);
-	
-							var h = 500;
-							var w = 1300;
-							var tick = 20;
-							this.traveTop = new PIXI.Graphics().beginFill(0x023548).drawRect(-w / 2, 0, w, tick);
-							this.goleira.addChild(this.traveTop);
-							this.traveTop.y = -h;
-							this.traveLeft = new PIXI.Graphics().beginFill(0x023548).drawRect(-tick / 2, -h, tick, h);
-							this.goleira.addChild(this.traveLeft);
-							this.traveLeft.x = w / 2;
-	
-							this.traveRight = new PIXI.Graphics().beginFill(0x023548).drawRect(-tick / 2, -h, tick, h);
-							this.goleira.addChild(this.traveRight);
-							this.traveRight.x = -w / 2;
-	
-							// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
-							// this.goleira.addChild(this.trave4);
-					}
-			}, {
-					key: 'addTargets',
-					value: function addTargets() {
-							var target = this.getTarget();
-							target.x = -this.goleira.width / 2 + target.radius;
-							target.y = -this.goleira.height + target.radius;
-							this.goleira.addChild(target);
-							this.targets.push(target);
-	
-							target = this.getTarget();
-							target.x = this.goleira.width / 2 - target.radius;
-							target.y = -this.goleira.height + target.radius;
-							this.goleira.addChild(target);
-							this.targets.push(target);
-	
-							// target.y = 0//-this.height
-					}
-			}, {
-					key: 'getTarget',
-					value: function getTarget() {
-							for (var i = this.targetPool.length - 1; i >= 0; i--) {
-									if (this.targetPool[i].killed) {
-											return this.targetPool[i];
-									}
-							}
-							var target = new _Target2.default(this, 80);
-							this.targetPool.push(target);
-							return target;
-					}
-			}, {
-					key: 'getTargetList',
-					value: function getTargetList() {
-							var returnList = [];
-							for (var i = this.targets.length - 1; i >= 0; i--) {
-									var target = this.targets[i];
-									var p = {
-											x: this.x + this.goleira.x + target.x * this.scale.x,
-											y: this.y + this.goleira.y + target.y * this.scale.y,
-											r: target.radius * this.scale.x
-									};
-									returnList.push(p);
-							}
-							return returnList;
-					}
-			}, {
-					key: 'getStickSide',
-					value: function getStickSide(target) {
-							var side = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
-	
-							var p1 = {
-									x: this.x + this.goleira.x + side * (this.goleira.width / 2 * this.scale.x) + -side * (target.width / 2 * this.scale.x),
-									y: this.y + this.goleira.y + target.y * this.scale.y - target.height * this.scale.y //+ (target.height * this.goleira.scale.y)
-							};
-							var p2 = {
-									x: p1.x,
-									y: this.y + this.goleira.y + target.y * this.scale.y //+ (target.height * this.goleira.scale.y)
-							};
-	
-							return { p1: p1, p2: p2 };
-					}
-			}, {
-					key: 'getGoalRect',
-					value: function getGoalRect() {
-							var www = 10;
-							var hhh = 6;
-							var rect = {
-									x: this.x - this.goleira.width / 2 * this.scale.x + www,
-									y: this.y - this.goleira.height * this.scale.y + hhh,
-									w: this.goleira.width * this.scale.x - www * 2 + 4,
-									h: this.goleira.height * this.scale.y - hhh
-							};
-							return rect;
-					}
-			}, {
-					key: 'getLeftStick',
-					value: function getLeftStick() {
-							return this.getStickSide(this.traveLeft, -1);
-					}
-			}, {
-					key: 'getRightStick',
-					value: function getRightStick() {
-							return this.getStickSide(this.traveRight, 1);
-					}
-			}, {
-					key: 'getTopStick',
-					value: function getTopStick() {
-							var target = this.traveTop;
-							var p1 = {
-									x: this.x + this.goleira.x - target.width / 2 * this.scale.x + 2,
-									y: this.y + this.goleira.y + target.y * this.scale.y + target.height / 2 * this.scale.x
-							};
-							var p2 = {
-									x: this.x + this.goleira.x + target.width / 2 * this.scale.x + 2,
-									y: p1.y
-							};
-	
-							return { p1: p1, p2: p2 };
-					}
-			}]);
-	
-			return GoalView;
-	}(PIXI.Container);
-	
-	exports.default = GoalView;
-
-/***/ },
+/* 199 */,
 /* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -48821,6 +48745,218 @@
 	}(_Screen3.default);
 	
 	exports.default = LoadScreen;
+
+/***/ },
+/* 201 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+			value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _Target = __webpack_require__(195);
+	
+	var _Target2 = _interopRequireDefault(_Target);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Goal = function (_PIXI$Container) {
+			_inherits(Goal, _PIXI$Container);
+	
+			function Goal(game) {
+					_classCallCheck(this, Goal);
+	
+					var _this = _possibleConstructorReturn(this, (Goal.__proto__ || Object.getPrototypeOf(Goal)).call(this));
+	
+					_this.game = game;
+					_this.targetPool = [];
+					_this.targets = [];
+	
+					return _this;
+			}
+	
+			_createClass(Goal, [{
+					key: 'build',
+					value: function build() {
+	
+							this.goal = PIXI.Sprite.fromImage('assets/images/goal.png'); //new PIXI.Graphics().beginFill(0x023548).drawRect(-500,-400,1000, 400);
+							// this.addChild(this.goal);
+							this.goal.anchor.set(0.5, 0.9);
+							// this.goal.scale.set(1.3)
+							this.goal.x = _config2.default.width / 2 + 16;
+							this.goal.y = 150;
+							this.goal.alpha = 0.5;
+	
+							this.goleira = new PIXI.Container();
+							this.addChild(this.goleira);
+	
+							var h = 500;
+							var w = 1300;
+							var tick = 20;
+							this.traveTop = new PIXI.Graphics().beginFill(0x023548).drawRect(-w / 2, 0, w, tick);
+							this.goleira.addChild(this.traveTop);
+							this.traveTop.y = -h;
+							this.traveLeft = new PIXI.Graphics().beginFill(0x023548).drawRect(-tick / 2, -h, tick, h);
+							this.goleira.addChild(this.traveLeft);
+							this.traveLeft.x = w / 2;
+	
+							this.traveRight = new PIXI.Graphics().beginFill(0x023548).drawRect(-tick / 2, -h, tick, h);
+							this.goleira.addChild(this.traveRight);
+							this.traveRight.x = -w / 2;
+	
+							// this.trave4 = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tck);
+							// this.goleira.addChild(this.trave4);
+					}
+			}, {
+					key: 'reset',
+					value: function reset() {
+							for (var i = this.targets.length - 1; i >= 0; i--) {
+									if (this.targets[i].parent) {
+											this.targets[i].parent.removeChild(this.targets[i]);
+									}
+							}
+							this.targets = [];
+					}
+			}, {
+					key: 'addTargets',
+					value: function addTargets() {
+							var target = this.getTarget();
+							target.x = -this.goleira.width / 2 + target.radius;
+							target.y = -this.goleira.height + target.radius;
+							this.goleira.addChild(target);
+							this.targets.push(target);
+	
+							target = this.getTarget();
+							target.x = this.goleira.width / 2 - target.radius;
+							target.y = -this.goleira.height + target.radius;
+							this.goleira.addChild(target);
+							this.targets.push(target);
+	
+							target = this.getTarget();
+							target.x = 0; //this.goleira.width / 2
+							target.y = -this.goleira.height / 2;
+							target.moveBounds = { x1: -350, x2: 350 };
+							target.updateable = true;
+							this.goleira.addChild(target);
+							this.targets.push(target);
+	
+							// target.y = 0//-this.height
+					}
+			}, {
+					key: 'getTarget',
+					value: function getTarget() {
+							for (var i = this.targetPool.length - 1; i >= 0; i--) {
+									if (this.targetPool[i].killed) {
+											return this.targetPool[i];
+									}
+							}
+							var target = new _Target2.default(this, 80);
+							this.targetPool.push(target);
+							return target;
+					}
+			}, {
+					key: 'getTargetList',
+					value: function getTargetList() {
+							var returnList = [];
+							for (var i = this.targets.length - 1; i >= 0; i--) {
+									var target = this.targets[i];
+									var p = {
+											target: target,
+											x: this.x + this.goleira.x + target.x * this.scale.x,
+											y: this.y + this.goleira.y + target.y * this.scale.y,
+											r: target.radius * this.scale.x
+									};
+									returnList.push(p);
+							}
+							return returnList;
+					}
+			}, {
+					key: 'getStickSide',
+					value: function getStickSide(target) {
+							var side = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+	
+							var p1 = {
+									x: this.x + this.goleira.x + side * (this.goleira.width / 2 * this.scale.x) + -side * (target.width / 2 * this.scale.x),
+									y: this.y + this.goleira.y + target.y * this.scale.y - target.height * this.scale.y //+ (target.height * this.goleira.scale.y)
+							};
+							var p2 = {
+									x: p1.x,
+									y: this.y + this.goleira.y + target.y * this.scale.y //+ (target.height * this.goleira.scale.y)
+							};
+	
+							return { p1: p1, p2: p2 };
+					}
+			}, {
+					key: 'getGoalRect',
+					value: function getGoalRect() {
+							var www = 10;
+							var hhh = 6;
+							var rect = {
+									x: this.x - this.goleira.width / 2 * this.scale.x + www,
+									y: this.y - this.goleira.height * this.scale.y + hhh,
+									w: this.goleira.width * this.scale.x - www * 2 + 4,
+									h: this.goleira.height * this.scale.y - hhh
+							};
+							return rect;
+					}
+			}, {
+					key: 'getLeftStick',
+					value: function getLeftStick() {
+							return this.getStickSide(this.traveLeft, -1);
+					}
+			}, {
+					key: 'getRightStick',
+					value: function getRightStick() {
+							return this.getStickSide(this.traveRight, 1);
+					}
+			}, {
+					key: 'update',
+					value: function update(delta) {
+							for (var i = this.targets.length - 1; i >= 0; i--) {
+									this.targets[i].update(delta);
+							}
+					}
+			}, {
+					key: 'getTopStick',
+					value: function getTopStick() {
+							var target = this.traveTop;
+							var p1 = {
+									x: this.x + this.goleira.x - target.width / 2 * this.scale.x + 2,
+									y: this.y + this.goleira.y + target.y * this.scale.y + target.height / 2 * this.scale.x
+							};
+							var p2 = {
+									x: this.x + this.goleira.x + target.width / 2 * this.scale.x + 2,
+									y: p1.y
+							};
+	
+							return { p1: p1, p2: p2 };
+					}
+			}]);
+	
+			return Goal;
+	}(PIXI.Container);
+	
+	exports.default = Goal;
 
 /***/ }
 /******/ ]);

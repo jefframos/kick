@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import config  from '../../config';
+import Trail from './Trail';
 export default class Ball extends PIXI.Container {
 
     constructor(game, radius = 20) {
@@ -57,6 +58,11 @@ export default class Ball extends PIXI.Container {
         this.shooting = false;
         this.killed = false;
         this.obstacleCollided = [];
+
+        // this.trail = new Trail(this.container, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+        // this.trail.trailTick = 15;
+        // this.trail.speed = 0.01;
+        // this.trail.frequency = 0.001
     }
    
 
@@ -110,7 +116,7 @@ export default class Ball extends PIXI.Container {
 
         this.rotationInfluence = {x:0,y:0};
         this.rotationSpeed = 0;
-        this.spriteContainer.y = 0//- Math.random() * 250;
+        this.spriteContainer.y = - Math.random() * 250;
         this.x = config.width / 2;
         this.startUpdate();
     }
@@ -138,13 +144,13 @@ export default class Ball extends PIXI.Container {
 
         this.y = config.height - 180;
 
-        if(Math.random() < 0.09995){
+        if(Math.random() < 0.5){
             this.verticalVelocity = {x:0, y:0};
             // this.spriteContainer.y = - Math.random() * 80;
-            this.spriteContainer.y = 0//- Math.random() * 250;
+            this.spriteContainer.y = - Math.random() * 250;
             this.x = config.width / 2;
             // this.verticalVelocity.y = Math.random() * this.shootYSpeed;
-            this.verticalVelocity.y = 0//this.shootYSpeed;
+            this.verticalVelocity.y = this.shootYSpeed;
         }else{
             this.spriteContainer.y = - Math.random() * 250;
 
@@ -168,44 +174,47 @@ export default class Ball extends PIXI.Container {
         //TweenLite.to(this.shadow, 0.5, {alpha:0.1})
         // this.sprite.scale.set(1)
         this.startUpdate();
+
+        
+
         // console.log(this.verticalVelocity);
         // this.updateable = true;
     }
     startUpdate(){
         this.updateable = true;
     }
-    backSide(force, force2) {
-        let t = Math.abs(force2) - 0.5
-        // force2 = 1 - force2
+    // backSide(force, force2) {
+    //     let t = Math.abs(force2) - 0.5
+    //     // force2 = 1 - force2
 
-        // console.log('backSide', this.velocity.y);
-        this.velocity.x +=  -t * this.velocity.x//force2
-        this.velocity.y *=  -0.8//force2
-        // this.velocity.y +=  t * this.velocity.y//force2
-        // console.log('backSide2', this.velocity.y, t);
+    //     // console.log('backSide', this.velocity.y);
+    //     this.velocity.x +=  -t * this.velocity.x//force2
+    //     this.velocity.y *=  -0.8//force2
+    //     // this.velocity.y +=  t * this.velocity.y//force2
+    //     // console.log('backSide2', this.velocity.y, t);
 
-        this.verticalVelocity.y = -this.velocity.y * force2 * force*2
-    }
-    back(force, force2, forceDown) {
+    //     this.verticalVelocity.y = -this.velocity.y * force2 * force*2
+    // }
+    // back(force, force2, forceDown) {
 
-        // force2 > 
-        //0 eh no meio
-        //>0 embaixo
-        //<acima
-        let t = Math.abs(force2) - 0.5
-        // force2 = 1 - force2
-        this.velocity.y *=  t//force2
-        if(forceDown){
-            this.verticalVelocity.y += 3500
-            this.velocity.y = -Math.abs(this.velocity.y) * 0.3-250;
-        }else{
-            this.velocity.y += 600
-            this.verticalVelocity.y = -this.velocity.y * force2 * force
+    //     // force2 > 
+    //     //0 eh no meio
+    //     //>0 embaixo
+    //     //<acima
+    //     let t = Math.abs(force2) - 0.5
+    //     // force2 = 1 - force2
+    //     this.velocity.y *=  t//force2
+    //     if(forceDown){
+    //         this.verticalVelocity.y += 3500
+    //         this.velocity.y = -Math.abs(this.velocity.y) * 0.3-250;
+    //     }else{
+    //         this.velocity.y += 600
+    //         this.verticalVelocity.y = -this.velocity.y * force2 * force
             
-        }
+    //     }
 
 
-    }
+    // }
     stickCollide() {
         this.collided = true;
 
@@ -237,7 +246,7 @@ export default class Ball extends PIXI.Container {
 
         // console.log(this.verticalVelocity.y);
 
-        if(Math.abs(this.verticalVelocity.y) < 2500){
+        if(Math.abs(this.verticalVelocity.y) < 800){
             // console.log(this.verticalVelocity);
             this.verticalVelocity.y = 0;
             this.spriteContainer.y = 0;
@@ -295,6 +304,14 @@ export default class Ball extends PIXI.Container {
         this.x += this.velocity.x * delta * this.scale.x;
         this.y += this.velocity.y * delta * this.scale.y;
 
+        // if(this.parent && !this.trail.parent){
+        //     this.parent.addChild(this.trail);
+        // }
+        // if(this.shooting){
+        //     let point = this.toGlobal(new PIXI.Point())
+        //     let point2 = this.trail.parent.toLocal(point)
+        //     //this.trail.update(delta, {x:point2.x, y:point2.y})
+        // }
         // console.log(this.killTimer);
         // if(this.shooting){
             this.killTimer -= delta;
