@@ -14,11 +14,60 @@ export default class Obstacle extends PIXI.Container {
         this.container = new PIXI.Container();
         this.addChild(this.container);
 
+        
+
+        // this.shadow = new PIXI.Graphics();
+        // this.shadow.beginFill(0x0000);
+        // this.shadow.drawCircle(0,this.radius,this.radius);
+        // this.shadow.alpha = 0.1;
+        // this.container.addChild(this.shadow);
+        // this.shadow.scale.y = 0.5
+
+
+        // this.spriteContainer = new PIXI.Container();
+        // this.container.addChild(this.spriteContainer);
+
+        // // if(this.radius > 20){
+
+        // this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
+        // //this.spriteContainer.addChild(this.sprite);
+        // this.sprite.anchor.set(0.5);
+        // this.sprite.scale.set(this.radius / 150);
+
+
+        // this.shape = new PIXI.Graphics();
+        // this.shape.beginFill(Math.random() * 0xFFFFFF);
+        // this.shape.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
+        // this.container.addChild(this.shape);
+
+        // this.shape.scale.set(1.5, 0);
+        // TweenLite.to(this.shape.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'});
+        // }
+
+       
+    }
+    build(radius = 20, bounds = {height:400}){
+        radius = Math.floor(radius/4)*4;
+        this.radius = radius;
+        this.externalRadius = this.radius*1;
+        bounds.height = Math.floor(bounds.height/4)*4;
+        this.bounds = bounds
+
+        // for (var i = this.container.children.length - 1; i >= 0; i--) {
+        //     this.container.removeChild(this.container.getChildAt(i));
+        // }
+
+        // this.container = new PIXI.Container();
+        // this.addChild(this.container);
+
+        if(this.shadow && this.shadow.parent){
+            this.shadow.parent.removeChild(this.shadow)
+        }
         this.shadow = new PIXI.Graphics();
         this.shadow.beginFill(0x0000);
         this.shadow.drawCircle(0,this.radius,this.radius);
-        this.shadow.alpha = 0.1;
         this.container.addChild(this.shadow);
+        this.shadow.alpha = 0.5;
         this.shadow.scale.y = 0.5
 
 
@@ -27,24 +76,46 @@ export default class Obstacle extends PIXI.Container {
 
         // if(this.radius > 20){
 
-        this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
-        //this.spriteContainer.addChild(this.sprite);
-        this.sprite.anchor.set(0.5);
-        this.sprite.scale.set(this.radius / 150);
 
 
         this.shape = new PIXI.Graphics();
         this.shape.beginFill(Math.random() * 0xFFFFFF);
         this.shape.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
+        this.shape.y = this.radius/2;
         this.container.addChild(this.shape);
 
-        this.shape.scale.set(1.5, 0);
-        TweenLite.to(this.shape.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'});
-        // }
+        // this.shape.alpha = 0.5
 
-       
+        this.shape.scale.set(1.5, 0);
+        TweenLite.killTweensOf(this.shape.scale)
+        TweenLite.to(this.shape.scale, 0.8, {delay:0.2, x:1, y:1, ease:'easeOutElastic'});
+
+        //this.reset();
+
+        console.log('BUILD', bounds, radius);
+
+        return this
     }
    
+    kill() {
+        console.log('KILL', this.container.children);
+        // for (var i = this.container.children.length - 1; i >= 0; i--) {
+        //      this.container.removeChild(this.container.getChildAt(i));
+        // }
+        // if(this.parent){
+        //     this.parent.removeChild(this)
+        // }
+
+        // this.shape.scale.set(1.5, 0);
+        TweenLite.killTweensOf(this.shape.scale)
+        TweenLite.to(this.shape.scale, 0.2, {x:2, y:0, ease:'easeInBack', onComplete:function(){
+            this.killed = true;            
+            if(this.parent){
+                this.parent.removeChild(this)
+            }
+        }, onCompleteScope:this});
+
+    }
     reset() {
 
         this.killed = false;
@@ -57,7 +128,7 @@ export default class Obstacle extends PIXI.Container {
         this.rotationInfluence = {x:0,y:0};
         this.rotationSpeed = 0;
 
-        this.sprite.rotation = 0;
+        // this.sprite.rotation = 0;
 
        
     }

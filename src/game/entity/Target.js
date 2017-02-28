@@ -11,6 +11,7 @@ export default class Target extends PIXI.Container {
         this.addChild(this.container);
 
         this.shadow = new PIXI.Graphics();
+        this.shadow.lineStyle(Math.floor(this.radius / 2 / 4)*4, 0xFF0000);
         this.shadow.beginFill(0x0000FF);
         this.shadow.drawCircle(0,0,this.radius);
         // this.shadow.alpha = 0.1;
@@ -22,10 +23,11 @@ export default class Target extends PIXI.Container {
         this.side = -1;
     }
     onTarget(){
-        this.updateable = false;
+        // this.updateable = false;
         this.scale.set(0);
         TweenLite.to(this.scale, 0.75, {delay:0.5, x:1,y:1, ease:'easeOutElastic', onComplete:function(){
-            this.updateable = true;
+            // console.log('UPDATE AGAIN');
+            // this.updateable = true;
         }})
     }
     update(delta){

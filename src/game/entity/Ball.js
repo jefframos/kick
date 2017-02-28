@@ -39,9 +39,10 @@ export default class Ball extends PIXI.Container {
         this.shadow = new PIXI.Graphics();
         this.shadow.beginFill(0x000000);
         this.shadow.drawCircle(0,this.radius,this.radius);
-        this.shadow.alpha = 0.1;
+        this.shadow.alpha = 0.5;
         this.container.addChild(this.shadow);
         this.shadow.scale.y = 0.5
+        this.shadow.y = this.radius / 2;
 
 
         this.spriteContainer = new PIXI.Container();
@@ -68,7 +69,9 @@ export default class Ball extends PIXI.Container {
 
     shoot(force, angle, angleColision) {
 
-
+        if(this.shooting){
+            return;
+        }
 
          let angSpeed = -angle;
 
@@ -104,6 +107,11 @@ export default class Ball extends PIXI.Container {
 
         let force2 = force*0.35
 
+        console.log('FORCE', force);
+        if(force < 4.5){
+            force2 += 4.5 / force - 0.1
+        }
+
         this.verticalVelocity.y += this.shootYSpeed * force2;
         this.spriteDirection = 1;
         this.shooting = true;
@@ -124,6 +132,9 @@ export default class Ball extends PIXI.Container {
 
         console.log('RESET');
         //this.updateable = true;
+
+        this.shadow.alpha = 0.5;
+
         this.obstacleCollided = [];
         this.shooting = false;
         this.killed = false;
@@ -142,7 +153,7 @@ export default class Ball extends PIXI.Container {
         this.onGoal = false;
         this.spriteContainer.y = 0;
 
-        this.y = config.height - 180;
+        this.y = config.height - 200;
 
         if(Math.random() < 0.5){
             this.verticalVelocity = {x:0, y:0};
@@ -183,38 +194,6 @@ export default class Ball extends PIXI.Container {
     startUpdate(){
         this.updateable = true;
     }
-    // backSide(force, force2) {
-    //     let t = Math.abs(force2) - 0.5
-    //     // force2 = 1 - force2
-
-    //     // console.log('backSide', this.velocity.y);
-    //     this.velocity.x +=  -t * this.velocity.x//force2
-    //     this.velocity.y *=  -0.8//force2
-    //     // this.velocity.y +=  t * this.velocity.y//force2
-    //     // console.log('backSide2', this.velocity.y, t);
-
-    //     this.verticalVelocity.y = -this.velocity.y * force2 * force*2
-    // }
-    // back(force, force2, forceDown) {
-
-    //     // force2 > 
-    //     //0 eh no meio
-    //     //>0 embaixo
-    //     //<acima
-    //     let t = Math.abs(force2) - 0.5
-    //     // force2 = 1 - force2
-    //     this.velocity.y *=  t//force2
-    //     if(forceDown){
-    //         this.verticalVelocity.y += 3500
-    //         this.velocity.y = -Math.abs(this.velocity.y) * 0.3-250;
-    //     }else{
-    //         this.velocity.y += 600
-    //         this.verticalVelocity.y = -this.velocity.y * force2 * force
-            
-    //     }
-
-
-    // }
     stickCollide() {
         this.collided = true;
 

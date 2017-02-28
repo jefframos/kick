@@ -26,15 +26,15 @@ export default class Goal extends PIXI.Container {
 
 		let h = 500
 		let w = 1300
-		let tick = 20
-		this.traveTop = new PIXI.Graphics().beginFill(0x023548).drawRect(-w/2,0,w, tick);
+		let tick = 24
+		this.traveTop = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(-w/2,0,w, tick);
 		this.goleira.addChild(this.traveTop);
 		this.traveTop.y = -h
-		this.traveLeft = new PIXI.Graphics().beginFill(0x023548).drawRect(-tick/2,-h,tick, h);
+		this.traveLeft = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(-tick/2,-h,tick, h);
 		this.goleira.addChild(this.traveLeft);
 		this.traveLeft.x = w/2
 
-		this.traveRight = new PIXI.Graphics().beginFill(0x023548).drawRect(-tick/2,-h,tick, h);
+		this.traveRight = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(-tick/2,-h,tick, h);
 		this.goleira.addChild(this.traveRight);
 		this.traveRight.x = -w/2
 
