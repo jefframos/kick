@@ -2,7 +2,8 @@ import * as PIXI from 'pixi.js';
 import config  from '../../config';
 import utils  from '../../utils';
 export default class Collisions{
-	constructor() {
+	constructor(game) {
+		this.game = game;
 	}
 	detectTopCollision(target, entity,ballPosition){
 		let interception = this.inteceptCircleLineSeg2(ballPosition, {p1:target.p1, p2:target.p2}, entity.getRadius());
@@ -12,6 +13,141 @@ export default class Collisions{
 	detectSideCollision(target, entity,ballPosition){
 		let interception = this.inteceptCircleLineSeg2(ballPosition, {p1:target.p1, p2:target.p2}, entity.getRadius());
 		return {interception:interception, p1:target.p1, p2:target.p2, type:'side'}	
+	}
+	collideBounds(delta, entity){
+		if(entity.collided){
+			return;
+		}
+
+		if(entity.velocity.y < 0){
+			if(entity.y < this.game.goleira.y -10){
+				let ballPosition = {
+					x: entity.x,
+					y: entity.y + entity.spriteContainer.y * entity.scale.y
+				}
+				// this.game.debugBall(ballPosition, entity);
+				this.game.textLabel.text = ''//'NOT GOAL'
+				let collisions = [];
+				let topStickPoint = this.game.goleira.getTopStick();
+				collisions.push(this.game.detectSideCollision(this.game.goleira.getLeftStick(), entity,ballPosition))
+				collisions.push(this.game.detectSideCollision(this.game.goleira.getRightStick(), entity,ballPosition))
+				collisions.push(this.game.detectTopCollision(topStickPoint, entity,ballPosition))
+
+				let isGoal = true;
+				let travessao = false;
+				let traveRight = false;
+				let traveLeft = false;
+				entity.stickCollide();
+				let distance = 0;
+				for (var i = collisions.length - 1; i >= 0; i--) {
+					let interception = collisions[i];
+					if(interception.interception.length > 0){
+						if(interception.type == 'side'){
+							// traves = true;
+							if(interception.interception[0].x > config.width/2){
+								traveRight = true;
+							}else{
+								traveLeft = true;
+							}
+							// console.log('interception', interception.interception[0].x, config.width/2);
+							let sideStick = {x:interception.interception[0].x, y:ballPosition.y + 1, getRadius:function(){return 1}}
+							this.collideSticksSide(1/60, entity, sideStick, ballPosition)
+						}else{
+
+							travessao = true;
+							let topStick = {x:ballPosition.x + 1, y:interception.interception[0].y, getRadius:function(){return 1}}
+							// let topStick = {x:ballPosition.x + entity.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
+							this.collideSticks(1/60, entity, topStick, ballPosition)
+							distance = utils.distance(interception.interception[0].y,0,ballPosition.y,0)
+						}
+					}
+				}
+
+				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.9}
+				let rect = this.game.goleira.getGoalRect()
+				let onGoal = this.rectCircleColliding(circle, rect);
+
+
+				if(onGoal && entity.velocity.y < 0){
+					let points = 0;
+					entity.verticalVelocity.y += 2000 //-entity.velocity.y// / -entity.velocity.y
+					this.game.textLabel.text = 'GOAL'
+					points = 1;
+					if(travessao){
+						this.game.textLabel.text = this.game.textLabel.text+ ' - travetop'
+						entity.verticalVelocity.y += 5000 //-entity.velocity.y// / -entity.velocity.y
+					}
+					if(traveLeft){
+						entity.velocity.y *= 2; //2 * Math.abs(entity.velocity.x);
+						entity.rotationInfluence.x *= 10;
+						entity.velocity.x =  1.5 * Math.abs(entity.velocity.y);//-entity.velocity.y
+						this.game.textLabel.text = this.game.textLabel.text+ ' - traveLeft'
+					}
+					if(traveRight){
+						entity.velocity.y *= 2;
+						entity.rotationInfluence.x *= -10;
+						entity.velocity.x = 1.5 * -Math.abs(entity.velocity.y);//-= -entity.velocity.y
+						this.game.textLabel.text = this.game.textLabel.text+ ' - traveRight'
+					}
+					entity.velocity.y *= 0.15;
+					entity.rotationInfluence.x *= 0.25;
+					entity.onGoal = true;
+
+
+					let targets = this.game.goleira.getTargetList();
+					for (var i = targets.length - 1; i >= 0; i--) {
+						let dist = utils.distance(targets[i].x, targets[i].y, ballPosition.x, ballPosition.y)
+						// console.log(dist, targets[i].r + entity.getRadius());
+						let radiusDistance = targets[i].r + entity.getRadius()
+						let radiusDistanceInner = targets[i].r/2 + entity.getRadius()/2
+						if(dist < radiusDistanceInner){
+							this.game.textLabel.text = 'na mosca'
+							targets[i].target.onTarget();
+							if(this.game.lifes < 5)
+								this.game.lifes ++
+							points = 10;
+						}else if(dist < radiusDistance){
+							targets[i].target.onTarget();
+							this.game.textLabel.text = 'no angulo'
+							points = 5;
+						}
+					}
+
+					this.game.goal(points);
+
+
+				}else{
+					this.game.textLabel.text = 'NO GOAL'
+					this.game.missShoot();
+					entity.velocity.y *= 0.6
+					if(travessao && distance > 5){
+						this.game.textLabel.text = this.game.textLabel.text+ ' - travetop - '+distance
+						entity.velocity.y = -Math.abs(entity.velocity.y)
+					}
+					if(traveLeft){
+						entity.rotationInfluence.x *= 10;
+						entity.velocity.x = 3 * -Math.abs(entity.velocity.y);
+						this.game.textLabel.text = this.game.textLabel.text+ ' - traveLeft NO'
+					}
+					if(traveRight){
+						entity.rotationInfluence.x *= -10;
+						entity.velocity.x = 3 * Math.abs(entity.velocity.y);
+						this.game.textLabel.text = this.game.textLabel.text+ ' - traveRight NO'
+					}
+
+					entity.spriteGravity *= 5
+					entity.rotationInfluence.x *= 0.25;
+				}
+
+				if(travessao || traveLeft || traveRight){
+					this.game.shake()
+				}
+				this.game.colliding = true;
+
+				this.game.updateGame();
+			}
+		}
+
 	}
 	collideEntities(delta, entity, toCollide){
 		if(entity.obstacleCollided){

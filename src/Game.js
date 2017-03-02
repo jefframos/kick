@@ -19,8 +19,19 @@ export default class Game {
 		this.resize();
 
 		this.frameskip = 1;
+		this.lastUpdate = Date.now();
+
+		PIXI.ticker.shared.add( this._onTickEvent, this );
+
 		this.update();
 
+
+
+	}
+	_onTickEvent( deltaTime ) {
+
+		this.dt =  deltaTime / 60;
+		// console.log( deltaTime / 60);
 	}
 	resize() {
 		if (window.innerWidth / window.innerHeight >= this.ratio) {
@@ -35,10 +46,21 @@ export default class Game {
 	}
 
 	update(){
+		let now = Date.now();
+	    this.dt = now - this.lastUpdate;
+	    this.lastUpdate = now;
+	    // if(this.dt < 30){
+	    // 	this.frameskip = 2;
+	    // }else{
+	    // 	this.frameskip = 1;	    	
+	    // }
+	    this.dt /= 1000;
 		for (var i = this.frameskip - 1; i >= 0; i--) {
 			for(let i = 0; i < this.stage.children.length; i++){
 				if(this.stage.children[i].update){
-					this.stage.children[i].update(1/60);
+					// this.stage.children[i].update(this.dt / this.frameskip);
+					this.stage.children[i].update(this.dt);
+					// this.stage.children[i].update(1/60);
 				}
 			}
 		}

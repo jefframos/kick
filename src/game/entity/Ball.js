@@ -60,10 +60,7 @@ export default class Ball extends PIXI.Container {
         this.killed = false;
         this.obstacleCollided = [];
 
-        // this.trail = new Trail(this.container, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
-        // this.trail.trailTick = 15;
-        // this.trail.speed = 0.01;
-        // this.trail.frequency = 0.001
+       
     }
    
 
@@ -72,6 +69,16 @@ export default class Ball extends PIXI.Container {
         if(this.shooting){
             return;
         }
+
+        if(!this.trail){
+            this.trail = new Trail(this.game.ingameUIContainer, 20, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+            this.trail.trailTick = 10;
+            this.trail.speed = 0.1;
+            this.trail.frequency = 0.001
+            this.trail.mesh.alpha = 0.5
+        }
+        this.trail.reset(this.position);
+        this.updateTrail(1/60);
 
          let angSpeed = -angle;
 
@@ -236,7 +243,9 @@ export default class Ball extends PIXI.Container {
     killBall ( ) {
         // this.killTimer = 99999;
         // console.log('kill ball');
-        
+        if(this.trail){
+            this.trail.reset();
+        }
         this.updateable = false;
         TweenLite.to(this.shadow, 0.2, {alpha:0})
 
@@ -267,6 +276,11 @@ export default class Ball extends PIXI.Container {
 
         // TweenLite.to(this.spriteContainer.scale, 0.5, targetScale)
     }
+    updateTrail(delta){
+        let point = this.toGlobal(new PIXI.Point())
+        let point2 = this.parent.toLocal(point)
+        this.trail.update(delta, {x:point2.x, y:point2.y + this.spriteContainer.y * this.scale.y})
+    }
     update ( delta ) {
         // delta*= 0.2
         if(this.killed){
@@ -283,14 +297,12 @@ export default class Ball extends PIXI.Container {
         this.x += this.velocity.x * delta * this.scale.x;
         this.y += this.velocity.y * delta * this.scale.y;
 
-        // if(this.parent && !this.trail.parent){
-        //     this.parent.addChild(this.trail);
+        // if(this.trail && this.parent && !this.trail.parent){
+        //     this.game.addChild(this.trail);
         // }
-        // if(this.shooting){
-        //     let point = this.toGlobal(new PIXI.Point())
-        //     let point2 = this.trail.parent.toLocal(point)
-        //     //this.trail.update(delta, {x:point2.x, y:point2.y})
-        // }
+        if(this.shooting && this.trail){
+            this.updateTrail(delta);
+        }
         // console.log(this.killTimer);
         // if(this.shooting){
             this.killTimer -= delta;

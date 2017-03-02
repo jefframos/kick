@@ -26,7 +26,7 @@ export default class TrailManager{
 	}
 	startNewTrail(position){
 		this.currentTrail = this.getTrail(position);
-		this.currentTrail.mesh.alpha = 0.2;
+		this.currentTrail.mesh.alpha = 0.4;
 		this.currentTrail.mesh.blendMode = PIXI.BLEND_MODES.ADD;
 		this.currentTrail.speed = 0.1
 		this.currentTrail.update(0, position)

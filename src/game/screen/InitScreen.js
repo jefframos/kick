@@ -68,6 +68,10 @@ export default class InitScreen extends Screen{
 		this.backgroundIngameUI.alpha = 0;
 		this.ingameUIContainer.addChild(this.backgroundIngameUI)
 
+
+		this.outgameUIContainer = new PIXI.Container();
+		this.addChild(this.outgameUIContainer);
+
 		
 
 		this.currentTrail = false;
@@ -92,7 +96,7 @@ export default class InitScreen extends Screen{
 		this.addChild(this.debug2)
 		this.debug2.y = config.height - 20;
 
-		this.collisions = new Collisions();
+		this.collisions = new Collisions(this);
 		this.viewManager = new ViewManager();
 		this.levelManager = new LevelManager(this);
 		this.trailManager = new TrailManager(this.ingameUIContainer);
@@ -108,7 +112,7 @@ export default class InitScreen extends Screen{
         this.button = new PIXI.Container();
         this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
         this.button.addChild(this.shape)
-        this.addChild(this.button)
+        this.outgameUIContainer.addChild(this.button)
         this.button.x = config.width / 2;
         this.button.y = config.height / 2;
         this.button.interactive = true;
@@ -119,6 +123,18 @@ export default class InitScreen extends Screen{
 		this.pixelate.size.x = 4;
 		this.pixelate.size.y = 4;
 		this.gameContainer.filters = [this.pixelate]
+		this.ingameUIContainer.filters = [this.pixelate]
+		this.ingameUIContainer.filters = [this.pixelate]
+		this.outgameUIContainer.filters = [this.pixelate]
+
+		// this.dot = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0,0,5);
+		// this.addChild(this.dot)
+
+		// this.trail = new Trail(this, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+  //       this.trail.trailTick = 15;
+  //       this.trail.speed = 0.01;
+  //       this.trail.frequency = 0.001
+  //       this.addChild(this.trail)
 
 	}
 	remove(entity){
@@ -209,7 +225,9 @@ export default class InitScreen extends Screen{
         // this.paused = false;
 	}
 	getNewBall(){
-		this.currentBalls.push(this.levelManager.getBall())
+		let ball = this.levelManager.getBall();
+		this.spotedBall = ball;
+		this.currentBalls.push(this.spotedBall)
 	}
 	reset(){
 		if(!this.gameStarted){
@@ -235,149 +253,14 @@ export default class InitScreen extends Screen{
 		this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x,ballPosition.y, entity.getRadius());
 		this.addChild(this.testeBall);
 	}
-	collideBounds(delta, entity){
-		if(entity.collided){
-			return;
+	
+	
+	updateGame(){
+		this.updateLifes();
+		if(this.lifes){
+			this.levelManager.createObstacles();
 		}
-
-		if(entity.velocity.y < 0){
-			if(entity.y < this.goleira.y -10){
-				let ballPosition = {
-					x: entity.x,
-					y: entity.y + entity.spriteContainer.y * entity.scale.y
-				}
-				// this.debugBall(ballPosition, entity);
-				this.textLabel.text = ''//'NOT GOAL'
-				let collisions = [];
-				let topStickPoint = this.goleira.getTopStick();
-				collisions.push(this.detectSideCollision(this.goleira.getLeftStick(), entity,ballPosition))
-				collisions.push(this.detectSideCollision(this.goleira.getRightStick(), entity,ballPosition))
-				collisions.push(this.detectTopCollision(topStickPoint, entity,ballPosition))
-
-				let killStandard = false
-				let isGoal = true;
-				let travessao = false;
-				let traveRight = false;
-				let traveLeft = false;
-				entity.stickCollide();
-				let distance = 0;
-				for (var i = collisions.length - 1; i >= 0; i--) {
-					let interception = collisions[i];
-					if(interception.interception.length > 0){
-						if(interception.type == 'side'){
-							// traves = true;
-							if(interception.interception[0].x > config.width/2){
-								traveRight = true;
-							}else{
-								traveLeft = true;
-							}
-							// console.log('interception', interception.interception[0].x, config.width/2);
-							let sideStick = {x:interception.interception[0].x, y:ballPosition.y + 1, getRadius:function(){return 1}}
-							this.collisions.collideSticksSide(1/60, entity, sideStick, ballPosition)
-						}else{
-
-							travessao = true;
-							let topStick = {x:ballPosition.x + 1, y:interception.interception[0].y, getRadius:function(){return 1}}
-							// let topStick = {x:ballPosition.x + entity.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
-							this.collisions.collideSticks(1/60, entity, topStick, ballPosition)
-							distance = utils.distance(interception.interception[0].y,0,ballPosition.y,0)
-						}
-						
-						let label =  isGoal?'GOAL':'NOT GOAL'
-						//this.textLabel.text = distance +' - '+distPos+' - '+label;//interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
-						killStandard = true;
-					}
-				}
-
-				let circle = {x:ballPosition.x,y:ballPosition.y, r:entity.getRadius() * 0.9}
-				let rect = this.goleira.getGoalRect()
-				let onGoal = this.collisions.rectCircleColliding(circle, rect);
-
-
-				if(onGoal && entity.velocity.y < 0){
-					entity.verticalVelocity.y += 2000 //-entity.velocity.y// / -entity.velocity.y
-					this.textLabel.text = 'GOAL'
-					this.points ++;
-					if(travessao){
-						this.textLabel.text = this.textLabel.text+ ' - travetop'
-						entity.verticalVelocity.y += 5000 //-entity.velocity.y// / -entity.velocity.y
-					}
-					if(traveLeft){
-						entity.velocity.y *= 2; //2 * Math.abs(entity.velocity.x);
-						entity.rotationInfluence.x *= 10;
-						entity.velocity.x =  1.5 * Math.abs(entity.velocity.y);//-entity.velocity.y
-						this.textLabel.text = this.textLabel.text+ ' - traveLeft'
-					}
-					if(traveRight){
-						entity.velocity.y *= 2;
-						entity.rotationInfluence.x *= -10;
-						entity.velocity.x = 1.5 * -Math.abs(entity.velocity.y);//-= -entity.velocity.y
-						this.textLabel.text = this.textLabel.text+ ' - traveRight'
-					}
-					entity.velocity.y *= 0.15;
-					entity.rotationInfluence.x *= 0.25;
-					entity.onGoal = true;
-
-
-					let targets = this.goleira.getTargetList();
-					for (var i = targets.length - 1; i >= 0; i--) {
-						let dist = utils.distance(targets[i].x, targets[i].y, ballPosition.x, ballPosition.y)
-						// console.log(dist, targets[i].r + entity.getRadius());
-						let radiusDistance = targets[i].r + entity.getRadius()
-						let radiusDistanceInner = targets[i].r/2 + entity.getRadius()/2
-						if(dist < radiusDistanceInner){
-							this.textLabel.text = 'na mosca'
-							targets[i].target.onTarget();
-							if(this.lifes < 5)
-								this.lifes ++
-							this.points += 4;
-						}else if(dist < radiusDistance){
-							targets[i].target.onTarget();
-							this.textLabel.text = 'no angulo'
-							this.points += 2;
-						}
-					}
-
-
-				}else{
-					this.textLabel.text = 'NO GOAL'
-					this.missShoot();
-					entity.velocity.y *= 0.6
-					if(travessao && distance > 5){
-						this.textLabel.text = this.textLabel.text+ ' - travetop - '+distance
-						entity.velocity.y = -Math.abs(entity.velocity.y)
-					}
-					if(traveLeft){
-						entity.rotationInfluence.x *= 10;
-						entity.velocity.x = 3 * -Math.abs(entity.velocity.y);
-						this.textLabel.text = this.textLabel.text+ ' - traveLeft NO'
-					}
-					if(traveRight){
-						entity.rotationInfluence.x *= -10;
-						entity.velocity.x = 3 * Math.abs(entity.velocity.y);
-						this.textLabel.text = this.textLabel.text+ ' - traveRight NO'
-					}
-
-					entity.spriteGravity *= 5
-					entity.rotationInfluence.x *= 0.25;
-				}
-
-				if(travessao || traveLeft || traveRight){
-					this.shake()
-				}
-				this.colliding = true;
-				this.updateLifes();
-				if(this.lifes){
-					this.levelManager.createObstacles();
-				}
-
-			}
-		}
-
 	}
-
-	
-	
 	missShoot(){
 		this.lifes -- ;
 		this.updateLifes();
@@ -400,6 +283,15 @@ export default class InitScreen extends Screen{
 			return
 		}
 		super.update(delta);
+
+		if(this.spotedBall){
+			// this.dot.x = this.spotedBall.x
+			// this.dot.y = this.spotedBall.y + this.spotedBall.spriteContainer.y
+
+			// this.trail.update(delta, {x:this.dot.x, y:this.dot.y})
+		}
+
+		this.debug2.text = delta
 
 		for (var i = this.updateList.length - 1; i >= 0; i--) {
 			if(this.updateList[i].update){
@@ -443,7 +335,7 @@ export default class InitScreen extends Screen{
 				){
 					this.verifyInterception(this.currentBalls[i]);
 				}
-				this.collideBounds(delta, this.currentBalls[i])
+				this.collisions.collideBounds(delta, this.currentBalls[i])
 
 				if(this.currentBalls[i].killed){
 					this.currentBalls.splice(i, 1);
@@ -453,9 +345,7 @@ export default class InitScreen extends Screen{
 			if(collideObs){// && collideObs.velocity.y <= 10){
 				collideObs.stickCollide();
 				this.missShoot();
-				if(this.lifes){
-					this.levelManager.createObstacles();
-				}
+				this.updateGame();
 				console.log('collide', collideObs.virtualVelocity.y)
 				collideObs = false;
 			}
@@ -464,7 +354,10 @@ export default class InitScreen extends Screen{
 
 
 	}
-
+	goal(goals = 1){
+		this.points += goals;
+		this.updateLifes();
+	}
 	noGoal(){
 		this.lifes --;
 		this.updateLifes();

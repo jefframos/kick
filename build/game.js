@@ -37724,7 +37724,7 @@
 	
 	var _InitScreen2 = _interopRequireDefault(_InitScreen);
 	
-	var _LoadScreen = __webpack_require__(201);
+	var _LoadScreen = __webpack_require__(202);
 	
 	var _LoadScreen2 = _interopRequireDefault(_LoadScreen);
 	
@@ -37854,10 +37854,21 @@
 			this.resize();
 	
 			this.frameskip = 1;
+			this.lastUpdate = Date.now();
+	
+			PIXI.ticker.shared.add(this._onTickEvent, this);
+	
 			this.update();
 		}
 	
 		_createClass(Game, [{
+			key: '_onTickEvent',
+			value: function _onTickEvent(deltaTime) {
+	
+				this.dt = deltaTime / 60;
+				// console.log( deltaTime / 60);
+			}
+		}, {
 			key: 'resize',
 			value: function resize() {
 				if (window.innerWidth / window.innerHeight >= this.ratio) {
@@ -37873,10 +37884,21 @@
 		}, {
 			key: 'update',
 			value: function update() {
+				var now = Date.now();
+				this.dt = now - this.lastUpdate;
+				this.lastUpdate = now;
+				// if(this.dt < 30){
+				// 	this.frameskip = 2;
+				// }else{
+				// 	this.frameskip = 1;	    	
+				// }
+				this.dt /= 1000;
 				for (var i = this.frameskip - 1; i >= 0; i--) {
 					for (var _i = 0; _i < this.stage.children.length; _i++) {
 						if (this.stage.children[_i].update) {
-							this.stage.children[_i].update(1 / 60);
+							// this.stage.children[i].update(this.dt / this.frameskip);
+							this.stage.children[_i].update(this.dt);
+							// this.stage.children[i].update(1/60);
 						}
 					}
 				}
@@ -38010,11 +38032,11 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _pixiFilters = __webpack_require__(202);
+	var _pixiFilters = __webpack_require__(188);
 	
 	var _pixiFilters2 = _interopRequireDefault(_pixiFilters);
 	
-	var _gsap = __webpack_require__(188);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -38022,39 +38044,39 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(190);
+	var _utils = __webpack_require__(191);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Screen2 = __webpack_require__(191);
+	var _Screen2 = __webpack_require__(192);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
-	var _Obstacle = __webpack_require__(192);
+	var _Obstacle = __webpack_require__(193);
 	
 	var _Obstacle2 = _interopRequireDefault(_Obstacle);
 	
-	var _Target = __webpack_require__(193);
+	var _Target = __webpack_require__(194);
 	
 	var _Target2 = _interopRequireDefault(_Target);
 	
-	var _Collisions = __webpack_require__(194);
+	var _Collisions = __webpack_require__(195);
 	
 	var _Collisions2 = _interopRequireDefault(_Collisions);
 	
-	var _TrailManager = __webpack_require__(195);
+	var _TrailManager = __webpack_require__(196);
 	
 	var _TrailManager2 = _interopRequireDefault(_TrailManager);
 	
-	var _ViewManager = __webpack_require__(197);
+	var _ViewManager = __webpack_require__(198);
 	
 	var _ViewManager2 = _interopRequireDefault(_ViewManager);
 	
-	var _LevelManager = __webpack_require__(198);
+	var _LevelManager = __webpack_require__(199);
 	
 	var _LevelManager2 = _interopRequireDefault(_LevelManager);
 	
-	var _Goal = __webpack_require__(200);
+	var _Goal = __webpack_require__(201);
 	
 	var _Goal2 = _interopRequireDefault(_Goal);
 	
@@ -38125,6 +38147,9 @@
 				this.backgroundIngameUI.alpha = 0;
 				this.ingameUIContainer.addChild(this.backgroundIngameUI);
 	
+				this.outgameUIContainer = new PIXI.Container();
+				this.addChild(this.outgameUIContainer);
+	
 				this.currentTrail = false;
 	
 				this.goleira = new _Goal2.default(this);
@@ -38146,7 +38171,7 @@
 				this.addChild(this.debug2);
 				this.debug2.y = _config2.default.height - 20;
 	
-				this.collisions = new _Collisions2.default();
+				this.collisions = new _Collisions2.default(this);
 				this.viewManager = new _ViewManager2.default();
 				this.levelManager = new _LevelManager2.default(this);
 				this.trailManager = new _TrailManager2.default(this.ingameUIContainer);
@@ -38161,7 +38186,7 @@
 				this.button = new PIXI.Container();
 				this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
 				this.button.addChild(this.shape);
-				this.addChild(this.button);
+				this.outgameUIContainer.addChild(this.button);
 				this.button.x = _config2.default.width / 2;
 				this.button.y = _config2.default.height / 2;
 				this.button.interactive = true;
@@ -38172,6 +38197,18 @@
 				this.pixelate.size.x = 4;
 				this.pixelate.size.y = 4;
 				this.gameContainer.filters = [this.pixelate];
+				this.ingameUIContainer.filters = [this.pixelate];
+				this.ingameUIContainer.filters = [this.pixelate];
+				this.outgameUIContainer.filters = [this.pixelate];
+	
+				// this.dot = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0,0,5);
+				// this.addChild(this.dot)
+	
+				// this.trail = new Trail(this, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+				//       this.trail.trailTick = 15;
+				//       this.trail.speed = 0.01;
+				//       this.trail.frequency = 0.001
+				//       this.addChild(this.trail)
 			}
 		}, {
 			key: 'remove',
@@ -38272,7 +38309,9 @@
 		}, {
 			key: 'getNewBall',
 			value: function getNewBall() {
-				this.currentBalls.push(this.levelManager.getBall());
+				var ball = this.levelManager.getBall();
+				this.spotedBall = ball;
+				this.currentBalls.push(this.spotedBall);
 			}
 		}, {
 			key: 'reset',
@@ -38304,142 +38343,11 @@
 				this.addChild(this.testeBall);
 			}
 		}, {
-			key: 'collideBounds',
-			value: function collideBounds(delta, entity) {
-				if (entity.collided) {
-					return;
-				}
-	
-				if (entity.velocity.y < 0) {
-					if (entity.y < this.goleira.y - 10) {
-						var ballPosition = {
-							x: entity.x,
-							y: entity.y + entity.spriteContainer.y * entity.scale.y
-						};
-						// this.debugBall(ballPosition, entity);
-						this.textLabel.text = ''; //'NOT GOAL'
-						var collisions = [];
-						var topStickPoint = this.goleira.getTopStick();
-						collisions.push(this.detectSideCollision(this.goleira.getLeftStick(), entity, ballPosition));
-						collisions.push(this.detectSideCollision(this.goleira.getRightStick(), entity, ballPosition));
-						collisions.push(this.detectTopCollision(topStickPoint, entity, ballPosition));
-	
-						var killStandard = false;
-						var isGoal = true;
-						var travessao = false;
-						var traveRight = false;
-						var traveLeft = false;
-						entity.stickCollide();
-						var distance = 0;
-						for (var i = collisions.length - 1; i >= 0; i--) {
-							var interception = collisions[i];
-							if (interception.interception.length > 0) {
-								if (interception.type == 'side') {
-									// traves = true;
-									if (interception.interception[0].x > _config2.default.width / 2) {
-										traveRight = true;
-									} else {
-										traveLeft = true;
-									}
-									// console.log('interception', interception.interception[0].x, config.width/2);
-									var sideStick = { x: interception.interception[0].x, y: ballPosition.y + 1, getRadius: function getRadius() {
-											return 1;
-										} };
-									this.collisions.collideSticksSide(1 / 60, entity, sideStick, ballPosition);
-								} else {
-	
-									travessao = true;
-									var topStick = { x: ballPosition.x + 1, y: interception.interception[0].y, getRadius: function getRadius() {
-											return 1;
-										} };
-									// let topStick = {x:ballPosition.x + entity.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
-									this.collisions.collideSticks(1 / 60, entity, topStick, ballPosition);
-									distance = _utils2.default.distance(interception.interception[0].y, 0, ballPosition.y, 0);
-								}
-	
-								var label = isGoal ? 'GOAL' : 'NOT GOAL';
-								//this.textLabel.text = distance +' - '+distPos+' - '+label;//interception[0].x + ' - ' +interception[0].y + ' - '+interception[1].x + ' - ' +interception[1].y//'COLIDIU'
-								killStandard = true;
-							}
-						}
-	
-						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.9 };
-						var rect = this.goleira.getGoalRect();
-						var onGoal = this.collisions.rectCircleColliding(circle, rect);
-	
-						if (onGoal && entity.velocity.y < 0) {
-							entity.verticalVelocity.y += 2000; //-entity.velocity.y// / -entity.velocity.y
-							this.textLabel.text = 'GOAL';
-							this.points++;
-							if (travessao) {
-								this.textLabel.text = this.textLabel.text + ' - travetop';
-								entity.verticalVelocity.y += 5000; //-entity.velocity.y// / -entity.velocity.y
-							}
-							if (traveLeft) {
-								entity.velocity.y *= 2; //2 * Math.abs(entity.velocity.x);
-								entity.rotationInfluence.x *= 10;
-								entity.velocity.x = 1.5 * Math.abs(entity.velocity.y); //-entity.velocity.y
-								this.textLabel.text = this.textLabel.text + ' - traveLeft';
-							}
-							if (traveRight) {
-								entity.velocity.y *= 2;
-								entity.rotationInfluence.x *= -10;
-								entity.velocity.x = 1.5 * -Math.abs(entity.velocity.y); //-= -entity.velocity.y
-								this.textLabel.text = this.textLabel.text + ' - traveRight';
-							}
-							entity.velocity.y *= 0.15;
-							entity.rotationInfluence.x *= 0.25;
-							entity.onGoal = true;
-	
-							var targets = this.goleira.getTargetList();
-							for (var i = targets.length - 1; i >= 0; i--) {
-								var dist = _utils2.default.distance(targets[i].x, targets[i].y, ballPosition.x, ballPosition.y);
-								// console.log(dist, targets[i].r + entity.getRadius());
-								var radiusDistance = targets[i].r + entity.getRadius();
-								var radiusDistanceInner = targets[i].r / 2 + entity.getRadius() / 2;
-								if (dist < radiusDistanceInner) {
-									this.textLabel.text = 'na mosca';
-									targets[i].target.onTarget();
-									if (this.lifes < 5) this.lifes++;
-									this.points += 4;
-								} else if (dist < radiusDistance) {
-									targets[i].target.onTarget();
-									this.textLabel.text = 'no angulo';
-									this.points += 2;
-								}
-							}
-						} else {
-							this.textLabel.text = 'NO GOAL';
-							this.missShoot();
-							entity.velocity.y *= 0.6;
-							if (travessao && distance > 5) {
-								this.textLabel.text = this.textLabel.text + ' - travetop - ' + distance;
-								entity.velocity.y = -Math.abs(entity.velocity.y);
-							}
-							if (traveLeft) {
-								entity.rotationInfluence.x *= 10;
-								entity.velocity.x = 3 * -Math.abs(entity.velocity.y);
-								this.textLabel.text = this.textLabel.text + ' - traveLeft NO';
-							}
-							if (traveRight) {
-								entity.rotationInfluence.x *= -10;
-								entity.velocity.x = 3 * Math.abs(entity.velocity.y);
-								this.textLabel.text = this.textLabel.text + ' - traveRight NO';
-							}
-	
-							entity.spriteGravity *= 5;
-							entity.rotationInfluence.x *= 0.25;
-						}
-	
-						if (travessao || traveLeft || traveRight) {
-							this.shake();
-						}
-						this.colliding = true;
-						this.updateLifes();
-						if (this.lifes) {
-							this.levelManager.createObstacles();
-						}
-					}
+			key: 'updateGame',
+			value: function updateGame() {
+				this.updateLifes();
+				if (this.lifes) {
+					this.levelManager.createObstacles();
 				}
 			}
 		}, {
@@ -38466,6 +38374,15 @@
 					return;
 				}
 				_get(InitScreen.prototype.__proto__ || Object.getPrototypeOf(InitScreen.prototype), 'update', this).call(this, delta);
+	
+				if (this.spotedBall) {
+					// this.dot.x = this.spotedBall.x
+					// this.dot.y = this.spotedBall.y + this.spotedBall.spriteContainer.y
+	
+					// this.trail.update(delta, {x:this.dot.x, y:this.dot.y})
+				}
+	
+				this.debug2.text = delta;
 	
 				for (var i = this.updateList.length - 1; i >= 0; i--) {
 					if (this.updateList[i].update) {
@@ -38505,7 +38422,7 @@
 						if (this.mousePosition && this.mousePosition.x > 0 && this.mousePosition.x < _config2.default.width && this.mousePosition.y > 0 && this.mousePosition.y < _config2.default.height) {
 							this.verifyInterception(this.currentBalls[i]);
 						}
-						this.collideBounds(delta, this.currentBalls[i]);
+						this.collisions.collideBounds(delta, this.currentBalls[i]);
 	
 						if (this.currentBalls[i].killed) {
 							this.currentBalls.splice(i, 1);
@@ -38516,13 +38433,19 @@
 						// && collideObs.velocity.y <= 10){
 						collideObs.stickCollide();
 						this.missShoot();
-						if (this.lifes) {
-							this.levelManager.createObstacles();
-						}
+						this.updateGame();
 						console.log('collide', collideObs.virtualVelocity.y);
 						collideObs = false;
 					}
 				}
+			}
+		}, {
+			key: 'goal',
+			value: function goal() {
+				var goals = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+	
+				this.points += goals;
+				this.updateLifes();
 			}
 		}, {
 			key: 'noGoal',
@@ -38722,6 +38645,21 @@
 
 /***/ },
 /* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var require;var require;/*!
+	 * pixi-filters - v1.0.6
+	 * Compiled Wed Aug 31 2016 08:37:40 GMT-0400 (EDT)
+	 *
+	 * pixi-filters is licensed under the MIT License.
+	 * http://www.opensource.org/licenses/mit-license
+	 */
+	!function(t){if(true)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var e;e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,e.filters=t()}}(function(){return function t(e,r,n){function o(l,u){if(!r[l]){if(!e[l]){var a="function"==typeof require&&require;if(!u&&a)return require(l,!0);if(i)return i(l,!0);var c=new Error("Cannot find module '"+l+"'");throw c.code="MODULE_NOT_FOUND",c}var s=r[l]={exports:{}};e[l][0].call(s.exports,function(t){var r=e[l][1][t];return o(r?r:t)},s,s.exports,t,e,r,n)}return r[l].exports}for(var i="function"==typeof require&&require,l=0;l<n.length;l++)o(n[l]);return o}({1:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform vec4 filterArea;\nuniform float pixelSize;\nuniform sampler2D uSampler;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n    return floor( coord / size ) * size;\n}\n\nvec2 getMod(vec2 coord, vec2 size)\n{\n    return mod( coord , size) / size;\n}\n\nfloat character(float n, vec2 p)\n{\n    p = floor(p*vec2(4.0, -4.0) + 2.5);\n    if (clamp(p.x, 0.0, 4.0) == p.x && clamp(p.y, 0.0, 4.0) == p.y)\n    {\n        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;\n    }\n    return 0.0;\n}\n\nvoid main()\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    // get the rounded color..\n    vec2 pixCoord = pixelate(coord, vec2(pixelSize));\n    pixCoord = unmapCoord(pixCoord);\n\n    vec4 color = texture2D(uSampler, pixCoord);\n\n    // determine the character to use\n    float gray = (color.r + color.g + color.b) / 3.0;\n\n    float n =  65536.0;             // .\n    if (gray > 0.2) n = 65600.0;    // :\n    if (gray > 0.3) n = 332772.0;   // *\n    if (gray > 0.4) n = 15255086.0; // o\n    if (gray > 0.5) n = 23385164.0; // &\n    if (gray > 0.6) n = 15252014.0; // 8\n    if (gray > 0.7) n = 13199452.0; // @\n    if (gray > 0.8) n = 11512810.0; // #\n\n    // get the mod..\n    vec2 modd = getMod(coord, vec2(pixelSize));\n\n    gl_FragColor = color * character( n, vec2(-1.0) + modd * 2.0);\n\n}"),this.size=8}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.pixelSize},set:function(t){this.uniforms.pixelSize=t}}})},{}],2:[function(t,e,r){function n(){PIXI.Filter.call(this),this.blurXFilter=new o,this.blurYFilter=new i,this.blurYFilter.blendMode=PIXI.BLEND_MODES.SCREEN,this.defaultFilter=new l}var o=PIXI.filters.BlurXFilter,i=PIXI.filters.BlurYFilter,l=PIXI.filters.VoidFilter;n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.defaultFilter.apply(t,e,r),this.blurXFilter.apply(t,e,n),this.blurYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=this.blurYFilter.blur=t}},blurX:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=t}},blurY:{get:function(){return this.blurYFilter.blur},set:function(t){this.blurYFilter.blur=t}}})},{}],3:[function(t,e,r){if("undefined"==typeof PIXI)throw new Error("pixi.js is required to be included")},{}],4:[function(t,e,r){function n(t,e,r){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying mediump vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 texelSize;\nuniform float matrix[9];\n\nvoid main(void)\n{\n   vec4 c11 = texture2D(uSampler, vTextureCoord - texelSize); // top left\n   vec4 c12 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - texelSize.y)); // top center\n   vec4 c13 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y - texelSize.y)); // top right\n\n   vec4 c21 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y)); // mid left\n   vec4 c22 = texture2D(uSampler, vTextureCoord); // mid center\n   vec4 c23 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y)); // mid right\n\n   vec4 c31 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y + texelSize.y)); // bottom left\n   vec4 c32 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + texelSize.y)); // bottom center\n   vec4 c33 = texture2D(uSampler, vTextureCoord + texelSize); // bottom right\n\n   gl_FragColor =\n       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +\n       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +\n       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];\n\n   gl_FragColor.a = c22.a;\n}\n"),this.matrix=t,this.width=e,this.height=r}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{matrix:{get:function(){return this.uniforms.matrix},set:function(t){this.uniforms.matrix=new Float32Array(t)}},width:{get:function(){return 1/this.uniforms.texelSize[0]},set:function(t){this.uniforms.texelSize[0]=1/t}},height:{get:function(){return 1/this.uniforms.texelSize[1]},set:function(t){this.uniforms.texelSize[1]=1/t}}})},{}],5:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);\n\n    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\n    if (lum < 1.00)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.75)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.50)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.3)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n}\n")}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n},{}],6:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec4 filterArea;\nuniform sampler2D uSampler;\n\nuniform float angle;\nuniform float scale;\n\nfloat pattern()\n{\n   float s = sin(angle), c = cos(angle);\n   vec2 tex = vTextureCoord * filterArea.xy;\n   vec2 point = vec2(\n       c * tex.x - s * tex.y,\n       s * tex.x + c * tex.y\n   ) * scale;\n   return (sin(point.x) * sin(point.y)) * 4.0;\n}\n\nvoid main()\n{\n   vec4 color = texture2D(uSampler, vTextureCoord);\n   float average = (color.r + color.g + color.b) / 3.0;\n   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);\n}\n"),this.scale=1,this.angle=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{scale:{get:function(){return this.uniforms.scale},set:function(t){this.uniforms.scale=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],7:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float strength;\nuniform vec4 filterArea;\n\nvoid main(void)\n{\n\tvec2 onePixel = vec2(1.0 / filterArea);\n\n\tvec4 color;\n\n\tcolor.rgb = vec3(0.5);\n\n\tcolor -= texture2D(uSampler, vTextureCoord - onePixel) * strength;\n\tcolor += texture2D(uSampler, vTextureCoord + onePixel) * strength;\n\n\tcolor.rgb = vec3((color.r + color.g + color.b) / 3.0);\n\n\tfloat alpha = texture2D(uSampler, vTextureCoord).a;\n\n\tgl_FragColor = vec4(color.rgb * alpha, alpha);\n}\n"),this.strength=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{strength:{get:function(){return this.uniforms.strength},set:function(t){this.uniforms.strength=t}}})},{}],8:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform vec2 size;\nuniform sampler2D uSampler;\n\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n\treturn floor( coord / size ) * size;\n}\n\nvoid main(void)\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = pixelate(coord, size);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord);\n}\n"),this.size=[10,10]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.size},set:function(t){this.uniforms.size.value=t}}})},{}],9:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 filterArea;\nuniform vec2 red;\nuniform vec2 green;\nuniform vec2 blue;\n\nvoid main(void)\n{\n   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/filterArea.xy).r;\n   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/filterArea.xy).g;\n   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/filterArea.xy).b;\n   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;\n}\n"),this.red=[-10,0],this.green=[0,10],this.blue=[0,0]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{red:{get:function(){return this.uniforms.red},set:function(t){this.uniforms.red=t}},green:{get:function(){return this.uniforms.green},set:function(t){this.uniforms.green=t}},blue:{get:function(){return this.uniforms.blue.value},set:function(t){this.uniforms.blue.value=t}}})},{}],10:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nuniform vec2 center;\nuniform vec3 params; // 10.0, 0.8, 0.1\nuniform float time;\n\nvoid main()\n{\n    vec2 uv = vTextureCoord;\n    vec2 texCoord = uv;\n\n    float dist = distance(uv, center);\n\n    if ( (dist <= (time + params.z)) && (dist >= (time - params.z)) )\n    {\n        float diff = (dist - time);\n        float powDiff = 1.0 - pow(abs(diff*params.x), params.y);\n\n        float diffTime = diff  * powDiff;\n        vec2 diffUV = normalize(uv - center);\n        texCoord = uv + (diffUV * diffTime);\n    }\n\n    gl_FragColor = texture2D(uSampler, texCoord);\n}\n",{center:{type:"v2",value:{x:.5,y:.5}},params:{type:"v3",value:{x:10,y:.8,z:.1}},time:{type:"1f",value:0}}),this.center=[.5,.5],this.params=[10,.8,.1],this.time=0}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{center:{get:function(){return this.uniforms.center},set:function(t){this.uniforms.center=t}},params:{get:function(){return this.uniforms.params},set:function(t){this.uniforms.params=t}},time:{get:function(){return this.uniforms.time},set:function(t){this.uniforms.time=t}}})},{}],11:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float blur;\nuniform float gradientBlur;\nuniform vec2 start;\nuniform vec2 end;\nuniform vec2 delta;\nuniform vec2 texSize;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));\n    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n"),this.uniforms.blur=100,this.uniforms.gradientBlur=600,this.uniforms.start=new PIXI.Point(0,window.innerHeight/2),this.uniforms.end=new PIXI.Point(600,window.innerHeight/2),this.uniforms.delta=new PIXI.Point(30,30),this.uniforms.texSize=new PIXI.Point(window.innerWidth,window.innerHeight),this.updateDelta()}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){this.uniforms.delta.x=0,this.uniforms.delta.y=0},Object.defineProperties(n.prototype,{blur:{get:function(){return this.uniforms.blur},set:function(t){this.uniforms.blur=t}},gradientBlur:{get:function(){return this.uniforms.gradientBlur},set:function(t){this.uniforms.gradientBlur=t}},start:{get:function(){return this.uniforms.start},set:function(t){this.uniforms.start=t,this.updateDelta()}},end:{get:function(){return this.uniforms.end},set:function(t){this.uniforms.end=t,this.updateDelta()}}})},{}],12:[function(t,e,r){function n(){PIXI.Filter.call(this),this.tiltShiftXFilter=new o,this.tiltShiftYFilter=new i}var o=t("./TiltShiftXFilter"),i=t("./TiltShiftYFilter");n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.tiltShiftXFilter.apply(t,e,n),this.tiltShiftYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.tiltShiftXFilter.blur},set:function(t){this.tiltShiftXFilter.blur=this.tiltShiftYFilter.blur=t}},gradientBlur:{get:function(){return this.tiltShiftXFilter.gradientBlur},set:function(t){this.tiltShiftXFilter.gradientBlur=this.tiltShiftYFilter.gradientBlur=t}},start:{get:function(){return this.tiltShiftXFilter.start},set:function(t){this.tiltShiftXFilter.start=this.tiltShiftYFilter.start=t}},end:{get:function(){return this.tiltShiftXFilter.end},set:function(t){this.tiltShiftXFilter.end=this.tiltShiftYFilter.end=t}}})},{"./TiltShiftXFilter":13,"./TiltShiftYFilter":14}],13:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=t/r,this.uniforms.delta.y=e/r}},{"./TiltShiftAxisFilter":11}],14:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=-e/r,this.uniforms.delta.y=t/r}},{"./TiltShiftAxisFilter":11}],15:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 twist(vec2 coord)\n{\n    coord -= offset;\n\n    float dist = length(coord);\n\n    if (dist < radius)\n    {\n        float ratioDist = (radius - dist) / radius;\n        float angleMod = ratioDist * ratioDist * angle;\n        float s = sin(angleMod);\n        float c = cos(angleMod);\n        coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n    }\n\n    coord += offset;\n\n    return coord;\n}\n\nvoid main(void)\n{\n\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = twist(coord);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord );\n\n}\n"),this.radius=200,this.angle=4,this.padding=20}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{offset:{get:function(){return this.uniforms.offset},set:function(t){this.uniforms.offset=t}},radius:{get:function(){return this.uniforms.radius},set:function(t){this.uniforms.radius=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],16:[function(t,e,r){t("./check");var n={AsciiFilter:t("./ascii/AsciiFilter"),BloomFilter:t("./bloom/BloomFilter"),ConvolutionFilter:t("./convolution/ConvolutionFilter"),CrossHatchFilter:t("./crosshatch/CrossHatchFilter"),DotFilter:t("./dot/DotFilter"),EmbossFilter:t("./emboss/EmbossFilter"),PixelateFilter:t("./pixelate/PixelateFilter"),RGBSplitFilter:t("./rgb/RGBSplitFilter"),ShockwaveFilter:t("./shockwave/ShockwaveFilter"),TiltShiftFilter:t("./tiltshift/TiltShiftFilter"),TiltShiftAxisFilter:t("./tiltshift/TiltShiftAxisFilter"),TiltShiftXFilter:t("./tiltshift/TiltShiftXFilter"),TiltShiftYFilter:t("./tiltshift/TiltShiftYFilter"),TwistFilter:t("./twist/TwistFilter")};Object.assign(PIXI.filters,n),"undefined"!=typeof e&&e.exports&&(e.exports=n)},{"./ascii/AsciiFilter":1,"./bloom/BloomFilter":2,"./check":3,"./convolution/ConvolutionFilter":4,"./crosshatch/CrossHatchFilter":5,"./dot/DotFilter":6,"./emboss/EmbossFilter":7,"./pixelate/PixelateFilter":8,"./rgb/RGBSplitFilter":9,"./shockwave/ShockwaveFilter":10,"./tiltshift/TiltShiftAxisFilter":11,"./tiltshift/TiltShiftFilter":12,"./tiltshift/TiltShiftXFilter":13,"./tiltshift/TiltShiftYFilter":14,"./twist/TwistFilter":15}]},{},[16])(16)});
+	//# sourceMappingURL=filters.min.js.map
+
+
+/***/ },
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -44767,7 +44705,7 @@
 							if (global) {
 								_globals[n] = _exports[n] = cl; //provides a way to avoid global namespace pollution. By default, the main classes like TweenLite, Power1, Strong, etc. are added to window unless a GreenSockGlobals is defined. So if you want to have things added to a custom object instead, just do something like window.GreenSockGlobals = {} before loading any GreenSock files. You can even set up an alias like window.GreenSockGlobals = windows.gs = {} so that you can access everything like gs.TweenLite. Also remember that ALL classes are added to the window.com.greensock object (in their respective packages, like com.greensock.easing.Power1, com.greensock.TweenLite, etc.)
 								hasModule = (typeof(module) !== "undefined" && module.exports);
-								if (!hasModule && "function" === "function" && __webpack_require__(189)){ //AMD
+								if (!hasModule && "function" === "function" && __webpack_require__(190)){ //AMD
 									!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() { return cl; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 								} else if (hasModule){ //node
 									if (ns === moduleName) {
@@ -46584,7 +46522,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 189 */
+/* 190 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -46592,7 +46530,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 190 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46870,7 +46808,7 @@
 	};
 
 /***/ },
-/* 191 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47002,7 +46940,7 @@
 	exports.default = Screen;
 
 /***/ },
-/* 192 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47254,7 +47192,7 @@
 	exports.default = Obstacle;
 
 /***/ },
-/* 193 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47344,7 +47282,7 @@
 	exports.default = Target;
 
 /***/ },
-/* 194 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47363,7 +47301,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(190);
+	var _utils = __webpack_require__(191);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
@@ -47374,8 +47312,10 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Collisions = function () {
-		function Collisions() {
+		function Collisions(game) {
 			_classCallCheck(this, Collisions);
+	
+			this.game = game;
 		}
 	
 		_createClass(Collisions, [{
@@ -47389,6 +47329,141 @@
 			value: function detectSideCollision(target, entity, ballPosition) {
 				var interception = this.inteceptCircleLineSeg2(ballPosition, { p1: target.p1, p2: target.p2 }, entity.getRadius());
 				return { interception: interception, p1: target.p1, p2: target.p2, type: 'side' };
+			}
+		}, {
+			key: 'collideBounds',
+			value: function collideBounds(delta, entity) {
+				if (entity.collided) {
+					return;
+				}
+	
+				if (entity.velocity.y < 0) {
+					if (entity.y < this.game.goleira.y - 10) {
+						var ballPosition = {
+							x: entity.x,
+							y: entity.y + entity.spriteContainer.y * entity.scale.y
+						};
+						// this.game.debugBall(ballPosition, entity);
+						this.game.textLabel.text = ''; //'NOT GOAL'
+						var collisions = [];
+						var topStickPoint = this.game.goleira.getTopStick();
+						collisions.push(this.game.detectSideCollision(this.game.goleira.getLeftStick(), entity, ballPosition));
+						collisions.push(this.game.detectSideCollision(this.game.goleira.getRightStick(), entity, ballPosition));
+						collisions.push(this.game.detectTopCollision(topStickPoint, entity, ballPosition));
+	
+						var isGoal = true;
+						var travessao = false;
+						var traveRight = false;
+						var traveLeft = false;
+						entity.stickCollide();
+						var distance = 0;
+						for (var i = collisions.length - 1; i >= 0; i--) {
+							var interception = collisions[i];
+							if (interception.interception.length > 0) {
+								if (interception.type == 'side') {
+									// traves = true;
+									if (interception.interception[0].x > _config2.default.width / 2) {
+										traveRight = true;
+									} else {
+										traveLeft = true;
+									}
+									// console.log('interception', interception.interception[0].x, config.width/2);
+									var sideStick = { x: interception.interception[0].x, y: ballPosition.y + 1, getRadius: function getRadius() {
+											return 1;
+										} };
+									this.collideSticksSide(1 / 60, entity, sideStick, ballPosition);
+								} else {
+	
+									travessao = true;
+									var topStick = { x: ballPosition.x + 1, y: interception.interception[0].y, getRadius: function getRadius() {
+											return 1;
+										} };
+									// let topStick = {x:ballPosition.x + entity.getRadius() * 0.5, y:interception.interception[0].y, getRadius:function(){return 5}}
+									this.collideSticks(1 / 60, entity, topStick, ballPosition);
+									distance = _utils2.default.distance(interception.interception[0].y, 0, ballPosition.y, 0);
+								}
+							}
+						}
+	
+						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.9 };
+						var rect = this.game.goleira.getGoalRect();
+						var onGoal = this.rectCircleColliding(circle, rect);
+	
+						if (onGoal && entity.velocity.y < 0) {
+							var points = 0;
+							entity.verticalVelocity.y += 2000; //-entity.velocity.y// / -entity.velocity.y
+							this.game.textLabel.text = 'GOAL';
+							points = 1;
+							if (travessao) {
+								this.game.textLabel.text = this.game.textLabel.text + ' - travetop';
+								entity.verticalVelocity.y += 5000; //-entity.velocity.y// / -entity.velocity.y
+							}
+							if (traveLeft) {
+								entity.velocity.y *= 2; //2 * Math.abs(entity.velocity.x);
+								entity.rotationInfluence.x *= 10;
+								entity.velocity.x = 1.5 * Math.abs(entity.velocity.y); //-entity.velocity.y
+								this.game.textLabel.text = this.game.textLabel.text + ' - traveLeft';
+							}
+							if (traveRight) {
+								entity.velocity.y *= 2;
+								entity.rotationInfluence.x *= -10;
+								entity.velocity.x = 1.5 * -Math.abs(entity.velocity.y); //-= -entity.velocity.y
+								this.game.textLabel.text = this.game.textLabel.text + ' - traveRight';
+							}
+							entity.velocity.y *= 0.15;
+							entity.rotationInfluence.x *= 0.25;
+							entity.onGoal = true;
+	
+							var targets = this.game.goleira.getTargetList();
+							for (var i = targets.length - 1; i >= 0; i--) {
+								var dist = _utils2.default.distance(targets[i].x, targets[i].y, ballPosition.x, ballPosition.y);
+								// console.log(dist, targets[i].r + entity.getRadius());
+								var radiusDistance = targets[i].r + entity.getRadius();
+								var radiusDistanceInner = targets[i].r / 2 + entity.getRadius() / 2;
+								if (dist < radiusDistanceInner) {
+									this.game.textLabel.text = 'na mosca';
+									targets[i].target.onTarget();
+									if (this.game.lifes < 5) this.game.lifes++;
+									points = 10;
+								} else if (dist < radiusDistance) {
+									targets[i].target.onTarget();
+									this.game.textLabel.text = 'no angulo';
+									points = 5;
+								}
+							}
+	
+							this.game.goal(points);
+						} else {
+							this.game.textLabel.text = 'NO GOAL';
+							this.game.missShoot();
+							entity.velocity.y *= 0.6;
+							if (travessao && distance > 5) {
+								this.game.textLabel.text = this.game.textLabel.text + ' - travetop - ' + distance;
+								entity.velocity.y = -Math.abs(entity.velocity.y);
+							}
+							if (traveLeft) {
+								entity.rotationInfluence.x *= 10;
+								entity.velocity.x = 3 * -Math.abs(entity.velocity.y);
+								this.game.textLabel.text = this.game.textLabel.text + ' - traveLeft NO';
+							}
+							if (traveRight) {
+								entity.rotationInfluence.x *= -10;
+								entity.velocity.x = 3 * Math.abs(entity.velocity.y);
+								this.game.textLabel.text = this.game.textLabel.text + ' - traveRight NO';
+							}
+	
+							entity.spriteGravity *= 5;
+							entity.rotationInfluence.x *= 0.25;
+						}
+	
+						if (travessao || traveLeft || traveRight) {
+							this.game.shake();
+						}
+						this.game.colliding = true;
+	
+						this.game.updateGame();
+					}
+				}
 			}
 		}, {
 			key: 'collideEntities',
@@ -47628,7 +47703,7 @@
 	exports.default = Collisions;
 
 /***/ },
-/* 195 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47647,7 +47722,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Trail = __webpack_require__(196);
+	var _Trail = __webpack_require__(197);
 	
 	var _Trail2 = _interopRequireDefault(_Trail);
 	
@@ -47691,7 +47766,7 @@
 			key: 'startNewTrail',
 			value: function startNewTrail(position) {
 				this.currentTrail = this.getTrail(position);
-				this.currentTrail.mesh.alpha = 0.2;
+				this.currentTrail.mesh.alpha = 0.4;
 				this.currentTrail.mesh.blendMode = PIXI.BLEND_MODES.ADD;
 				this.currentTrail.speed = 0.1;
 				this.currentTrail.update(0, position);
@@ -47716,7 +47791,7 @@
 	exports.default = TrailManager;
 
 /***/ },
-/* 196 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47735,7 +47810,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _gsap = __webpack_require__(188);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -48039,7 +48114,7 @@
 	exports.default = Trail;
 
 /***/ },
-/* 197 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48083,7 +48158,7 @@
 	exports.default = ViewManager;
 
 /***/ },
-/* 198 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48102,11 +48177,11 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Ball = __webpack_require__(199);
+	var _Ball = __webpack_require__(200);
 	
 	var _Ball2 = _interopRequireDefault(_Ball);
 	
-	var _Obstacle = __webpack_require__(192);
+	var _Obstacle = __webpack_require__(193);
 	
 	var _Obstacle2 = _interopRequireDefault(_Obstacle);
 	
@@ -48276,7 +48351,7 @@
 	exports.default = LevelManager;
 
 /***/ },
-/* 199 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48295,7 +48370,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Trail = __webpack_require__(196);
+	var _Trail = __webpack_require__(197);
 	
 	var _Trail2 = _interopRequireDefault(_Trail);
 	
@@ -48372,10 +48447,6 @@
 	        _this.killed = false;
 	        _this.obstacleCollided = [];
 	
-	        // this.trail = new Trail(this.container, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
-	        // this.trail.trailTick = 15;
-	        // this.trail.speed = 0.01;
-	        // this.trail.frequency = 0.001
 	        return _this;
 	    }
 	
@@ -48386,6 +48457,16 @@
 	            if (this.shooting) {
 	                return;
 	            }
+	
+	            if (!this.trail) {
+	                this.trail = new _Trail2.default(this.game.ingameUIContainer, 20, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+	                this.trail.trailTick = 10;
+	                this.trail.speed = 0.1;
+	                this.trail.frequency = 0.001;
+	                this.trail.mesh.alpha = 0.5;
+	            }
+	            this.trail.reset(this.position);
+	            this.updateTrail(1 / 60);
 	
 	            var angSpeed = -angle;
 	
@@ -48561,7 +48642,9 @@
 	        value: function killBall() {
 	            // this.killTimer = 99999;
 	            // console.log('kill ball');
-	
+	            if (this.trail) {
+	                this.trail.reset();
+	            }
 	            this.updateable = false;
 	            TweenLite.to(this.shadow, 0.2, { alpha: 0 });
 	
@@ -48594,6 +48677,13 @@
 	            // TweenLite.to(this.spriteContainer.scale, 0.5, targetScale)
 	        }
 	    }, {
+	        key: 'updateTrail',
+	        value: function updateTrail(delta) {
+	            var point = this.toGlobal(new PIXI.Point());
+	            var point2 = this.parent.toLocal(point);
+	            this.trail.update(delta, { x: point2.x, y: point2.y + this.spriteContainer.y * this.scale.y });
+	        }
+	    }, {
 	        key: 'update',
 	        value: function update(delta) {
 	            // delta*= 0.2
@@ -48611,14 +48701,12 @@
 	            this.x += this.velocity.x * delta * this.scale.x;
 	            this.y += this.velocity.y * delta * this.scale.y;
 	
-	            // if(this.parent && !this.trail.parent){
-	            //     this.parent.addChild(this.trail);
+	            // if(this.trail && this.parent && !this.trail.parent){
+	            //     this.game.addChild(this.trail);
 	            // }
-	            // if(this.shooting){
-	            //     let point = this.toGlobal(new PIXI.Point())
-	            //     let point2 = this.trail.parent.toLocal(point)
-	            //     //this.trail.update(delta, {x:point2.x, y:point2.y})
-	            // }
+	            if (this.shooting && this.trail) {
+	                this.updateTrail(delta);
+	            }
 	            // console.log(this.killTimer);
 	            // if(this.shooting){
 	            this.killTimer -= delta;
@@ -48709,7 +48797,7 @@
 	exports.default = Ball;
 
 /***/ },
-/* 200 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48728,7 +48816,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Target = __webpack_require__(193);
+	var _Target = __webpack_require__(194);
 	
 	var _Target2 = _interopRequireDefault(_Target);
 	
@@ -48921,7 +49009,7 @@
 	exports.default = Goal;
 
 /***/ },
-/* 201 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48938,7 +49026,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(188);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -48946,11 +49034,11 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(190);
+	var _utils = __webpack_require__(191);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Screen2 = __webpack_require__(191);
+	var _Screen2 = __webpack_require__(192);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
@@ -49158,21 +49246,6 @@
 	}(_Screen3.default);
 	
 	exports.default = LoadScreen;
-
-/***/ },
-/* 202 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var require;var require;/*!
-	 * pixi-filters - v1.0.6
-	 * Compiled Wed Aug 31 2016 08:37:40 GMT-0400 (EDT)
-	 *
-	 * pixi-filters is licensed under the MIT License.
-	 * http://www.opensource.org/licenses/mit-license
-	 */
-	!function(t){if(true)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var e;e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,e.filters=t()}}(function(){return function t(e,r,n){function o(l,u){if(!r[l]){if(!e[l]){var a="function"==typeof require&&require;if(!u&&a)return require(l,!0);if(i)return i(l,!0);var c=new Error("Cannot find module '"+l+"'");throw c.code="MODULE_NOT_FOUND",c}var s=r[l]={exports:{}};e[l][0].call(s.exports,function(t){var r=e[l][1][t];return o(r?r:t)},s,s.exports,t,e,r,n)}return r[l].exports}for(var i="function"==typeof require&&require,l=0;l<n.length;l++)o(n[l]);return o}({1:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform vec4 filterArea;\nuniform float pixelSize;\nuniform sampler2D uSampler;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n    return floor( coord / size ) * size;\n}\n\nvec2 getMod(vec2 coord, vec2 size)\n{\n    return mod( coord , size) / size;\n}\n\nfloat character(float n, vec2 p)\n{\n    p = floor(p*vec2(4.0, -4.0) + 2.5);\n    if (clamp(p.x, 0.0, 4.0) == p.x && clamp(p.y, 0.0, 4.0) == p.y)\n    {\n        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;\n    }\n    return 0.0;\n}\n\nvoid main()\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    // get the rounded color..\n    vec2 pixCoord = pixelate(coord, vec2(pixelSize));\n    pixCoord = unmapCoord(pixCoord);\n\n    vec4 color = texture2D(uSampler, pixCoord);\n\n    // determine the character to use\n    float gray = (color.r + color.g + color.b) / 3.0;\n\n    float n =  65536.0;             // .\n    if (gray > 0.2) n = 65600.0;    // :\n    if (gray > 0.3) n = 332772.0;   // *\n    if (gray > 0.4) n = 15255086.0; // o\n    if (gray > 0.5) n = 23385164.0; // &\n    if (gray > 0.6) n = 15252014.0; // 8\n    if (gray > 0.7) n = 13199452.0; // @\n    if (gray > 0.8) n = 11512810.0; // #\n\n    // get the mod..\n    vec2 modd = getMod(coord, vec2(pixelSize));\n\n    gl_FragColor = color * character( n, vec2(-1.0) + modd * 2.0);\n\n}"),this.size=8}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.pixelSize},set:function(t){this.uniforms.pixelSize=t}}})},{}],2:[function(t,e,r){function n(){PIXI.Filter.call(this),this.blurXFilter=new o,this.blurYFilter=new i,this.blurYFilter.blendMode=PIXI.BLEND_MODES.SCREEN,this.defaultFilter=new l}var o=PIXI.filters.BlurXFilter,i=PIXI.filters.BlurYFilter,l=PIXI.filters.VoidFilter;n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.defaultFilter.apply(t,e,r),this.blurXFilter.apply(t,e,n),this.blurYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=this.blurYFilter.blur=t}},blurX:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=t}},blurY:{get:function(){return this.blurYFilter.blur},set:function(t){this.blurYFilter.blur=t}}})},{}],3:[function(t,e,r){if("undefined"==typeof PIXI)throw new Error("pixi.js is required to be included")},{}],4:[function(t,e,r){function n(t,e,r){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying mediump vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 texelSize;\nuniform float matrix[9];\n\nvoid main(void)\n{\n   vec4 c11 = texture2D(uSampler, vTextureCoord - texelSize); // top left\n   vec4 c12 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - texelSize.y)); // top center\n   vec4 c13 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y - texelSize.y)); // top right\n\n   vec4 c21 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y)); // mid left\n   vec4 c22 = texture2D(uSampler, vTextureCoord); // mid center\n   vec4 c23 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y)); // mid right\n\n   vec4 c31 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y + texelSize.y)); // bottom left\n   vec4 c32 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + texelSize.y)); // bottom center\n   vec4 c33 = texture2D(uSampler, vTextureCoord + texelSize); // bottom right\n\n   gl_FragColor =\n       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +\n       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +\n       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];\n\n   gl_FragColor.a = c22.a;\n}\n"),this.matrix=t,this.width=e,this.height=r}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{matrix:{get:function(){return this.uniforms.matrix},set:function(t){this.uniforms.matrix=new Float32Array(t)}},width:{get:function(){return 1/this.uniforms.texelSize[0]},set:function(t){this.uniforms.texelSize[0]=1/t}},height:{get:function(){return 1/this.uniforms.texelSize[1]},set:function(t){this.uniforms.texelSize[1]=1/t}}})},{}],5:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);\n\n    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\n    if (lum < 1.00)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.75)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.50)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.3)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n}\n")}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n},{}],6:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec4 filterArea;\nuniform sampler2D uSampler;\n\nuniform float angle;\nuniform float scale;\n\nfloat pattern()\n{\n   float s = sin(angle), c = cos(angle);\n   vec2 tex = vTextureCoord * filterArea.xy;\n   vec2 point = vec2(\n       c * tex.x - s * tex.y,\n       s * tex.x + c * tex.y\n   ) * scale;\n   return (sin(point.x) * sin(point.y)) * 4.0;\n}\n\nvoid main()\n{\n   vec4 color = texture2D(uSampler, vTextureCoord);\n   float average = (color.r + color.g + color.b) / 3.0;\n   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);\n}\n"),this.scale=1,this.angle=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{scale:{get:function(){return this.uniforms.scale},set:function(t){this.uniforms.scale=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],7:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float strength;\nuniform vec4 filterArea;\n\nvoid main(void)\n{\n\tvec2 onePixel = vec2(1.0 / filterArea);\n\n\tvec4 color;\n\n\tcolor.rgb = vec3(0.5);\n\n\tcolor -= texture2D(uSampler, vTextureCoord - onePixel) * strength;\n\tcolor += texture2D(uSampler, vTextureCoord + onePixel) * strength;\n\n\tcolor.rgb = vec3((color.r + color.g + color.b) / 3.0);\n\n\tfloat alpha = texture2D(uSampler, vTextureCoord).a;\n\n\tgl_FragColor = vec4(color.rgb * alpha, alpha);\n}\n"),this.strength=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{strength:{get:function(){return this.uniforms.strength},set:function(t){this.uniforms.strength=t}}})},{}],8:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform vec2 size;\nuniform sampler2D uSampler;\n\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n\treturn floor( coord / size ) * size;\n}\n\nvoid main(void)\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = pixelate(coord, size);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord);\n}\n"),this.size=[10,10]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.size},set:function(t){this.uniforms.size.value=t}}})},{}],9:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 filterArea;\nuniform vec2 red;\nuniform vec2 green;\nuniform vec2 blue;\n\nvoid main(void)\n{\n   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/filterArea.xy).r;\n   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/filterArea.xy).g;\n   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/filterArea.xy).b;\n   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;\n}\n"),this.red=[-10,0],this.green=[0,10],this.blue=[0,0]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{red:{get:function(){return this.uniforms.red},set:function(t){this.uniforms.red=t}},green:{get:function(){return this.uniforms.green},set:function(t){this.uniforms.green=t}},blue:{get:function(){return this.uniforms.blue.value},set:function(t){this.uniforms.blue.value=t}}})},{}],10:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nuniform vec2 center;\nuniform vec3 params; // 10.0, 0.8, 0.1\nuniform float time;\n\nvoid main()\n{\n    vec2 uv = vTextureCoord;\n    vec2 texCoord = uv;\n\n    float dist = distance(uv, center);\n\n    if ( (dist <= (time + params.z)) && (dist >= (time - params.z)) )\n    {\n        float diff = (dist - time);\n        float powDiff = 1.0 - pow(abs(diff*params.x), params.y);\n\n        float diffTime = diff  * powDiff;\n        vec2 diffUV = normalize(uv - center);\n        texCoord = uv + (diffUV * diffTime);\n    }\n\n    gl_FragColor = texture2D(uSampler, texCoord);\n}\n",{center:{type:"v2",value:{x:.5,y:.5}},params:{type:"v3",value:{x:10,y:.8,z:.1}},time:{type:"1f",value:0}}),this.center=[.5,.5],this.params=[10,.8,.1],this.time=0}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{center:{get:function(){return this.uniforms.center},set:function(t){this.uniforms.center=t}},params:{get:function(){return this.uniforms.params},set:function(t){this.uniforms.params=t}},time:{get:function(){return this.uniforms.time},set:function(t){this.uniforms.time=t}}})},{}],11:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float blur;\nuniform float gradientBlur;\nuniform vec2 start;\nuniform vec2 end;\nuniform vec2 delta;\nuniform vec2 texSize;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));\n    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n"),this.uniforms.blur=100,this.uniforms.gradientBlur=600,this.uniforms.start=new PIXI.Point(0,window.innerHeight/2),this.uniforms.end=new PIXI.Point(600,window.innerHeight/2),this.uniforms.delta=new PIXI.Point(30,30),this.uniforms.texSize=new PIXI.Point(window.innerWidth,window.innerHeight),this.updateDelta()}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){this.uniforms.delta.x=0,this.uniforms.delta.y=0},Object.defineProperties(n.prototype,{blur:{get:function(){return this.uniforms.blur},set:function(t){this.uniforms.blur=t}},gradientBlur:{get:function(){return this.uniforms.gradientBlur},set:function(t){this.uniforms.gradientBlur=t}},start:{get:function(){return this.uniforms.start},set:function(t){this.uniforms.start=t,this.updateDelta()}},end:{get:function(){return this.uniforms.end},set:function(t){this.uniforms.end=t,this.updateDelta()}}})},{}],12:[function(t,e,r){function n(){PIXI.Filter.call(this),this.tiltShiftXFilter=new o,this.tiltShiftYFilter=new i}var o=t("./TiltShiftXFilter"),i=t("./TiltShiftYFilter");n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.tiltShiftXFilter.apply(t,e,n),this.tiltShiftYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.tiltShiftXFilter.blur},set:function(t){this.tiltShiftXFilter.blur=this.tiltShiftYFilter.blur=t}},gradientBlur:{get:function(){return this.tiltShiftXFilter.gradientBlur},set:function(t){this.tiltShiftXFilter.gradientBlur=this.tiltShiftYFilter.gradientBlur=t}},start:{get:function(){return this.tiltShiftXFilter.start},set:function(t){this.tiltShiftXFilter.start=this.tiltShiftYFilter.start=t}},end:{get:function(){return this.tiltShiftXFilter.end},set:function(t){this.tiltShiftXFilter.end=this.tiltShiftYFilter.end=t}}})},{"./TiltShiftXFilter":13,"./TiltShiftYFilter":14}],13:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=t/r,this.uniforms.delta.y=e/r}},{"./TiltShiftAxisFilter":11}],14:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=-e/r,this.uniforms.delta.y=t/r}},{"./TiltShiftAxisFilter":11}],15:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 twist(vec2 coord)\n{\n    coord -= offset;\n\n    float dist = length(coord);\n\n    if (dist < radius)\n    {\n        float ratioDist = (radius - dist) / radius;\n        float angleMod = ratioDist * ratioDist * angle;\n        float s = sin(angleMod);\n        float c = cos(angleMod);\n        coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n    }\n\n    coord += offset;\n\n    return coord;\n}\n\nvoid main(void)\n{\n\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = twist(coord);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord );\n\n}\n"),this.radius=200,this.angle=4,this.padding=20}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{offset:{get:function(){return this.uniforms.offset},set:function(t){this.uniforms.offset=t}},radius:{get:function(){return this.uniforms.radius},set:function(t){this.uniforms.radius=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],16:[function(t,e,r){t("./check");var n={AsciiFilter:t("./ascii/AsciiFilter"),BloomFilter:t("./bloom/BloomFilter"),ConvolutionFilter:t("./convolution/ConvolutionFilter"),CrossHatchFilter:t("./crosshatch/CrossHatchFilter"),DotFilter:t("./dot/DotFilter"),EmbossFilter:t("./emboss/EmbossFilter"),PixelateFilter:t("./pixelate/PixelateFilter"),RGBSplitFilter:t("./rgb/RGBSplitFilter"),ShockwaveFilter:t("./shockwave/ShockwaveFilter"),TiltShiftFilter:t("./tiltshift/TiltShiftFilter"),TiltShiftAxisFilter:t("./tiltshift/TiltShiftAxisFilter"),TiltShiftXFilter:t("./tiltshift/TiltShiftXFilter"),TiltShiftYFilter:t("./tiltshift/TiltShiftYFilter"),TwistFilter:t("./twist/TwistFilter")};Object.assign(PIXI.filters,n),"undefined"!=typeof e&&e.exports&&(e.exports=n)},{"./ascii/AsciiFilter":1,"./bloom/BloomFilter":2,"./check":3,"./convolution/ConvolutionFilter":4,"./crosshatch/CrossHatchFilter":5,"./dot/DotFilter":6,"./emboss/EmbossFilter":7,"./pixelate/PixelateFilter":8,"./rgb/RGBSplitFilter":9,"./shockwave/ShockwaveFilter":10,"./tiltshift/TiltShiftAxisFilter":11,"./tiltshift/TiltShiftFilter":12,"./tiltshift/TiltShiftXFilter":13,"./tiltshift/TiltShiftYFilter":14,"./twist/TwistFilter":15}]},{},[16])(16)});
-	//# sourceMappingURL=filters.min.js.map
-
 
 /***/ }
 /******/ ]);
