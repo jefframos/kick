@@ -14,6 +14,8 @@ import ViewManager from '../core/ViewManager';
 import LevelManager from '../core/LevelManager';
 import Goal from '../entity/Goal';
 
+import UIManager from '../ui/UIManager';
+
 
 export default class InitScreen extends Screen{	
 	constructor(label){
@@ -61,16 +63,15 @@ export default class InitScreen extends Screen{
 
         // this.currentBalls.push(this.levelManager.getBall());
 
-        this.ingameUIContainer = new PIXI.Container();
-        
+        this.ingameUIContainer = new PIXI.Container();        
 		this.addChild(this.ingameUIContainer);
-		this.backgroundIngameUI = new PIXI.Graphics().beginFill(0x023548).drawRect(0,0,config.width, config.height);
-		this.backgroundIngameUI.alpha = 0;
-		this.ingameUIContainer.addChild(this.backgroundIngameUI)
-
 
 		this.outgameUIContainer = new PIXI.Container();
 		this.addChild(this.outgameUIContainer);
+
+		this.uiManager = new UIManager(this);
+		this.uiManager.build();
+
 
 		
 
@@ -84,17 +85,7 @@ export default class InitScreen extends Screen{
 
 		this.gameContainer.addChild(this.goleira)
 
-		this.textLabel = new PIXI.Text('---',{font : '20px', fill : 0x000000, align : 'right'});
-		this.addChild(this.textLabel)
-
-		this.textScore = new PIXI.Text('0',{font : '50px', fill : 0x000000, align : 'right'});
-		this.addChild(this.textScore)
-		this.textScore.x = config.width / 2 - this.textScore.width / 2;
-		this.textScore.y = config.height - this.textScore.height - 20
-
-		this.debug2 = new PIXI.Text('---',{font : '20px', fill : 0x000000, align : 'right'});
-		this.addChild(this.debug2)
-		this.debug2.y = config.height - 20;
+		
 
 		this.collisions = new Collisions(this);
 		this.viewManager = new ViewManager();
@@ -105,7 +96,7 @@ export default class InitScreen extends Screen{
         this.add(this.goleira)
 
 
-        this.lifes = 5;
+        
 		// this.startGame();
 		
 
@@ -127,14 +118,7 @@ export default class InitScreen extends Screen{
 		this.ingameUIContainer.filters = [this.pixelate]
 		this.outgameUIContainer.filters = [this.pixelate]
 
-		// this.dot = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0,0,5);
-		// this.addChild(this.dot)
-
-		// this.trail = new Trail(this, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
-  //       this.trail.trailTick = 15;
-  //       this.trail.speed = 0.01;
-  //       this.trail.frequency = 0.001
-  //       this.addChild(this.trail)
+		
 
 	}
 	remove(entity){
@@ -155,37 +139,6 @@ export default class InitScreen extends Screen{
 		this.gameContainer.addChild(entity)
 	}
 	
-
-	createLifes(){
-		this.textScore.text = 0;
-		if(this.lifesUI){
-			for (var i = this.lifesUI.length - 1; i >= 0; i--) {
-				if(this.lifesUI[i].parent){
-					this.lifesUI[i].parent.removeChild(this.lifesUI[i]);
-				}
-			}
-		}
-		this.lifesUI = [];
-		for (var i = 0; i < this.lifes; i++) {
-			let hearthUI = PIXI.Sprite.fromImage('assets/images/onion.png');
-			this.lifesUI.push(hearthUI)
-			hearthUI.x = config.width - 25 * i - 20;
-			hearthUI.y = 25;
-			hearthUI.anchor.set(0.5);
-			hearthUI.width = 20
-			hearthUI.height = 20
-			
-			this.addChild(hearthUI)
-		}
-	}
-	updateLifes(){
-		this.textScore.text = this.points;
-		for (var i = this.lifesUI.length - 1; i >= 0; i--) {
-			if((i + 1) > this.lifes){
-				this.lifesUI[i].tint = 0x000000;
-			}
-		}
-	}
 	gameOver(){
         this.button.visible = true;
         this.button.scale.set(0);
@@ -216,7 +169,7 @@ export default class InitScreen extends Screen{
 		this.lifes = 5;
 		this.points = 0;
         this.getNewBall();
-        this.createLifes();
+        this.uiManager.createLifes();
         this.levelManager.createObstacles();
         this.levelManager.addTargets();
         TweenLite.to(this.button.scale, 0.2, {x:0, y:0, ease:'easeInBack'})
@@ -225,6 +178,7 @@ export default class InitScreen extends Screen{
         // this.paused = false;
 	}
 	getNewBall(){
+		console.log('new ball');
 		let ball = this.levelManager.getBall();
 		this.spotedBall = ball;
 		this.currentBalls.push(this.spotedBall)
@@ -235,7 +189,7 @@ export default class InitScreen extends Screen{
 		}
 		setTimeout(function() {
 			this.getNewBall();
-		}.bind(this), 500);
+		}.bind(this), 1500);
 		console.log('reset');
 		this.paused = false;		
 		this.colliding = false;
@@ -256,23 +210,23 @@ export default class InitScreen extends Screen{
 	
 	
 	updateGame(){
-		this.updateLifes();
+		this.uiManager.updateLifes();
 		if(this.lifes){
 			this.levelManager.createObstacles();
 		}
 	}
 	missShoot(){
 		this.lifes -- ;
-		this.updateLifes();
+		this.uiManager.updateLifes();
 
 		if(this.lifes <= 0){
 			this.gameStarted = false;
 			setTimeout(function() {
 				this.removeBalls();
-			}.bind(this), 750);
+			}.bind(this), 500);
 			setTimeout(function() {
 				this.gameOver();
-			}.bind(this), 1000);
+			}.bind(this), 1200);
 			
 		}
 
@@ -291,7 +245,7 @@ export default class InitScreen extends Screen{
 			// this.trail.update(delta, {x:this.dot.x, y:this.dot.y})
 		}
 
-		this.debug2.text = delta
+		this.uiManager.debug2.text = delta
 
 		for (var i = this.updateList.length - 1; i >= 0; i--) {
 			if(this.updateList[i].update){
@@ -309,8 +263,8 @@ export default class InitScreen extends Screen{
 
 		// this.collide(delta, this.currentBalls, this.currentBalls2)
 		// console.log(this.currentBalls.length);
-		// if(this.debug2.text != this.currentBalls.length){
-		// 	this.debug2.text = this.currentBalls.length;
+		// if(this.uiManager.debug2.text != this.currentBalls.length){
+		// 	this.uiManager.debug2.text = this.currentBalls.length;
 		// }
 		this.goleira.update(delta);
 
@@ -356,11 +310,11 @@ export default class InitScreen extends Screen{
 	}
 	goal(goals = 1){
 		this.points += goals;
-		this.updateLifes();
+		this.uiManager.updateLifes();
 	}
 	noGoal(){
 		this.lifes --;
-		this.updateLifes();
+		this.uiManager.updateLifes();
 	}
 
 	debugGoal(rect){
@@ -412,7 +366,7 @@ export default class InitScreen extends Screen{
 
         let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025
 
-        this.debug2.text = force;
+        this.uiManager.debug2.text = force;
        
         entity.shoot(force, angle, angleColision);
 

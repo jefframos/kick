@@ -26,7 +26,7 @@ export default class Collisions{
 					y: entity.y + entity.spriteContainer.y * entity.scale.y
 				}
 				// this.game.debugBall(ballPosition, entity);
-				this.game.textLabel.text = ''//'NOT GOAL'
+				this.game.uiManager.textLabel.text = ''//'NOT GOAL'
 				let collisions = [];
 				let topStickPoint = this.game.goleira.getTopStick();
 				collisions.push(this.game.detectSideCollision(this.game.goleira.getLeftStick(), entity,ballPosition))
@@ -71,23 +71,23 @@ export default class Collisions{
 				if(onGoal && entity.velocity.y < 0){
 					let points = 0;
 					entity.verticalVelocity.y += 2000 //-entity.velocity.y// / -entity.velocity.y
-					this.game.textLabel.text = 'GOAL'
+					this.game.uiManager.textLabel.text = 'GOAL'
 					points = 1;
 					if(travessao){
-						this.game.textLabel.text = this.game.textLabel.text+ ' - travetop'
+						this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text+ ' - travetop'
 						entity.verticalVelocity.y += 5000 //-entity.velocity.y// / -entity.velocity.y
 					}
 					if(traveLeft){
 						entity.velocity.y *= 2; //2 * Math.abs(entity.velocity.x);
 						entity.rotationInfluence.x *= 10;
 						entity.velocity.x =  1.5 * Math.abs(entity.velocity.y);//-entity.velocity.y
-						this.game.textLabel.text = this.game.textLabel.text+ ' - traveLeft'
+						this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text+ ' - traveLeft'
 					}
 					if(traveRight){
 						entity.velocity.y *= 2;
 						entity.rotationInfluence.x *= -10;
 						entity.velocity.x = 1.5 * -Math.abs(entity.velocity.y);//-= -entity.velocity.y
-						this.game.textLabel.text = this.game.textLabel.text+ ' - traveRight'
+						this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text+ ' - traveRight'
 					}
 					entity.velocity.y *= 0.15;
 					entity.rotationInfluence.x *= 0.25;
@@ -101,14 +101,14 @@ export default class Collisions{
 						let radiusDistance = targets[i].r + entity.getRadius()
 						let radiusDistanceInner = targets[i].r/2 + entity.getRadius()/2
 						if(dist < radiusDistanceInner){
-							this.game.textLabel.text = 'na mosca'
+							this.game.uiManager.textLabel.text = 'na mosca'
 							targets[i].target.onTarget();
 							if(this.game.lifes < 5)
 								this.game.lifes ++
 							points = 10;
 						}else if(dist < radiusDistance){
 							targets[i].target.onTarget();
-							this.game.textLabel.text = 'no angulo'
+							this.game.uiManager.textLabel.text = 'no angulo'
 							points = 5;
 						}
 					}
@@ -117,22 +117,22 @@ export default class Collisions{
 
 
 				}else{
-					this.game.textLabel.text = 'NO GOAL'
+					this.game.uiManager.textLabel.text = 'NO GOAL'
 					this.game.missShoot();
 					entity.velocity.y *= 0.6
 					if(travessao && distance > 5){
-						this.game.textLabel.text = this.game.textLabel.text+ ' - travetop - '+distance
+						this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text+ ' - travetop - '+distance
 						entity.velocity.y = -Math.abs(entity.velocity.y)
 					}
 					if(traveLeft){
 						entity.rotationInfluence.x *= 10;
 						entity.velocity.x = 3 * -Math.abs(entity.velocity.y);
-						this.game.textLabel.text = this.game.textLabel.text+ ' - traveLeft NO'
+						this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text+ ' - traveLeft NO'
 					}
 					if(traveRight){
 						entity.rotationInfluence.x *= -10;
 						entity.velocity.x = 3 * Math.abs(entity.velocity.y);
-						this.game.textLabel.text = this.game.textLabel.text+ ' - traveRight NO'
+						this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text+ ' - traveRight NO'
 					}
 
 					entity.spriteGravity *= 5

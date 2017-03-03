@@ -38080,6 +38080,10 @@
 	
 	var _Goal2 = _interopRequireDefault(_Goal);
 	
+	var _UIManager = __webpack_require__(203);
+	
+	var _UIManager2 = _interopRequireDefault(_UIManager);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -38141,14 +38145,13 @@
 				// this.currentBalls.push(this.levelManager.getBall());
 	
 				this.ingameUIContainer = new PIXI.Container();
-	
 				this.addChild(this.ingameUIContainer);
-				this.backgroundIngameUI = new PIXI.Graphics().beginFill(0x023548).drawRect(0, 0, _config2.default.width, _config2.default.height);
-				this.backgroundIngameUI.alpha = 0;
-				this.ingameUIContainer.addChild(this.backgroundIngameUI);
 	
 				this.outgameUIContainer = new PIXI.Container();
 				this.addChild(this.outgameUIContainer);
+	
+				this.uiManager = new _UIManager2.default(this);
+				this.uiManager.build();
 	
 				this.currentTrail = false;
 	
@@ -38159,18 +38162,6 @@
 	
 				this.gameContainer.addChild(this.goleira);
 	
-				this.textLabel = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
-				this.addChild(this.textLabel);
-	
-				this.textScore = new PIXI.Text('0', { font: '50px', fill: 0x000000, align: 'right' });
-				this.addChild(this.textScore);
-				this.textScore.x = _config2.default.width / 2 - this.textScore.width / 2;
-				this.textScore.y = _config2.default.height - this.textScore.height - 20;
-	
-				this.debug2 = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
-				this.addChild(this.debug2);
-				this.debug2.y = _config2.default.height - 20;
-	
 				this.collisions = new _Collisions2.default(this);
 				this.viewManager = new _ViewManager2.default();
 				this.levelManager = new _LevelManager2.default(this);
@@ -38179,7 +38170,6 @@
 				// this.updateList.push(this.currentBalls)
 				this.add(this.goleira);
 	
-				this.lifes = 5;
 				// this.startGame();
 	
 	
@@ -38200,15 +38190,6 @@
 				this.ingameUIContainer.filters = [this.pixelate];
 				this.ingameUIContainer.filters = [this.pixelate];
 				this.outgameUIContainer.filters = [this.pixelate];
-	
-				// this.dot = new PIXI.Graphics().beginFill(0xFF0000).drawCircle(0,0,5);
-				// this.addChild(this.dot)
-	
-				// this.trail = new Trail(this, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
-				//       this.trail.trailTick = 15;
-				//       this.trail.speed = 0.01;
-				//       this.trail.frequency = 0.001
-				//       this.addChild(this.trail)
 			}
 		}, {
 			key: 'remove',
@@ -38230,40 +38211,6 @@
 				}
 				this.updateList.push(entity);
 				this.gameContainer.addChild(entity);
-			}
-		}, {
-			key: 'createLifes',
-			value: function createLifes() {
-				this.textScore.text = 0;
-				if (this.lifesUI) {
-					for (var i = this.lifesUI.length - 1; i >= 0; i--) {
-						if (this.lifesUI[i].parent) {
-							this.lifesUI[i].parent.removeChild(this.lifesUI[i]);
-						}
-					}
-				}
-				this.lifesUI = [];
-				for (var i = 0; i < this.lifes; i++) {
-					var hearthUI = PIXI.Sprite.fromImage('assets/images/onion.png');
-					this.lifesUI.push(hearthUI);
-					hearthUI.x = _config2.default.width - 25 * i - 20;
-					hearthUI.y = 25;
-					hearthUI.anchor.set(0.5);
-					hearthUI.width = 20;
-					hearthUI.height = 20;
-	
-					this.addChild(hearthUI);
-				}
-			}
-		}, {
-			key: 'updateLifes',
-			value: function updateLifes() {
-				this.textScore.text = this.points;
-				for (var i = this.lifesUI.length - 1; i >= 0; i--) {
-					if (i + 1 > this.lifes) {
-						this.lifesUI[i].tint = 0x000000;
-					}
-				}
 			}
 		}, {
 			key: 'gameOver',
@@ -38298,7 +38245,7 @@
 				this.lifes = 5;
 				this.points = 0;
 				this.getNewBall();
-				this.createLifes();
+				this.uiManager.createLifes();
 				this.levelManager.createObstacles();
 				this.levelManager.addTargets();
 				_gsap2.default.to(this.button.scale, 0.2, { x: 0, y: 0, ease: 'easeInBack' });
@@ -38309,6 +38256,7 @@
 		}, {
 			key: 'getNewBall',
 			value: function getNewBall() {
+				console.log('new ball');
 				var ball = this.levelManager.getBall();
 				this.spotedBall = ball;
 				this.currentBalls.push(this.spotedBall);
@@ -38321,7 +38269,7 @@
 				}
 				setTimeout(function () {
 					this.getNewBall();
-				}.bind(this), 500);
+				}.bind(this), 1500);
 				console.log('reset');
 				this.paused = false;
 				this.colliding = false;
@@ -38345,7 +38293,7 @@
 		}, {
 			key: 'updateGame',
 			value: function updateGame() {
-				this.updateLifes();
+				this.uiManager.updateLifes();
 				if (this.lifes) {
 					this.levelManager.createObstacles();
 				}
@@ -38354,16 +38302,16 @@
 			key: 'missShoot',
 			value: function missShoot() {
 				this.lifes--;
-				this.updateLifes();
+				this.uiManager.updateLifes();
 	
 				if (this.lifes <= 0) {
 					this.gameStarted = false;
 					setTimeout(function () {
 						this.removeBalls();
-					}.bind(this), 750);
+					}.bind(this), 500);
 					setTimeout(function () {
 						this.gameOver();
-					}.bind(this), 1000);
+					}.bind(this), 1200);
 				}
 			}
 		}, {
@@ -38382,7 +38330,7 @@
 					// this.trail.update(delta, {x:this.dot.x, y:this.dot.y})
 				}
 	
-				this.debug2.text = delta;
+				this.uiManager.debug2.text = delta;
 	
 				for (var i = this.updateList.length - 1; i >= 0; i--) {
 					if (this.updateList[i].update) {
@@ -38400,8 +38348,8 @@
 	
 				// this.collide(delta, this.currentBalls, this.currentBalls2)
 				// console.log(this.currentBalls.length);
-				// if(this.debug2.text != this.currentBalls.length){
-				// 	this.debug2.text = this.currentBalls.length;
+				// if(this.uiManager.debug2.text != this.currentBalls.length){
+				// 	this.uiManager.debug2.text = this.currentBalls.length;
 				// }
 				this.goleira.update(delta);
 	
@@ -38445,13 +38393,13 @@
 				var goals = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 	
 				this.points += goals;
-				this.updateLifes();
+				this.uiManager.updateLifes();
 			}
 		}, {
 			key: 'noGoal',
 			value: function noGoal() {
 				this.lifes--;
-				this.updateLifes();
+				this.uiManager.updateLifes();
 			}
 		}, {
 			key: 'debugGoal',
@@ -38505,7 +38453,7 @@
 	
 				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025;
 	
-				this.debug2.text = force;
+				this.uiManager.debug2.text = force;
 	
 				entity.shoot(force, angle, angleColision);
 	
@@ -47344,7 +47292,7 @@
 							y: entity.y + entity.spriteContainer.y * entity.scale.y
 						};
 						// this.game.debugBall(ballPosition, entity);
-						this.game.textLabel.text = ''; //'NOT GOAL'
+						this.game.uiManager.textLabel.text = ''; //'NOT GOAL'
 						var collisions = [];
 						var topStickPoint = this.game.goleira.getTopStick();
 						collisions.push(this.game.detectSideCollision(this.game.goleira.getLeftStick(), entity, ballPosition));
@@ -47392,23 +47340,23 @@
 						if (onGoal && entity.velocity.y < 0) {
 							var points = 0;
 							entity.verticalVelocity.y += 2000; //-entity.velocity.y// / -entity.velocity.y
-							this.game.textLabel.text = 'GOAL';
+							this.game.uiManager.textLabel.text = 'GOAL';
 							points = 1;
 							if (travessao) {
-								this.game.textLabel.text = this.game.textLabel.text + ' - travetop';
+								this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text + ' - travetop';
 								entity.verticalVelocity.y += 5000; //-entity.velocity.y// / -entity.velocity.y
 							}
 							if (traveLeft) {
 								entity.velocity.y *= 2; //2 * Math.abs(entity.velocity.x);
 								entity.rotationInfluence.x *= 10;
 								entity.velocity.x = 1.5 * Math.abs(entity.velocity.y); //-entity.velocity.y
-								this.game.textLabel.text = this.game.textLabel.text + ' - traveLeft';
+								this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text + ' - traveLeft';
 							}
 							if (traveRight) {
 								entity.velocity.y *= 2;
 								entity.rotationInfluence.x *= -10;
 								entity.velocity.x = 1.5 * -Math.abs(entity.velocity.y); //-= -entity.velocity.y
-								this.game.textLabel.text = this.game.textLabel.text + ' - traveRight';
+								this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text + ' - traveRight';
 							}
 							entity.velocity.y *= 0.15;
 							entity.rotationInfluence.x *= 0.25;
@@ -47421,35 +47369,35 @@
 								var radiusDistance = targets[i].r + entity.getRadius();
 								var radiusDistanceInner = targets[i].r / 2 + entity.getRadius() / 2;
 								if (dist < radiusDistanceInner) {
-									this.game.textLabel.text = 'na mosca';
+									this.game.uiManager.textLabel.text = 'na mosca';
 									targets[i].target.onTarget();
 									if (this.game.lifes < 5) this.game.lifes++;
 									points = 10;
 								} else if (dist < radiusDistance) {
 									targets[i].target.onTarget();
-									this.game.textLabel.text = 'no angulo';
+									this.game.uiManager.textLabel.text = 'no angulo';
 									points = 5;
 								}
 							}
 	
 							this.game.goal(points);
 						} else {
-							this.game.textLabel.text = 'NO GOAL';
+							this.game.uiManager.textLabel.text = 'NO GOAL';
 							this.game.missShoot();
 							entity.velocity.y *= 0.6;
 							if (travessao && distance > 5) {
-								this.game.textLabel.text = this.game.textLabel.text + ' - travetop - ' + distance;
+								this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text + ' - travetop - ' + distance;
 								entity.velocity.y = -Math.abs(entity.velocity.y);
 							}
 							if (traveLeft) {
 								entity.rotationInfluence.x *= 10;
 								entity.velocity.x = 3 * -Math.abs(entity.velocity.y);
-								this.game.textLabel.text = this.game.textLabel.text + ' - traveLeft NO';
+								this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text + ' - traveLeft NO';
 							}
 							if (traveRight) {
 								entity.rotationInfluence.x *= -10;
 								entity.velocity.x = 3 * Math.abs(entity.velocity.y);
-								this.game.textLabel.text = this.game.textLabel.text + ' - traveRight NO';
+								this.game.uiManager.textLabel.text = this.game.uiManager.textLabel.text + ' - traveRight NO';
 							}
 	
 							entity.spriteGravity *= 5;
@@ -48199,6 +48147,33 @@
 			this.obstaclePool = [];
 			this.obstacles = [];
 			this.game = game;
+	
+			this.levels = [];
+	
+			var lvl = [];
+			this.levels.push(lvl);
+	
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 - 100, y: 250, w: 50, h: 380 });
+			lvl.push({ x: _config2.default.width / 2 - 60, y: 250, w: 50, h: 370 });
+			lvl.push({ x: _config2.default.width / 2 - 20, y: 250, w: 50, h: 400 });
+			lvl.push({ x: _config2.default.width / 2 + 80, y: 160, w: 60, h: 410 });
+			this.levels.push(lvl);
+	
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2, y: 160, w: 50, h: 410 });
+			this.levels.push(lvl);
+	
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
+			this.levels.push(lvl);
+	
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2, y: 230, w: 60, h: 360 });
+			this.levels.push(lvl);
 		}
 	
 		_createClass(LevelManager, [{
@@ -48206,6 +48181,18 @@
 			value: function addTargets() {
 	
 				this.game.goleira.addTargets();
+			}
+		}, {
+			key: 'createObstacle',
+			value: function createObstacle() {
+				var bounds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { x: 0, y: 0, w: 50, h: 400 };
+	
+				var obstacle = this.getObstacle().build(bounds.w, { height: bounds.h });
+				obstacle.x = bounds.x;
+				obstacle.y = bounds.y;
+				// this.game.add.(obstacle);
+				this.game.add(obstacle);
+				this.obstacles.push(obstacle);
 			}
 		}, {
 			key: 'createObstacles',
@@ -48222,74 +48209,10 @@
 				}
 				this.obstacles = [];
 				var obstacle = null;
-				var rnd = Math.random();
+				var rnd = Math.floor(Math.random() * this.levels.length);
 	
-				console.log(rnd);
-	
-				if (rnd < 0.25) {
-					obstacle = this.getObstacle().build(50, { height: 380 });
-					obstacle.x = _config2.default.width / 2 - 100;
-					obstacle.y = 250;
-					// this.game.add.(obstacle);
-					this.game.add(obstacle);
-					this.obstacles.push(obstacle);
-	
-					// this.gameContainer.addChild(obstacle)
-	
-					obstacle = this.getObstacle().build(50, { height: 375 });
-					obstacle.x = _config2.default.width / 2 - 60;
-					obstacle.y = 250;
-					// this.game.add.(obstacle);
-					this.game.add(obstacle);
-					this.obstacles.push(obstacle);
-	
-					// this.gameContainer.addChild(obstacle)
-	
-					obstacle = this.getObstacle().build(50, { height: 400 });
-					obstacle.x = _config2.default.width / 2 - 20;
-					obstacle.y = 250;
-					// this.game.add.(obstacle);
-					this.game.add(obstacle);
-					this.obstacles.push(obstacle);
-	
-					// this.gameContainer.addChild(obstacle)
-	
-	
-					obstacle = this.getObstacle().build(50, { height: 375 });
-					obstacle.x = _config2.default.width / 2 + 100;
-					obstacle.y = 160;
-					// this.game.add.(obstacle);
-					this.game.add(obstacle);
-					this.obstacles.push(obstacle);
-	
-					// this.gameContainer.addChild(obstacle)
-				} else if (rnd < 0.5) {
-					obstacle = this.getObstacle().build(50, { height: 400 });
-					obstacle.x = _config2.default.width / 2;
-					obstacle.y = 160;
-					// this.game.add.(obstacle);
-					this.game.add(obstacle);
-					this.obstacles.push(obstacle);
-	
-					// this.gameContainer.addChild(obstacle)
-				} else if (rnd < 0.75) {
-					obstacle = this.getObstacle().build(50, { height: 380 });
-					obstacle.x = _config2.default.width / 2 - 100;
-					obstacle.y = 250;
-					// this.game.add.(obstacle);
-					this.game.add(obstacle);
-					this.obstacles.push(obstacle);
-	
-					// this.gameContainer.addChild(obstacle)
-	
-					obstacle = this.getObstacle().build(50, { height: 375 });
-					obstacle.x = _config2.default.width / 2 + 100;
-					obstacle.y = 250;
-					// this.game.add.(obstacle);
-					this.game.add(obstacle);
-					this.obstacles.push(obstacle);
-	
-					// this.gameContainer.addChild(obstacle)
+				for (var i = this.levels[rnd].length - 1; i >= 0; i--) {
+					this.createObstacle(this.levels[rnd][i]);
 				}
 	
 				for (var i = this.obstacles.length - 1; i >= 0; i--) {
@@ -48298,8 +48221,6 @@
 					obs.y = Math.floor(obs.y / 4) * 4;
 					// 	this.viewManager.updateObjectScale(this.game.obstacles[i]);
 				}
-	
-				// this.gameContainer.addChild(obstacle)
 			}
 		}, {
 			key: 'getObstacle',
@@ -49246,6 +49167,113 @@
 	}(_Screen3.default);
 	
 	exports.default = LoadScreen;
+
+/***/ },
+/* 203 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _utils = __webpack_require__(191);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var UIManager = function (_PIXI$Container) {
+		_inherits(UIManager, _PIXI$Container);
+	
+		function UIManager(game) {
+			_classCallCheck(this, UIManager);
+	
+			var _this = _possibleConstructorReturn(this, (UIManager.__proto__ || Object.getPrototypeOf(UIManager)).call(this));
+	
+			_this.game = game;
+			_this.lifesUI = [];
+			return _this;
+		}
+	
+		_createClass(UIManager, [{
+			key: 'build',
+			value: function build() {
+				var backgroundIngameUI = new PIXI.Graphics().beginFill(0x023548).drawRect(0, 0, _config2.default.width, _config2.default.height);
+				backgroundIngameUI.alpha = 0;
+				this.game.ingameUIContainer.addChild(backgroundIngameUI);
+	
+				this.textLabel = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
+				this.game.addChild(this.textLabel);
+	
+				this.textScore = new PIXI.Text('0', { font: '50px', fill: 0x000000, align: 'right' });
+				this.game.addChild(this.textScore);
+				this.textScore.x = _config2.default.width / 2 - this.textScore.width / 2;
+				this.textScore.y = _config2.default.height - this.textScore.height - 20;
+	
+				this.debug2 = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
+				this.game.addChild(this.debug2);
+				this.debug2.y = _config2.default.height - 20;
+			}
+		}, {
+			key: 'updateLifes',
+			value: function updateLifes() {
+				this.textScore.text = this.game.points;
+				for (var i = this.lifesUI.length - 1; i >= 0; i--) {
+					if (i + 1 > this.lifes) {
+						this.lifesUI[i].tint = 0x000000;
+					}
+				}
+			}
+		}, {
+			key: 'createLifes',
+			value: function createLifes() {
+				this.textScore.text = 0;
+				if (this.lifesUI) {
+					for (var i = this.lifesUI.length - 1; i >= 0; i--) {
+						if (this.lifesUI[i].parent) {
+							this.lifesUI[i].parent.removeChild(this.lifesUI[i]);
+						}
+					}
+				}
+				this.lifesUI = [];
+				for (var i = 0; i < this.lifes; i++) {
+					var hearthUI = PIXI.Sprite.fromImage('assets/images/onion.png');
+					this.lifesUI.push(hearthUI);
+					hearthUI.x = _config2.default.width - 25 * i - 20;
+					hearthUI.y = 25;
+					hearthUI.anchor.set(0.5);
+					hearthUI.width = 20;
+					hearthUI.height = 20;
+	
+					this.addChild(hearthUI);
+				}
+			}
+		}]);
+	
+		return UIManager;
+	}(PIXI.Container);
+	
+	exports.default = UIManager;
 
 /***/ }
 /******/ ]);

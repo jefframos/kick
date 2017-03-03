@@ -8,6 +8,34 @@ export default class LevelManager{
 		this.obstaclePool = []
 		this.obstacles = []
 		this.game = game;
+
+
+		this.levels = [];
+
+		let lvl = [];
+		this.levels.push(lvl)
+
+		lvl = []
+		lvl.push({x:config.width / 2-100, y: 250, w:50, h:380});
+		lvl.push({x:config.width / 2-60, y: 250, w:50, h:370});
+		lvl.push({x:config.width / 2-20, y: 250, w:50, h:400});
+		lvl.push({x:config.width / 2 + 80, y: 160, w:60, h:410});
+		this.levels.push(lvl)
+
+		lvl = [];
+		lvl.push({x:config.width / 2, y: 160, w:50, h:410});
+		this.levels.push(lvl)
+
+		lvl = [];
+		lvl.push({x:config.width / 2 + 100, y: 230, w:50, h:410});
+		lvl.push({x:config.width / 2 - 100, y: 230, w:50, h:410});
+		this.levels.push(lvl)
+
+		lvl = [];
+		lvl.push({x:config.width / 2 + 100, y: 230, w:50, h:410});
+		lvl.push({x:config.width / 2 - 100, y: 230, w:50, h:410});
+		lvl.push({x:config.width / 2, y: 230, w:60, h:360});
+		this.levels.push(lvl)
 	}
 	
 	addTargets(){
@@ -16,6 +44,14 @@ export default class LevelManager{
 		
 	}
 
+	createObstacle(bounds = {x:0, y:0, w:50, h:400}){
+		let obstacle = this.getObstacle().build(bounds.w, {height:bounds.h});
+		obstacle.x = bounds.x;
+		obstacle.y = bounds.y;
+		// this.game.add.(obstacle);
+		this.game.add(obstacle);
+		this.obstacles.push(obstacle)
+	}
 	createObstacles(){
 
 		for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
@@ -30,76 +66,13 @@ export default class LevelManager{
 		}
 		this.obstacles = [];
 		let obstacle = null;
-		let rnd = Math.random();
-
-		console.log(rnd);
-
-		if(rnd < 0.25){
-			obstacle = this.getObstacle().build(50, {height:380});
-			obstacle.x = config.width / 2-100;
-			obstacle.y = 250;
-			// this.game.add.(obstacle);
-			this.game.add(obstacle);
-			this.obstacles.push(obstacle)
-
-			// this.gameContainer.addChild(obstacle)
-
-			obstacle = this.getObstacle().build(50, {height:375});
-			obstacle.x = config.width / 2-60;
-			obstacle.y = 250;
-			// this.game.add.(obstacle);
-			this.game.add(obstacle);
-			this.obstacles.push(obstacle)
-
-			// this.gameContainer.addChild(obstacle)
-
-			obstacle = this.getObstacle().build(50, {height:400});
-			obstacle.x = config.width / 2-20;
-			obstacle.y = 250;
-			// this.game.add.(obstacle);
-			this.game.add(obstacle);
-			this.obstacles.push(obstacle)
-
-			// this.gameContainer.addChild(obstacle)
+		let rnd = Math.floor(Math.random() * this.levels.length);
 
 
-			obstacle = this.getObstacle().build(50, {height:375});
-			obstacle.x = config.width / 2+100
-			obstacle.y = 160;
-			// this.game.add.(obstacle);
-			this.game.add(obstacle);
-			this.obstacles.push(obstacle)
-
-			// this.gameContainer.addChild(obstacle)
-
-		}else if(rnd < 0.5){
-			obstacle = this.getObstacle().build(50, {height:400});
-			obstacle.x = config.width / 2;
-			obstacle.y = 160;
-			// this.game.add.(obstacle);
-			this.game.add(obstacle);
-			this.obstacles.push(obstacle)
-
-			// this.gameContainer.addChild(obstacle)
-		}else if(rnd < 0.75){
-			obstacle = this.getObstacle().build(50, {height:380});
-			obstacle.x = config.width / 2-100;
-			obstacle.y = 250;
-			// this.game.add.(obstacle);
-			this.game.add(obstacle);
-			this.obstacles.push(obstacle)
-
-			// this.gameContainer.addChild(obstacle)
-
-			obstacle = this.getObstacle().build(50, {height:375});
-			obstacle.x = config.width / 2+100;
-			obstacle.y = 250;
-			// this.game.add.(obstacle);
-			this.game.add(obstacle);
-			this.obstacles.push(obstacle)
-
-			// this.gameContainer.addChild(obstacle)
+		for (var i = this.levels[rnd].length - 1; i >= 0; i--) {
+			this.createObstacle(this.levels[rnd][i]);
 		}
+
 
 		for (var i = this.obstacles.length - 1; i >= 0; i--) {	
 			let obs = this.obstacles[i];
@@ -107,8 +80,6 @@ export default class LevelManager{
 			obs.y = Math.floor(obs.y / 4) * 4;
 		// 	this.viewManager.updateObjectScale(this.game.obstacles[i]);
 		}
-
-		// this.gameContainer.addChild(obstacle)
 	}
 
 	getObstacle(){
