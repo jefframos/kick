@@ -14,7 +14,7 @@ export default class TrailManager{
 				return this.trailPool[i]
 			}
 		}
-		let trail = new Trail(this.container, 50, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+		let trail = new Trail(this.container, 50, PIXI.Texture.from('assets/images/trail1.jpg'));
 		trail.trailTick = 15;
 		trail.speed = 0.01;
 		trail.frequency = 0.0001

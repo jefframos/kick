@@ -8,14 +8,38 @@ export default class StartScreen extends Screen{
 	constructor(label){
 		super(label);
 
-		this.button = new PIXI.Container();
-        this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
-        this.button.addChild(this.shape)
-        // this.outgameUIContainer.addChild(this.button)
-        this.button.x = config.width / 2;
-        this.button.y = config.height / 2;
-        this.button.interactive = true;
-        this.addChild(this.button)
+		let shape = PIXI.Sprite.fromFrame('big-button-up.png');
+		shape.anchor.set(0.5);
+		this.startButton = new PIXI.Container();
+        //this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+        this.startButton.addChild(shape)
+        this.startButton.x = config.width / 2;
+        this.startButton.y = config.height / 2;
+        this.startButton.interactive = true;
+        this.addChild(this.startButton)
+
+
+        shape = PIXI.Sprite.fromFrame('big-button-up.png');
+		shape.anchor.set(0.5);
+		this.teamButton = new PIXI.Container();
+        //this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+        this.teamButton.addChild(shape)
+        this.teamButton.x = config.width / 2 + 120;
+        this.teamButton.y = config.height / 2 - 50;
+        this.teamButton.interactive = true;
+        this.addChild(this.teamButton)
+
+
+        shape = PIXI.Sprite.fromFrame('big-button-up.png');
+		shape.anchor.set(0.5);
+		this.fieldButton = new PIXI.Container();
+        //this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+        this.fieldButton.addChild(shape)
+        this.fieldButton.x = config.width / 2 - 120;
+        this.fieldButton.y = config.height / 2 - 50;
+        this.fieldButton.interactive = true;
+        this.addChild(this.fieldButton)
+
 
         this.addEvents();
 
@@ -23,7 +47,6 @@ export default class StartScreen extends Screen{
 	}
 	build(){
 		super.build();
-
 	}
 
 	destroy(){
@@ -31,7 +54,7 @@ export default class StartScreen extends Screen{
 	}
 
 	startGame(){
-		this.screenManager.forceChange('InitScreen')
+		this.screenManager.change('InitScreen')
 	}
 
 	update(delta){
@@ -39,21 +62,26 @@ export default class StartScreen extends Screen{
 	}
 
 	transitionOut(nextScreen){
-
-		super.transitionOut(nextScreen);
+		this.nextScreen = nextScreen;
+		TweenLite.to(this.startButton.scale, 0.5, {x:0, y:0, ease:'easeInBack', onComplete:function(){
+			this.endTransitionOut();
+		}, onCompleteScope:this})
 
 	}
 	transitionIn(){
 
 		super.transitionIn();
+		this.startButton.scale.set(0)
+		TweenLite.to(this.startButton.scale, 0.8, {delay:0.2, x:1, y:1, ease:'easeOutElastic'});
+
 
 	}
 
 	removeEvents(){
-		this.button.off('touchstart').off('mousedown');
+		this.startButton.off('touchstart').off('mousedown');
 	}
 	addEvents(){
 		this.removeEvents();
-		this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+		this.startButton.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 	}
 }

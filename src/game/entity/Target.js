@@ -10,12 +10,19 @@ export default class Target extends PIXI.Container {
         this.container = new PIXI.Container();
         this.addChild(this.container);
 
-        this.shadow = new PIXI.Graphics();
-        this.shadow.lineStyle(Math.floor(this.radius / 2 / 4)*4, 0xFF0000);
-        this.shadow.beginFill(0x0000FF);
-        this.shadow.drawCircle(0,0,this.radius);
-        // this.shadow.alpha = 0.1;
-        this.container.addChild(this.shadow);
+        this.backTarget = new PIXI.Graphics();
+        this.backTarget.beginFill(0xFFFFFF);
+        this.backTarget.drawCircle(0,0,this.radius);
+        // this.backTarget.alpha = 0.1;
+        this.backTarget.tint = 0xFF0000;
+        this.container.addChild(this.backTarget);
+
+        this.frontTarget = new PIXI.Graphics();
+        this.frontTarget.beginFill(0xFFFFFF);
+        this.frontTarget.drawCircle(0,0,this.radius - 20);
+        // this.frontTarget.alpha = 0.1;
+        this.frontTarget.tint = 0x0000FF;
+        this.container.addChild(this.frontTarget);
 
         this.updateable = false;
         this.moveBounds = {x1:0, x2:100}
@@ -24,11 +31,28 @@ export default class Target extends PIXI.Container {
     }
     onTarget(){
         // this.updateable = false;
-        this.scale.set(0);
-        TweenLite.to(this.scale, 0.75, {delay:0.5, x:1,y:1, ease:'easeOutElastic', onComplete:function(){
-            // console.log('UPDATE AGAIN');
-            // this.updateable = true;
-        }})
+        
+        this.frontTarget.tint = 0xFFFFFF;
+        this.backTarget.tint = 0xFFFFFF;
+        let timeLine = new TimelineLite();
+        timeLine.add(TweenLite.to(this.scale, 0.2, {delay:0.1, x:0,y:0, ease:'easeInBack',onComplete:function(){
+                this.frontTarget.tint = 0x0000FF;
+                this.backTarget.tint = 0xFF0000;
+            },
+            onCompleteScope:this
+        })
+        )
+        timeLine.add(TweenLite.to(this.scale, 0.75, {x:1,y:1, ease:'easeOutElastic'}))
+        //  onComplete:function(){
+        //     // console.log('UPDATE AGAIN');
+        //     // this.updateable = true;
+        // }, onStart:function(){
+        //     this.scale.set(0);
+        //     this.frontTarget.tint = 0x0000FF;
+        //     this.backTarget.tint = 0xFF0000;
+        //     // console.log('UPDATE AGAIN');
+        //     // this.updateable = true;
+        // }, onStartScope:this})
     }
     update(delta){
         if(!this.updateable){

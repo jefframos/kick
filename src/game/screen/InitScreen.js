@@ -120,6 +120,7 @@ export default class InitScreen extends Screen{
 		console.log('START GAME');
 		GAME_DATA.lifes = 3;
 		GAME_DATA.points = 0;
+		this.spotedBall = null;
         this.getNewBall();
         this.uiManager.createLifes();
         this.levelManager.createObstacles();

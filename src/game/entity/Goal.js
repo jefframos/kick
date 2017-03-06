@@ -13,13 +13,13 @@ export default class Goal extends PIXI.Container {
     }
     build(){
 
-    	this.goal = PIXI.Sprite.fromImage('assets/images/goal.png');//new PIXI.Graphics().beginFill(0x023548).drawRect(-500,-400,1000, 400);
-		// this.addChild(this.goal);
-		this.goal.anchor.set(0.5, 0.9)
-		// this.goal.scale.set(1.3)
-		this.goal.x = config.width / 2 + 16
-		this.goal.y = 150
-		this.goal.alpha = 0.5
+  //   	this.goal = PIXI.Sprite.fromImage('assets/images/goal.png');//new PIXI.Graphics().beginFill(0x023548).drawRect(-500,-400,1000, 400);
+		// // this.addChild(this.goal);
+		// this.goal.anchor.set(0.5, 0.9)
+		// // this.goal.scale.set(1.3)
+		// this.goal.x = config.width / 2 + 16
+		// this.goal.y = 150
+		// this.goal.alpha = 0.5
 
 		this.goleira = new PIXI.Container();
 		this.addChild(this.goleira);

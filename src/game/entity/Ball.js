@@ -49,11 +49,13 @@ export default class Ball extends PIXI.Container {
         this.container.addChild(this.spriteContainer);
 
         // if(this.radius > 20){
-
-        this.sprite = PIXI.Sprite.fromImage('assets/images/onion.png');
+        let texture = PIXI.Texture.fromFrame('ball.png');
+        this.sprite = new PIXI.Sprite(texture)
         this.spriteContainer.addChild(this.sprite);
         this.sprite.anchor.set(0.5);
-        this.sprite.scale.set(this.radius / 150);
+        this.sprite.width = this.radius * 2
+        this.sprite.height = this.radius * 2
+        // this.sprite.scale.set(this.radius / this.sprite.width);
         // }
 
         this.shooting = false;
@@ -71,7 +73,7 @@ export default class Ball extends PIXI.Container {
         }
 
         if(!this.trail){
-            this.trail = new Trail(this.game.ingameUIContainer, 20, PIXI.Texture.from('assets/images/rainbow-flag2.jpg'));
+            this.trail = new Trail(this.game.ingameUIContainer, 20, PIXI.Texture.from('assets/images/trail1.jpg'));
             this.trail.trailTick = 10;
             this.trail.speed = 0.1;
             this.trail.frequency = 0.001
@@ -122,7 +124,7 @@ export default class Ball extends PIXI.Container {
         this.verticalVelocity.y += this.shootYSpeed * force2;
         this.spriteDirection = 1;
         this.shooting = true;
-        this.killTimer = 99999994;
+        this.killTimer = 6;
         //this.sprite.y = 0;
     }
     stopMiddle() {
@@ -312,11 +314,14 @@ export default class Ball extends PIXI.Container {
         }
         // console.log(this.killTimer);
         // if(this.shooting){
-            this.killTimer -= delta;
-            if(this.killTimer <= 0){
-                this.killBall();
-                
-            }
+        if(this.x < -200 || this.x > config.width + 200){
+            this.killTimer = 0;
+        }
+        this.killTimer -= delta;
+        if(this.killTimer <= 0){
+            this.killBall();
+            
+        }
         // }
         //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
 

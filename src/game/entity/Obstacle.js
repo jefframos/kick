@@ -78,12 +78,19 @@ export default class Obstacle extends PIXI.Container {
 
 
 
-        this.shape = new PIXI.Graphics();
-        this.shape.beginFill(Math.random() * 0xFFFFFF);
-        this.shape.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
-        this.shape.y = this.radius/2;
-        this.container.addChild(this.shape);
+        // this.shape = new PIXI.Graphics();
+        // this.shape.beginFill(Math.random() * 0xFFFFFF);
+        // this.shape.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
+        // this.shape.y = this.radius/2;
+        // this.container.addChild(this.shape);
 
+        let obs = ['grizz-bear-win.png', 'darwin-win.png','finn-win.png','marceline-win.png','rigby-win.png']
+
+        this.shape = PIXI.Sprite.fromFrame(obs[Math.floor(Math.random() * obs.length)]);
+        this.shape.anchor.set(0.5, 0.9);
+        this.container.addChild(this.shape);
+        this.shape.height = this.bounds.height
+        this.shape.scale.x = this.shape.scale.y
         // this.shape.alpha = 0.5
 
         this.shape.scale.set(1.5, 0);

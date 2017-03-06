@@ -24,7 +24,7 @@ export default class GameData{
 
 		let tex;
 
-		tex = PIXI.Texture.fromImage('./assets/images/torcida.jpg');
+		tex = PIXI.Texture.fromFrame('torcida.jpg');
 		this.sky = new PIXI.extras.TilingSprite(tex, config.width + 100, config.height + 100);//new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
 		this.backgroundContaier.addChild(this.sky)
 		this.sky.tileScale.x = 0.25
@@ -33,7 +33,7 @@ export default class GameData{
 		this.sky.y = -50
 
 
-		tex = PIXI.Texture.fromImage('./assets/images/grass1.png');
+		tex = PIXI.Texture.fromFrame('grass1.png');
 		this.field = new PIXI.extras.TilingSprite(tex, config.width  + 100, config.height  + 100);//new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
 		this.backgroundContaier.addChild(this.field)
 		this.field.tileScale.x = 0.25/2

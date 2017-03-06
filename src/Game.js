@@ -59,8 +59,12 @@ export default class Game {
 			for(let i = 0; i < this.stage.children.length; i++){
 				if(this.stage.children[i].update){
 					// this.stage.children[i].update(this.dt / this.frameskip);
-					this.stage.children[i].update(this.dt);
-					// this.stage.children[i].update(1/60);
+					// this.stage.children[i].update(this.dt);
+					if(this.dt <= 1/30){
+						this.stage.children[i].update(1/60);
+					}else{
+						this.stage.children[i].update(1/30);
+					}
 				}
 			}
 		}

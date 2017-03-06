@@ -46,7 +46,8 @@ export default class UIManager extends PIXI.Container {
 		}
 		this.lifesUI = [];
 		for (var i = 0; i < GAME_DATA.lifes; i++) {
-			let hearthUI = PIXI.Sprite.fromImage('assets/images/onion.png');
+			let hearthUI = PIXI.Sprite.fromFrame('ball.png');
+			
 			this.lifesUI.push(hearthUI)
 			hearthUI.x = config.width - 25 * i - 20;
 			hearthUI.y = 25;
