@@ -38147,7 +38147,7 @@
 				this.updateList = [];
 				this.targets = [];
 				this.currentBalls = [];
-				GAME_DATA.lifes = 1;
+				GAME_DATA.lifes = 3;
 				this.currentTrail = false;
 	
 				this.goleira = new _Goal2.default(this);
@@ -38217,7 +38217,7 @@
 			value: function startGame() {
 	
 				console.log('START GAME');
-				GAME_DATA.lifes = 1;
+				GAME_DATA.lifes = 3;
 				GAME_DATA.points = 0;
 				this.getNewBall();
 				this.uiManager.createLifes();
@@ -38232,10 +38232,10 @@
 			key: 'getNewBall',
 			value: function getNewBall() {
 				console.log('BALLLLLLZ');
-				// if(this.spotedBall && !this.spotedBall.shooting){
-				// 	console.log('spot',this.spotedBall.shooting);
-				// 	return
-				// }
+				if (this.spotedBall && !this.spotedBall.shooting) {
+					// 	console.log('spot',this.spotedBall.shooting);
+					return;
+				}
 				var ball = this.levelManager.getBall();
 				this.spotedBall = ball;
 				this.currentBalls.push(this.spotedBall);
@@ -38443,7 +38443,8 @@
 				// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
 				angle += 90 / 180 * 3.14;
 	
-				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.022;
+				//0.022
+				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.032;
 	
 				this.uiManager.debug2.text = force;
 	
@@ -47283,7 +47284,7 @@
 							x: entity.x,
 							y: entity.y + entity.spriteContainer.y * entity.scale.y
 						};
-						// this.game.debugBall(ballPosition, entity);
+						this.game.debugBall(ballPosition, entity);
 						this.game.uiManager.textLabel.text = ''; //'NOT GOAL'
 						var collisions = [];
 						var topStickPoint = this.game.goleira.getTopStick();
@@ -47328,6 +47329,10 @@
 						var circle = { x: ballPosition.x, y: ballPosition.y, r: entity.getRadius() * 0.9 };
 						var rect = this.game.goleira.getGoalRect();
 						var onGoal = this.rectCircleColliding(circle, rect);
+	
+						// this.game.debugGoal(rect)
+	
+						// this.debugBall()
 	
 						if (onGoal && entity.velocity.y < 0) {
 							var points = 0;
@@ -47459,6 +47464,8 @@
 						// console.log('HEAD COLLIDE AQUI', headDistPercent, entity.verticalVelocity.y);
 						entity.velocity.y *= headDistPercent * 2;
 						entity.verticalVelocity.y *= headDistPercent * 5;
+						//entity.velocity.y = Math.abs(entity.velocity.y/2);
+						//entity.verticalVelocity.y = Math.abs(entity.verticalVelocity.y/2);
 						entity.update(1 / 60);
 					} else {
 						entity.velocity.y = Math.cos(angle) * entity.velocity.y + entity.velocity.y * distPercent; //+ entity.velocity.y;
@@ -47532,12 +47539,9 @@
 					//TROCAR ENTRE SENOS E COSSENOS AQUI
 					entity.velocity.x = -Math.cos(angle) * (entity.velocity.x * 2); // * percent);
 					// angle -= 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
-					entity.velocity.y = Math.sin(angle) * Math.abs(entity.velocity.y * 2) + entity.velocity.y; // * percent);
-					//entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
-					// console.log('2', Math.sin(angle), entity.velocity.y);	
-					// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
-					// console.log('angle --', angle * 180 / 3.14);
-					// console.log('-----');	
+					entity.velocity.y = Math.sin(angle) * Math.abs(entity.velocity.y * 2) + entity.velocity.y;
+	
+					// if(entity)
 				}
 			}
 		}, {
@@ -48091,7 +48095,8 @@
 			key: 'updateObjectScale',
 			value: function updateObjectScale(object, height) {
 				var perspectiveFactor = 1 - object.y / height;
-				object.scale.set(1.1 - perspectiveFactor * 1.1);
+				var test = 0.95;
+				object.scale.set(test - perspectiveFactor * test);
 			}
 		}]);
 	
@@ -48314,7 +48319,7 @@
 	        _this.virtualVelocity = { x: 0, y: 0 };
 	        _this.velocity = { x: 0, y: 0 };
 	        _this.speed = { x: 230, y: 230 };
-	        _this.friction = { x: 275, y: 200 };
+	        _this.friction = { x: 250, y: 200 };
 	        _this.standardFriction = { x: 275, y: 200 };
 	        // this.rotationFriction = {x:100,y:200};
 	        _this.rotationInfluence = { x: 0, y: 0 };
@@ -48396,10 +48401,10 @@
 	            // this.ball.rotation += angleColision// * 0.5;
 	            // console.log(force);
 	            this.rotationSpeed = angSpeed * 1.5; // * 0.5;
-	            if (this.rotationSpeed > 1.2) {
-	                this.rotationSpeed = 1.2;
-	            } else if (this.rotationSpeed < -1.2) {
-	                this.rotationSpeed = -1.2;
+	            if (this.rotationSpeed > 1.4) {
+	                this.rotationSpeed = 1.4;
+	            } else if (this.rotationSpeed < -1.4) {
+	                this.rotationSpeed = -1.4;
 	            }
 	            // console.log(this.rotationSpeed, force);
 	            this.velocity.x = 0;
@@ -48410,14 +48415,14 @@
 	            this.virtualVelocity.x = 0;
 	            this.virtualVelocity.y = 0;
 	
-	            this.rotationInfluence.x = this.rotationSpeed * 850;
+	            this.rotationInfluence.x = this.rotationSpeed * 1000;
 	            this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
 	
 	            var force2 = force * 0.35;
 	
 	            console.log('FORCE', force);
-	            if (force < 4.5) {
-	                force2 += 4.5 / force - 0.1;
+	            if (force < 5) {
+	                force2 += 5 / force - 0.1;
 	            }
 	
 	            this.verticalVelocity.y += this.shootYSpeed * force2;
@@ -48579,6 +48584,8 @@
 	
 	                    if (!this.shooting) {
 	                        this.game.reset();
+	                    } else {
+	                        this.game.getNewBall();
 	                    }
 	                }, onCompleteScope: this });
 	        }
@@ -48891,10 +48898,10 @@
 			}, {
 					key: 'getGoalRect',
 					value: function getGoalRect() {
-							var www = 10;
-							var hhh = 6;
+							var www = 14;
+							var hhh = 9;
 							var rect = {
-									x: this.x - this.goleira.width / 2 * this.scale.x + www,
+									x: this.x - this.goleira.width / 2 * this.scale.x + www - 1,
 									y: this.y - this.goleira.height * this.scale.y + hhh,
 									w: this.goleira.width * this.scale.x - www * 2 + 4,
 									h: this.goleira.height * this.scale.y - hhh

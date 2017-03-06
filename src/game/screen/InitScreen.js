@@ -54,7 +54,7 @@ export default class InitScreen extends Screen{
 		this.updateList = [];
 		this.targets = [];
 		this.currentBalls = [];
-		GAME_DATA.lifes = 1;
+		GAME_DATA.lifes = 3;
 		this.currentTrail = false;
 
 		this.goleira = new Goal(this)
@@ -118,7 +118,7 @@ export default class InitScreen extends Screen{
 	startGame(){
 
 		console.log('START GAME');
-		GAME_DATA.lifes = 1;
+		GAME_DATA.lifes = 3;
 		GAME_DATA.points = 0;
         this.getNewBall();
         this.uiManager.createLifes();
@@ -131,10 +131,10 @@ export default class InitScreen extends Screen{
 	}
 	getNewBall(){
 		console.log('BALLLLLLZ');
-		// if(this.spotedBall && !this.spotedBall.shooting){
+		if(this.spotedBall && !this.spotedBall.shooting){
 		// 	console.log('spot',this.spotedBall.shooting);
-		// 	return
-		// }
+			return
+		}
 		let ball = this.levelManager.getBall();
 		this.spotedBall = ball;
 		this.currentBalls.push(this.spotedBall)
@@ -330,8 +330,8 @@ export default class InitScreen extends Screen{
 		// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
 		angle += 90 / 180 * 3.14;
 
-
-        let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.022
+//0.022
+        let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.032
 
         this.uiManager.debug2.text = force;
        

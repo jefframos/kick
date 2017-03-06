@@ -9,7 +9,7 @@ export default class Ball extends PIXI.Container {
         this.virtualVelocity = {x:0,y:0};
         this.velocity = {x:0,y:0};
         this.speed = {x:230,y:230};
-        this.friction = {x:275,y:200};
+        this.friction = {x:250,y:200};
         this.standardFriction = {x:275,y:200};
         // this.rotationFriction = {x:100,y:200};
         this.rotationInfluence = {x:0,y:0};
@@ -94,10 +94,10 @@ export default class Ball extends PIXI.Container {
         // this.ball.rotation += angleColision// * 0.5;
         // console.log(force);
         this.rotationSpeed = angSpeed * 1.5// * 0.5;
-        if(this.rotationSpeed > 1.2){
-            this.rotationSpeed = 1.2
-        }else if(this.rotationSpeed < -1.2){
-            this.rotationSpeed = -1.2
+        if(this.rotationSpeed > 1.4){
+            this.rotationSpeed = 1.4
+        }else if(this.rotationSpeed < -1.4){
+            this.rotationSpeed = -1.4
         }
         // console.log(this.rotationSpeed, force);
         this.velocity.x = 0;
@@ -109,14 +109,14 @@ export default class Ball extends PIXI.Container {
         this.virtualVelocity.y = 0;
 
 
-        this.rotationInfluence.x = this.rotationSpeed * 850;
+        this.rotationInfluence.x = this.rotationSpeed * 1000;
         this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
 
         let force2 = force*0.35
 
         console.log('FORCE', force);
-        if(force < 4.5){
-            force2 += 4.5 / force - 0.1
+        if(force < 5){
+            force2 += 5 / force - 0.1
         }
 
         this.verticalVelocity.y += this.shootYSpeed * force2;
@@ -259,6 +259,8 @@ export default class Ball extends PIXI.Container {
 
             if(!this.shooting){
                 this.game.reset();
+            }else{
+                this.game.getNewBall();
             }
 
         }, onCompleteScope:this})

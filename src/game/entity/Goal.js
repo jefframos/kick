@@ -115,10 +115,10 @@ export default class Goal extends PIXI.Container {
 		return {p1:p1, p2:p2}
     }
     getGoalRect(){
-    	let www = 10
-		let hhh = 6
+    	let www = 14
+		let hhh = 9
 		let rect = {
-			x:this.x- this.goleira.width/2 * this.scale.x + www,
+			x:this.x- this.goleira.width/2 * this.scale.x + www - 1,
 			y:this.y- this.goleira.height * this.scale.y + hhh,
 			w:this.goleira.width * this.scale.x - www *2 + 4,
 			h:this.goleira.height * this.scale.y - hhh

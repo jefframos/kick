@@ -25,7 +25,7 @@ export default class Collisions{
 					x: entity.x,
 					y: entity.y + entity.spriteContainer.y * entity.scale.y
 				}
-				// this.game.debugBall(ballPosition, entity);
+				this.game.debugBall(ballPosition, entity);
 				this.game.uiManager.textLabel.text = ''//'NOT GOAL'
 				let collisions = [];
 				let topStickPoint = this.game.goleira.getTopStick();
@@ -67,6 +67,9 @@ export default class Collisions{
 				let rect = this.game.goleira.getGoalRect()
 				let onGoal = this.rectCircleColliding(circle, rect);
 
+				// this.game.debugGoal(rect)
+
+				// this.debugBall()
 
 				if(onGoal && entity.velocity.y < 0){
 					let points = 0;
@@ -202,6 +205,8 @@ console.log('finished on coll');
 				// console.log('HEAD COLLIDE AQUI', headDistPercent, entity.verticalVelocity.y);
 				entity.velocity.y *= (headDistPercent * 2);
 				entity.verticalVelocity.y *= (headDistPercent  * 5)
+				//entity.velocity.y = Math.abs(entity.velocity.y/2);
+				//entity.verticalVelocity.y = Math.abs(entity.verticalVelocity.y/2);
 				entity.update(1/60)
 			}else{
 				entity.velocity.y = Math.cos(angle) * entity.velocity.y  + (entity.velocity.y * distPercent) //+ entity.velocity.y;
@@ -274,12 +279,9 @@ console.log('finished on coll');
 			//TROCAR ENTRE SENOS E COSSENOS AQUI
 			entity.velocity.x = -Math.cos(angle) * (entity.velocity.x*2)// * percent);
 			// angle -= 180 / 180 * 3.14;//GAMBIARRAS AQUI, QUASE LAHlo
-			entity.velocity.y = Math.sin(angle) *  Math.abs((entity.velocity.y * 2)) + entity.velocity.y// * percent);
-			//entity.verticalVelocity.y = Math.cos(angle) * (entity.velocity.y * 20 / percent)//(entity.shootYSpeed * percent);
-			// console.log('2', Math.sin(angle), entity.velocity.y);	
-			// console.log('1',entity.velocity.y, entity.verticalVelocity.y);	
-			// console.log('angle --', angle * 180 / 3.14);
-			// console.log('-----');	
+			entity.velocity.y = Math.sin(angle) *  Math.abs((entity.velocity.y * 2)) + entity.velocity.y
+
+			// if(entity)
 		}
 	}
 
