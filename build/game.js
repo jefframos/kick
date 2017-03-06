@@ -47103,7 +47103,7 @@
 	                        // this.shape.y = this.radius/2;
 	                        // this.container.addChild(this.shape);
 	
-	                        var obs = ['grizz-bear-win.png', 'darwin-win.png', 'finn-win.png', 'marceline-win.png', 'rigby-win.png'];
+	                        var obs = ['grizz-bear-win.png', 'darwin-win.png', 'finn-win.png', 'marceline-win.png', 'rigby-win.png', 'jake-win.png', 'moredecai-win.png'];
 	
 	                        this.shape = PIXI.Sprite.fromFrame(obs[Math.floor(Math.random() * obs.length)]);
 	                        this.shape.anchor.set(0.5, 0.9);
@@ -48284,7 +48284,7 @@
 	
 			lvl = [];
 			lvl.push({ x: _config2.default.width / 2 - 100, y: 250, w: 50, h: 380 });
-			lvl.push({ x: _config2.default.width / 2 - 60, y: 250, w: 50, h: 370 });
+			lvl.push({ x: _config2.default.width / 2 - 60, y: 260, w: 50, h: 370 });
 			lvl.push({ x: _config2.default.width / 2 - 20, y: 250, w: 50, h: 400 });
 			lvl.push({ x: _config2.default.width / 2 + 80, y: 160, w: 60, h: 410 });
 			this.levels.push(lvl);
@@ -48299,9 +48299,20 @@
 			this.levels.push(lvl);
 	
 			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 + 30, y: 280, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2 - 110, y: 230, w: 50, h: 410 });
+			this.levels.push(lvl);
+	
+			lvl = [];
 			lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
 			lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
 			lvl.push({ x: _config2.default.width / 2, y: 230, w: 60, h: 360 });
+			this.levels.push(lvl);
+	
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 + 100, y: 330, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2 - 100, y: 160, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2, y: 170, w: 60, h: 360 });
 			this.levels.push(lvl);
 		}
 	

@@ -84,7 +84,7 @@ export default class Obstacle extends PIXI.Container {
         // this.shape.y = this.radius/2;
         // this.container.addChild(this.shape);
 
-        let obs = ['grizz-bear-win.png', 'darwin-win.png','finn-win.png','marceline-win.png','rigby-win.png']
+        let obs = ['grizz-bear-win.png', 'darwin-win.png','finn-win.png','marceline-win.png','rigby-win.png','jake-win.png','moredecai-win.png']
 
         this.shape = PIXI.Sprite.fromFrame(obs[Math.floor(Math.random() * obs.length)]);
         this.shape.anchor.set(0.5, 0.9);
