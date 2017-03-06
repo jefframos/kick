@@ -122,7 +122,7 @@ export default class Ball extends PIXI.Container {
         this.verticalVelocity.y += this.shootYSpeed * force2;
         this.spriteDirection = 1;
         this.shooting = true;
-        this.killTimer = 4;
+        this.killTimer = 99999994;
         //this.sprite.y = 0;
     }
     stopMiddle() {
@@ -145,6 +145,7 @@ export default class Ball extends PIXI.Container {
         this.obstacleCollided = [];
         this.shooting = false;
         this.killed = false;
+        this.collideObstacle = false;
 
         this.collided = false;
 
@@ -162,7 +163,7 @@ export default class Ball extends PIXI.Container {
 
         this.y = config.height - 200;
 
-        if(Math.random() < 0.5){
+        if(Math.random() < 10.5){
             this.verticalVelocity = {x:0, y:0};
             // this.spriteContainer.y = - Math.random() * 80;
             this.spriteContainer.y = - Math.random() * 250;
@@ -193,6 +194,8 @@ export default class Ball extends PIXI.Container {
         // this.sprite.scale.set(1)
         this.startUpdate();
 
+        this.killTimer = 99999;
+
         
 
         // console.log(this.verticalVelocity);
@@ -203,7 +206,6 @@ export default class Ball extends PIXI.Container {
     }
     stickCollide() {
         this.collided = true;
-
     }
     getRadius() {
         // this.standardScale
@@ -218,20 +220,11 @@ export default class Ball extends PIXI.Container {
     }
     touchGround ( delta ) {
 
-        // console.log('touchGround');
-
-        // console.log('1',this.verticalVelocity.y);
         if(this.onGoal){
             this.verticalVelocity.y = -this.verticalVelocity.y/3
         }else{
             this.verticalVelocity.y = -this.verticalVelocity.y/1.7
         }
-        // console.log('2',this.verticalVelocity.y);
-
-        // this.velocity.x *= 0.9
-
-        // console.log(this.verticalVelocity.y);
-
         if(Math.abs(this.verticalVelocity.y) < 800){
             // console.log(this.verticalVelocity);
             this.verticalVelocity.y = 0;
@@ -240,9 +233,17 @@ export default class Ball extends PIXI.Container {
         }
         this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
     }
+    resetCollisions ( ) {
+        this.killTimer = 1;
+        this.collideObstacle = false;
+    }
+    inObstacle ( ) {
+        this.killTimer = 3;
+        this.collideObstacle = true;
+    }
     killBall ( ) {
         // this.killTimer = 99999;
-        // console.log('kill ball');
+        console.log('kill ball');
         if(this.trail){
             this.trail.reset();
         }
@@ -251,6 +252,10 @@ export default class Ball extends PIXI.Container {
 
         TweenLite.to(this.spriteContainer.scale, 0.2, {x:0,y:0, onComplete:function(){
             this.killed = true;
+
+            if(this.collideObstacle){
+                this.game.missShoot();
+            }
 
             if(!this.shooting){
                 this.game.reset();

@@ -42,6 +42,10 @@ export default class Goal extends PIXI.Container {
 		// this.goleira.addChild(this.trave4);
 
     }
+    show(){
+    	this.goleira.scale.set(0);
+    	TweenLite.to(this.goleira.scale, 1, {x:1, y:1, ease:'easeOutElastic'})
+    }
     reset(){
     	for (var i = this.targets.length - 1; i >= 0; i--) {
     		if(this.targets[i].parent){

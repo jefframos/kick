@@ -20,49 +20,16 @@ import UIManager from '../ui/UIManager';
 export default class InitScreen extends Screen{	
 	constructor(label){
 		super(label);
+
+		
 	}
 	build(){
+
 		super.build();
-
-		this.backgroundContaier = new PIXI.Container();
-		this.addChild(this.backgroundContaier);
-
-		this.background = new PIXI.Graphics();
-		this.background.beginFill(0xababab);
-	    this.background.drawRect( 0, 0, config.width, config.height);
-		this.backgroundContaier.addChild(this.background);
-
-		let tex;
-
-		tex = PIXI.Texture.fromImage('./assets/images/torcida.jpg');
-		this.sky = new PIXI.extras.TilingSprite(tex, config.width + 100, config.height + 100);//new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
-		this.backgroundContaier.addChild(this.sky)
-		this.sky.tileScale.x = 0.25
-		this.sky.tileScale.y = 0.25
-		this.sky.x = -50
-		this.sky.y = -50
-
-
-		tex = PIXI.Texture.fromImage('./assets/images/grass1.png');
-		this.field = new PIXI.extras.TilingSprite(tex, config.width  + 100, config.height  + 100);//new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
-		this.backgroundContaier.addChild(this.field)
-		this.field.tileScale.x = 0.25/2
-		this.field.tileScale.y = 0.25/2
-		this.field.y = 150;
-		this.field.x = -50
-
 
 		this.gameContainer = new PIXI.Container();
 		this.addChild(this.gameContainer);
-
-		this.updateList = [];
-		this.targets = [];
-		this.currentBalls = [];
-		this.lifes = 5;
-
-
-        // this.currentBalls.push(this.levelManager.getBall());
-
+		
         this.ingameUIContainer = new PIXI.Container();        
 		this.addChild(this.ingameUIContainer);
 
@@ -71,55 +38,36 @@ export default class InitScreen extends Screen{
 
 		this.uiManager = new UIManager(this);
 		this.uiManager.build();
+		this.collisions = new Collisions(this);
+		this.viewManager = new ViewManager();
+		this.levelManager = new LevelManager(this);
+		this.trailManager = new TrailManager(this.ingameUIContainer);
+
+		this.pixelate = new PIXI.filters.PixelateFilter()
+		this.pixelate.size.x = 4;
+		this.pixelate.size.y = 4;
+		this.gameContainer.filters = [this.pixelate]
+		// this.ingameUIContainer.filters = [this.pixelate]
+		// this.outgameUIContainer.filters = [this.pixelate]
 
 
-		
-
+		this.updateList = [];
+		this.targets = [];
+		this.currentBalls = [];
+		GAME_DATA.lifes = 1;
 		this.currentTrail = false;
-
 
 		this.goleira = new Goal(this)
 		this.goleira.build();
 		this.goleira.x = config.width / 2
 		this.goleira.y = 150
 
-		this.gameContainer.addChild(this.goleira)
-
-		
-
-		this.collisions = new Collisions(this);
-		this.viewManager = new ViewManager();
-		this.levelManager = new LevelManager(this);
-		this.trailManager = new TrailManager(this.ingameUIContainer);
-
-        // this.updateList.push(this.currentBalls)
-        this.add(this.goleira)
-
-
-        
-		// this.startGame();
-		
-
-        this.button = new PIXI.Container();
-        this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
-        this.button.addChild(this.shape)
-        this.outgameUIContainer.addChild(this.button)
-        this.button.x = config.width / 2;
-        this.button.y = config.height / 2;
-        this.button.interactive = true;
-
+		this.gameContainer.addChild(this.goleira);
+        this.add(this.goleira);
+        this.goleira.addTargets();
+        this.goleira.show();
 		this.addEvents();
-
-		this.pixelate = new PIXI.filters.PixelateFilter()
-		this.pixelate.size.x = 4;
-		this.pixelate.size.y = 4;
-		this.gameContainer.filters = [this.pixelate]
-		this.ingameUIContainer.filters = [this.pixelate]
-		this.ingameUIContainer.filters = [this.pixelate]
-		this.outgameUIContainer.filters = [this.pixelate]
-
-		
-
+		this.startGame();
 	}
 	remove(entity){
 		for (var i = this.updateList.length - 1; i >= 0; i--) {
@@ -140,9 +88,9 @@ export default class InitScreen extends Screen{
 	}
 	
 	gameOver(){
-        this.button.visible = true;
-        this.button.scale.set(0);
-        TweenLite.to(this.button.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'})
+        // this.button.visible = true;
+        // this.button.scale.set(0);
+        // TweenLite.to(this.button.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'})
 
 		for (var i = this.levelManager.obstacles.length - 1; i >= 0; i--) {
 			if(this.levelManager.obstacles[i].parent){
@@ -162,23 +110,31 @@ export default class InitScreen extends Screen{
 
 		this.gameStarted = false;
 
+		this.screenManager.change('StartScreen')
+
 		// this.paused = true;
 
 	}
 	startGame(){
-		this.lifes = 5;
-		this.points = 0;
+
+		console.log('START GAME');
+		GAME_DATA.lifes = 1;
+		GAME_DATA.points = 0;
         this.getNewBall();
         this.uiManager.createLifes();
         this.levelManager.createObstacles();
-        this.levelManager.addTargets();
-        TweenLite.to(this.button.scale, 0.2, {x:0, y:0, ease:'easeInBack'})
+        // this.levelManager.addTargets();
+        // TweenLite.to(this.button.scale, 0.2, {x:0, y:0, ease:'easeInBack'})
         // this.button.visible = false;
         this.gameStarted = true;
         // this.paused = false;
 	}
 	getNewBall(){
-		console.log('new ball');
+		console.log('BALLLLLLZ');
+		// if(this.spotedBall && !this.spotedBall.shooting){
+		// 	console.log('spot',this.spotedBall.shooting);
+		// 	return
+		// }
 		let ball = this.levelManager.getBall();
 		this.spotedBall = ball;
 		this.currentBalls.push(this.spotedBall)
@@ -187,9 +143,7 @@ export default class InitScreen extends Screen{
 		if(!this.gameStarted){
 			return
 		}
-		setTimeout(function() {
-			this.getNewBall();
-		}.bind(this), 1500);
+		this.finishedBall();
 		console.log('reset');
 		this.paused = false;		
 		this.colliding = false;
@@ -207,19 +161,28 @@ export default class InitScreen extends Screen{
 		this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x,ballPosition.y, entity.getRadius());
 		this.addChild(this.testeBall);
 	}
-	
-	
+
+	finishedBall(timer = 0){
+// console.log('FINIZED');
+		setTimeout(function() {
+			this.getNewBall();
+		}.bind(this), timer);
+	}
+
 	updateGame(){
 		this.uiManager.updateLifes();
-		if(this.lifes){
+		if(GAME_DATA.lifes){
 			this.levelManager.createObstacles();
 		}
 	}
 	missShoot(){
-		this.lifes -- ;
+		if(GAME_DATA.lifes <= 0){
+			return
+		}
+		GAME_DATA.lifes -- ;
 		this.uiManager.updateLifes();
 
-		if(this.lifes <= 0){
+		if(GAME_DATA.lifes <= 0){
 			this.gameStarted = false;
 			setTimeout(function() {
 				this.removeBalls();
@@ -276,8 +239,7 @@ export default class InitScreen extends Screen{
 					for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
 						if(this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])){
 							this.shake();
-							collideObs = this.currentBalls[i];				
-							//alert('collide')		
+							collideObs = this.currentBalls[i];	
 						}
 					}
 				}
@@ -296,12 +258,17 @@ export default class InitScreen extends Screen{
 				}
 			}
 
-			if(collideObs){// && collideObs.velocity.y <= 10){
+			if(collideObs && collideObs.velocity.y > 10){
 				collideObs.stickCollide();
+				// collideObs.inObstacle();
 				this.missShoot();
+
+				this.finishedBall(500);
 				this.updateGame();
-				console.log('collide', collideObs.virtualVelocity.y)
 				collideObs = false;
+
+			}else if(collideObs){
+				collideObs.inObstacle();
 			}
 		}
 
@@ -309,11 +276,11 @@ export default class InitScreen extends Screen{
 
 	}
 	goal(goals = 1){
-		this.points += goals;
+		GAME_DATA.points += goals;
 		this.uiManager.updateLifes();
 	}
 	noGoal(){
-		this.lifes --;
+		GAME_DATA.lifes --;
 		this.uiManager.updateLifes();
 	}
 
@@ -364,13 +331,13 @@ export default class InitScreen extends Screen{
 		angle += 90 / 180 * 3.14;
 
 
-        let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025
+        let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.022
 
         this.uiManager.debug2.text = force;
        
         entity.shoot(force, angle, angleColision);
 
-        this.reset();
+        // this.reset();
 
         this.paused = true;
         setTimeout(function() {this.paused = false;}.bind(this), 100);
@@ -450,14 +417,14 @@ export default class InitScreen extends Screen{
 		this.ingameUIContainer.interactive = false;
 		this.ingameUIContainer.off('touchstart').off('mousedown');
 		this.ingameUIContainer.off('touchend').off('mouseup');
-		this.button.off('touchstart').off('mousedown');
+		// this.button.off('touchstart').off('mousedown');
 	}
 	addEvents(){
 		this.removeEvents();
 		this.ingameUIContainer.interactive = true;
 		this.ingameUIContainer.on('mousedown', this.onTapDown.bind(this)).on('touchstart', this.onTapDown.bind(this));
 		this.ingameUIContainer.on('mouseup', this.onTapUp.bind(this)).on('touchend', this.onTapUp.bind(this));
-		this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+		// this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 	}
 	shake(force = 0.5, steps = 4, time = 0.4){
 		let timelinePosition = new TimelineLite();

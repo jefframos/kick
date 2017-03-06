@@ -27,14 +27,15 @@ export default class UIManager extends PIXI.Container {
 
     }
     updateLifes(){
-		this.textScore.text = this.game.points;
+		this.textScore.text = GAME_DATA.points;
 		for (var i = this.lifesUI.length - 1; i >= 0; i--) {
-			if((i + 1) > this.lifes){
+			if((i + 1) > GAME_DATA.lifes){
 				this.lifesUI[i].tint = 0x000000;
 			}
 		}
 	}
     createLifes(){
+    	console.log('LIFES');
 		this.textScore.text = 0;
 		if(this.lifesUI){
 			for (var i = this.lifesUI.length - 1; i >= 0; i--) {
@@ -44,7 +45,7 @@ export default class UIManager extends PIXI.Container {
 			}
 		}
 		this.lifesUI = [];
-		for (var i = 0; i < this.lifes; i++) {
+		for (var i = 0; i < GAME_DATA.lifes; i++) {
 			let hearthUI = PIXI.Sprite.fromImage('assets/images/onion.png');
 			this.lifesUI.push(hearthUI)
 			hearthUI.x = config.width - 25 * i - 20;
@@ -53,7 +54,8 @@ export default class UIManager extends PIXI.Container {
 			hearthUI.width = 20
 			hearthUI.height = 20
 			
-			this.addChild(hearthUI)
+
+			this.game.ingameUIContainer.addChild(hearthUI)
 		}
 	}
 }

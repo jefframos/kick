@@ -37716,6 +37716,10 @@
 	
 	var _Game2 = _interopRequireDefault(_Game);
 	
+	var _GameData = __webpack_require__(204);
+	
+	var _GameData2 = _interopRequireDefault(_GameData);
+	
 	var _ScreenManager = __webpack_require__(186);
 	
 	var _ScreenManager2 = _interopRequireDefault(_ScreenManager);
@@ -37724,9 +37728,13 @@
 	
 	var _InitScreen2 = _interopRequireDefault(_InitScreen);
 	
-	var _LoadScreen = __webpack_require__(202);
+	var _LoadScreen = __webpack_require__(203);
 	
 	var _LoadScreen2 = _interopRequireDefault(_LoadScreen);
+	
+	var _StartScreen = __webpack_require__(205);
+	
+	var _StartScreen2 = _interopRequireDefault(_StartScreen);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -37742,14 +37750,17 @@
 	
 		//create screen manager
 		var screenManager = new _ScreenManager2.default();
+		window.GAME_DATA = new _GameData2.default(screenManager);
 		//add screens
 		var initScreen = new _InitScreen2.default('InitScreen');
 		var loadScreen = new _LoadScreen2.default('LoadScreen');
+		var startScreen = new _StartScreen2.default('StartScreen');
 	
 		game.stage.addChild(screenManager);
 	
 		screenManager.addScreen(initScreen);
 		screenManager.addScreen(loadScreen);
+		screenManager.addScreen(startScreen);
 		//change to init screen
 		screenManager.forceChange('LoadScreen');
 	
@@ -38080,7 +38091,7 @@
 	
 	var _Goal2 = _interopRequireDefault(_Goal);
 	
-	var _UIManager = __webpack_require__(203);
+	var _UIManager = __webpack_require__(202);
 	
 	var _UIManager2 = _interopRequireDefault(_UIManager);
 	
@@ -38106,43 +38117,11 @@
 		_createClass(InitScreen, [{
 			key: 'build',
 			value: function build() {
+	
 				_get(InitScreen.prototype.__proto__ || Object.getPrototypeOf(InitScreen.prototype), 'build', this).call(this);
-	
-				this.backgroundContaier = new PIXI.Container();
-				this.addChild(this.backgroundContaier);
-	
-				this.background = new PIXI.Graphics();
-				this.background.beginFill(0xababab);
-				this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
-				this.backgroundContaier.addChild(this.background);
-	
-				var tex = void 0;
-	
-				tex = PIXI.Texture.fromImage('./assets/images/torcida.jpg');
-				this.sky = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
-				this.backgroundContaier.addChild(this.sky);
-				this.sky.tileScale.x = 0.25;
-				this.sky.tileScale.y = 0.25;
-				this.sky.x = -50;
-				this.sky.y = -50;
-	
-				tex = PIXI.Texture.fromImage('./assets/images/grass1.png');
-				this.field = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
-				this.backgroundContaier.addChild(this.field);
-				this.field.tileScale.x = 0.25 / 2;
-				this.field.tileScale.y = 0.25 / 2;
-				this.field.y = 150;
-				this.field.x = -50;
 	
 				this.gameContainer = new PIXI.Container();
 				this.addChild(this.gameContainer);
-	
-				this.updateList = [];
-				this.targets = [];
-				this.currentBalls = [];
-				this.lifes = 5;
-	
-				// this.currentBalls.push(this.levelManager.getBall());
 	
 				this.ingameUIContainer = new PIXI.Container();
 				this.addChild(this.ingameUIContainer);
@@ -38152,7 +38131,23 @@
 	
 				this.uiManager = new _UIManager2.default(this);
 				this.uiManager.build();
+				this.collisions = new _Collisions2.default(this);
+				this.viewManager = new _ViewManager2.default();
+				this.levelManager = new _LevelManager2.default(this);
+				this.trailManager = new _TrailManager2.default(this.ingameUIContainer);
 	
+				this.pixelate = new PIXI.filters.PixelateFilter();
+				this.pixelate.size.x = 4;
+				this.pixelate.size.y = 4;
+				this.gameContainer.filters = [this.pixelate];
+				// this.ingameUIContainer.filters = [this.pixelate]
+				// this.outgameUIContainer.filters = [this.pixelate]
+	
+	
+				this.updateList = [];
+				this.targets = [];
+				this.currentBalls = [];
+				GAME_DATA.lifes = 1;
 				this.currentTrail = false;
 	
 				this.goleira = new _Goal2.default(this);
@@ -38161,35 +38156,11 @@
 				this.goleira.y = 150;
 	
 				this.gameContainer.addChild(this.goleira);
-	
-				this.collisions = new _Collisions2.default(this);
-				this.viewManager = new _ViewManager2.default();
-				this.levelManager = new _LevelManager2.default(this);
-				this.trailManager = new _TrailManager2.default(this.ingameUIContainer);
-	
-				// this.updateList.push(this.currentBalls)
 				this.add(this.goleira);
-	
-				// this.startGame();
-	
-	
-				this.button = new PIXI.Container();
-				this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
-				this.button.addChild(this.shape);
-				this.outgameUIContainer.addChild(this.button);
-				this.button.x = _config2.default.width / 2;
-				this.button.y = _config2.default.height / 2;
-				this.button.interactive = true;
-	
+				this.goleira.addTargets();
+				this.goleira.show();
 				this.addEvents();
-	
-				this.pixelate = new PIXI.filters.PixelateFilter();
-				this.pixelate.size.x = 4;
-				this.pixelate.size.y = 4;
-				this.gameContainer.filters = [this.pixelate];
-				this.ingameUIContainer.filters = [this.pixelate];
-				this.ingameUIContainer.filters = [this.pixelate];
-				this.outgameUIContainer.filters = [this.pixelate];
+				this.startGame();
 			}
 		}, {
 			key: 'remove',
@@ -38215,9 +38186,9 @@
 		}, {
 			key: 'gameOver',
 			value: function gameOver() {
-				this.button.visible = true;
-				this.button.scale.set(0);
-				_gsap2.default.to(this.button.scale, 0.8, { x: 1, y: 1, ease: 'easeOutElastic' });
+				// this.button.visible = true;
+				// this.button.scale.set(0);
+				// TweenLite.to(this.button.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'})
 	
 				for (var i = this.levelManager.obstacles.length - 1; i >= 0; i--) {
 					if (this.levelManager.obstacles[i].parent) {
@@ -38237,18 +38208,22 @@
 	
 				this.gameStarted = false;
 	
+				this.screenManager.change('StartScreen');
+	
 				// this.paused = true;
 			}
 		}, {
 			key: 'startGame',
 			value: function startGame() {
-				this.lifes = 5;
-				this.points = 0;
+	
+				console.log('START GAME');
+				GAME_DATA.lifes = 1;
+				GAME_DATA.points = 0;
 				this.getNewBall();
 				this.uiManager.createLifes();
 				this.levelManager.createObstacles();
-				this.levelManager.addTargets();
-				_gsap2.default.to(this.button.scale, 0.2, { x: 0, y: 0, ease: 'easeInBack' });
+				// this.levelManager.addTargets();
+				// TweenLite.to(this.button.scale, 0.2, {x:0, y:0, ease:'easeInBack'})
 				// this.button.visible = false;
 				this.gameStarted = true;
 				// this.paused = false;
@@ -38256,7 +38231,11 @@
 		}, {
 			key: 'getNewBall',
 			value: function getNewBall() {
-				console.log('new ball');
+				console.log('BALLLLLLZ');
+				// if(this.spotedBall && !this.spotedBall.shooting){
+				// 	console.log('spot',this.spotedBall.shooting);
+				// 	return
+				// }
 				var ball = this.levelManager.getBall();
 				this.spotedBall = ball;
 				this.currentBalls.push(this.spotedBall);
@@ -38267,9 +38246,7 @@
 				if (!this.gameStarted) {
 					return;
 				}
-				setTimeout(function () {
-					this.getNewBall();
-				}.bind(this), 1500);
+				this.finishedBall();
 				console.log('reset');
 				this.paused = false;
 				this.colliding = false;
@@ -38291,20 +38268,33 @@
 				this.addChild(this.testeBall);
 			}
 		}, {
+			key: 'finishedBall',
+			value: function finishedBall() {
+				var timer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	
+				// console.log('FINIZED');
+				setTimeout(function () {
+					this.getNewBall();
+				}.bind(this), timer);
+			}
+		}, {
 			key: 'updateGame',
 			value: function updateGame() {
 				this.uiManager.updateLifes();
-				if (this.lifes) {
+				if (GAME_DATA.lifes) {
 					this.levelManager.createObstacles();
 				}
 			}
 		}, {
 			key: 'missShoot',
 			value: function missShoot() {
-				this.lifes--;
+				if (GAME_DATA.lifes <= 0) {
+					return;
+				}
+				GAME_DATA.lifes--;
 				this.uiManager.updateLifes();
 	
-				if (this.lifes <= 0) {
+				if (GAME_DATA.lifes <= 0) {
 					this.gameStarted = false;
 					setTimeout(function () {
 						this.removeBalls();
@@ -38362,7 +38352,6 @@
 								if (this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])) {
 									this.shake();
 									collideObs = this.currentBalls[i];
-									//alert('collide')		
 								}
 							}
 						}
@@ -38377,13 +38366,16 @@
 						}
 					}
 	
-					if (collideObs) {
-						// && collideObs.velocity.y <= 10){
+					if (collideObs && collideObs.velocity.y > 10) {
 						collideObs.stickCollide();
+						// collideObs.inObstacle();
 						this.missShoot();
+	
+						this.finishedBall(500);
 						this.updateGame();
-						console.log('collide', collideObs.virtualVelocity.y);
 						collideObs = false;
+					} else if (collideObs) {
+						collideObs.inObstacle();
 					}
 				}
 			}
@@ -38392,13 +38384,13 @@
 			value: function goal() {
 				var goals = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 	
-				this.points += goals;
+				GAME_DATA.points += goals;
 				this.uiManager.updateLifes();
 			}
 		}, {
 			key: 'noGoal',
 			value: function noGoal() {
-				this.lifes--;
+				GAME_DATA.lifes--;
 				this.uiManager.updateLifes();
 			}
 		}, {
@@ -38451,13 +38443,13 @@
 				// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
 				angle += 90 / 180 * 3.14;
 	
-				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.025;
+				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.022;
 	
 				this.uiManager.debug2.text = force;
 	
 				entity.shoot(force, angle, angleColision);
 	
-				this.reset();
+				// this.reset();
 	
 				this.paused = true;
 				setTimeout(function () {
@@ -38555,7 +38547,7 @@
 				this.ingameUIContainer.interactive = false;
 				this.ingameUIContainer.off('touchstart').off('mousedown');
 				this.ingameUIContainer.off('touchend').off('mouseup');
-				this.button.off('touchstart').off('mousedown');
+				// this.button.off('touchstart').off('mousedown');
 			}
 		}, {
 			key: 'addEvents',
@@ -38564,7 +38556,7 @@
 				this.ingameUIContainer.interactive = true;
 				this.ingameUIContainer.on('mousedown', this.onTapDown.bind(this)).on('touchstart', this.onTapDown.bind(this));
 				this.ingameUIContainer.on('mouseup', this.onTapUp.bind(this)).on('touchend', this.onTapUp.bind(this));
-				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+				// this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 			}
 		}, {
 			key: 'shake',
@@ -47408,7 +47400,10 @@
 							this.game.shake();
 						}
 						this.game.colliding = true;
+						entity.resetCollisions();
 	
+						console.log('finished on coll');
+						this.game.finishedBall(750);
 						this.game.updateGame();
 					}
 				}
@@ -48176,13 +48171,13 @@
 			this.levels.push(lvl);
 		}
 	
-		_createClass(LevelManager, [{
-			key: 'addTargets',
-			value: function addTargets() {
+		// addTargets(){
 	
-				this.game.goleira.addTargets();
-			}
-		}, {
+		// 	this.game.goleira.addTargets();
+	
+		// }
+	
+		_createClass(LevelManager, [{
 			key: 'createObstacle',
 			value: function createObstacle() {
 				var bounds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { x: 0, y: 0, w: 50, h: 400 };
@@ -48428,7 +48423,7 @@
 	            this.verticalVelocity.y += this.shootYSpeed * force2;
 	            this.spriteDirection = 1;
 	            this.shooting = true;
-	            this.killTimer = 4;
+	            this.killTimer = 99999994;
 	            //this.sprite.y = 0;
 	        }
 	    }, {
@@ -48455,6 +48450,7 @@
 	            this.obstacleCollided = [];
 	            this.shooting = false;
 	            this.killed = false;
+	            this.collideObstacle = false;
 	
 	            this.collided = false;
 	
@@ -48472,7 +48468,7 @@
 	
 	            this.y = _config2.default.height - 200;
 	
-	            if (Math.random() < 0.5) {
+	            if (Math.random() < 10.5) {
 	                this.verticalVelocity = { x: 0, y: 0 };
 	                // this.spriteContainer.y = - Math.random() * 80;
 	                this.spriteContainer.y = -Math.random() * 250;
@@ -48502,6 +48498,8 @@
 	            //TweenLite.to(this.shadow, 0.5, {alpha:0.1})
 	            // this.sprite.scale.set(1)
 	            this.startUpdate();
+	
+	            this.killTimer = 99999;
 	
 	            // console.log(this.verticalVelocity);
 	            // this.updateable = true;
@@ -48536,20 +48534,11 @@
 	        key: 'touchGround',
 	        value: function touchGround(delta) {
 	
-	            // console.log('touchGround');
-	
-	            // console.log('1',this.verticalVelocity.y);
 	            if (this.onGoal) {
 	                this.verticalVelocity.y = -this.verticalVelocity.y / 3;
 	            } else {
 	                this.verticalVelocity.y = -this.verticalVelocity.y / 1.7;
 	            }
-	            // console.log('2',this.verticalVelocity.y);
-	
-	            // this.velocity.x *= 0.9
-	
-	            // console.log(this.verticalVelocity.y);
-	
 	            if (Math.abs(this.verticalVelocity.y) < 800) {
 	                // console.log(this.verticalVelocity);
 	                this.verticalVelocity.y = 0;
@@ -48559,10 +48548,22 @@
 	            this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.x;
 	        }
 	    }, {
+	        key: 'resetCollisions',
+	        value: function resetCollisions() {
+	            this.killTimer = 1;
+	            this.collideObstacle = false;
+	        }
+	    }, {
+	        key: 'inObstacle',
+	        value: function inObstacle() {
+	            this.killTimer = 3;
+	            this.collideObstacle = true;
+	        }
+	    }, {
 	        key: 'killBall',
 	        value: function killBall() {
 	            // this.killTimer = 99999;
-	            // console.log('kill ball');
+	            console.log('kill ball');
 	            if (this.trail) {
 	                this.trail.reset();
 	            }
@@ -48571,6 +48572,10 @@
 	
 	            TweenLite.to(this.spriteContainer.scale, 0.2, { x: 0, y: 0, onComplete: function onComplete() {
 	                    this.killed = true;
+	
+	                    if (this.collideObstacle) {
+	                        this.game.missShoot();
+	                    }
 	
 	                    if (!this.shooting) {
 	                        this.game.reset();
@@ -48799,6 +48804,12 @@
 							// this.goleira.addChild(this.trave4);
 					}
 			}, {
+					key: 'show',
+					value: function show() {
+							this.goleira.scale.set(0);
+							TweenLite.to(this.goleira.scale, 1, { x: 1, y: 1, ease: 'easeOutElastic' });
+					}
+			}, {
 					key: 'reset',
 					value: function reset() {
 							for (var i = this.targets.length - 1; i >= 0; i--) {
@@ -48941,245 +48952,6 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _gsap = __webpack_require__(189);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _utils = __webpack_require__(191);
-	
-	var _utils2 = _interopRequireDefault(_utils);
-	
-	var _Screen2 = __webpack_require__(192);
-	
-	var _Screen3 = _interopRequireDefault(_Screen2);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var LoadScreen = function (_Screen) {
-		_inherits(LoadScreen, _Screen);
-	
-		function LoadScreen(label) {
-			_classCallCheck(this, LoadScreen);
-	
-			return _possibleConstructorReturn(this, (LoadScreen.__proto__ || Object.getPrototypeOf(LoadScreen)).call(this, label));
-		}
-	
-		_createClass(LoadScreen, [{
-			key: 'build',
-			value: function build() {
-				_get(LoadScreen.prototype.__proto__ || Object.getPrototypeOf(LoadScreen.prototype), 'build', this).call(this);
-	
-				this.mapSrc = './assets/map.json';
-	
-				// this.screenManager.change('GameScreen')
-	
-				this.startLoad();
-			}
-		}, {
-			key: 'toGame',
-			value: function toGame() {
-				this.screenManager.change('InitScreen');
-			}
-		}, {
-			key: 'startLoad',
-			value: function startLoad() {
-				var loader = new PIXI.loaders.Loader(); // you can also create your own if you want
-	
-				loader.add(this.mapSrc);
-	
-				loader.once('complete', this.onAssetsLoaded.bind(this));
-	
-				loader.load();
-			}
-		}, {
-			key: 'onAssetsLoaded',
-			value: function onAssetsLoaded(evt) {
-	
-				this.toGame();
-				return;
-				var map = evt.resources[this.mapSrc].data;
-				var mapLayers = map.layers;
-	
-				_config2.default.tileWidth = map.tilewidth;
-				// console.log(map.tilewidth);
-				// console.log(mapLayers);
-	
-	
-				this.levels = [];
-	
-				for (var i = 0; i < mapLayers.length; i++) {
-					var levelObj = {
-						walls: [],
-						diamonds: [],
-						coins: [],
-						enemies: [],
-						redCoins: [],
-						itens: [],
-						portals: [],
-						beginZone: null,
-						label: null,
-						endZone: [],
-						first: false,
-						debug: false,
-						height: 0,
-						middle: 0,
-						straight: false,
-						singleLane: true,
-						playerSide: 1,
-						playerPosition: { x: 0, y: 0 }
-					};
-					if (mapLayers[i].visible && mapLayers[i].name.indexOf('Pattern') !== -1) {
-						// console.log(mapLayers[i]);
-						if (mapLayers[i].properties && mapLayers[i].properties.first) {
-							levelObj.first = true;
-						}
-						if (mapLayers[i].properties && mapLayers[i].properties.debug) {
-							levelObj.debug = true;
-						}
-						levelObj.label = mapLayers[i].name;
-						for (var j = 0; j < mapLayers[i].objects.length; j++) {
-							var obj = mapLayers[i].objects[j];
-							if (obj.type.indexOf('wall') !== -1) {
-	
-								levelObj.walls.push(obj);
-							}
-							if (obj.type == 'enemy') {
-								levelObj.enemies.push(obj);
-							}
-							if (obj.type == 'coin') {
-								levelObj.coins.push(obj);
-							}
-							if (obj.type.indexOf('chain') !== -1) {
-								levelObj.redCoins.push(obj);
-							}
-	
-							if (obj.type.indexOf('portal') !== -1) {
-								levelObj.portals.push(obj);
-							}
-	
-							if (obj.type.indexOf('item') !== -1) {
-								levelObj.itens.push(obj);
-							}
-							if (obj.type == 'diamond') {
-								levelObj.diamonds.push(obj);
-							}
-							if (obj.type == 'beginzone') {
-								levelObj.beginZone = obj;
-							}
-							if (obj.type == 'endzone') {
-								levelObj.endZone.push(obj);
-							}
-							if (obj.type == 'player') {
-								// console.log(obj.gid > 8);
-								if (obj.gid > 8) {
-									levelObj.playerSide = -1;
-								}
-								levelObj.playerPosition.x = obj.x + obj.width;
-								levelObj.playerPosition.y = obj.y;
-							}
-						}
-	
-						levelObj.height = levelObj.beginZone.y - levelObj.endZone[0].y;
-						levelObj.middle = -levelObj.beginZone.x; //levelObj.beginZone.polyline[1].x - levelObj.beginZone.x - config.width / 2;
-						if (levelObj.endZone.length > 1) {
-							levelObj.singleLane = false;
-						} else {
-							levelObj.straight = _utils2.default.distance(levelObj.beginZone.x, 0, levelObj.endZone[0].x, 0) < 64;
-						}
-						levelObj.endZone.sort(_utils2.default.xCompare);
-						levelObj.redCoins.sort(_utils2.default.alphabetCompare);
-						// console.log(levelObj.redCoins);
-						this.levels.push(levelObj);
-					}
-				}
-	
-				for (var i = 0; i < this.levels.length; i++) {
-					var level = this.levels[i];
-					level.beginZone.x += level.middle + _config2.default.tileWidth;
-					level.playerPosition.x += level.middle + _config2.default.tileWidth;
-					// console.log(level.playerPosition.y , level.beginZone.y , level.height);
-					level.playerPosition.y = level.playerPosition.y - level.beginZone.y;
-					for (var j = 0; j < level.endZone.length; j++) {
-						level.endZone[j].x += level.middle + _config2.default.tileWidth;
-					}
-	
-					for (var j = 0; j < level.walls.length; j++) {
-						level.walls[j].x += level.middle + _config2.default.tileWidth;
-						level.walls[j].y += level.endZone[0].y;
-					}
-	
-					for (var j = 0; j < level.coins.length; j++) {
-						level.coins[j].x += level.middle + level.coins[j].width + _config2.default.tileWidth - level.coins[j].width * 0.5;
-						level.coins[j].y += level.endZone[0].y - level.coins[j].height / 2;
-					}
-	
-					for (var j = 0; j < level.redCoins.length; j++) {
-						level.redCoins[j].x += level.middle + level.redCoins[j].width + _config2.default.tileWidth - level.redCoins[j].width * 0.5;
-						level.redCoins[j].y += level.endZone[0].y - level.redCoins[j].height / 2;
-					}
-	
-					for (var j = 0; j < level.portals.length; j++) {
-						level.portals[j].x += level.middle + level.portals[j].width + _config2.default.tileWidth - level.portals[j].width * 0.5;
-						level.portals[j].y += level.endZone[0].y - level.portals[j].height / 2;
-					}
-	
-					for (var j = 0; j < level.itens.length; j++) {
-						level.itens[j].x += level.middle + level.itens[j].width + _config2.default.tileWidth - level.itens[j].width * 0.5;
-						level.itens[j].y += level.endZone[0].y - level.itens[j].height / 2;
-					}
-	
-					for (var j = 0; j < level.diamonds.length; j++) {
-						level.diamonds[j].x += level.middle + level.diamonds[j].width + _config2.default.tileWidth - level.diamonds[j].width * 0.5;
-						level.diamonds[j].y += level.endZone[0].y - level.diamonds[j].height / 2;
-					}
-	
-					for (var j = 0; j < level.enemies.length; j++) {
-						level.enemies[j].x += level.middle + level.enemies[j].width + _config2.default.tileWidth - level.enemies[j].width * 0.5;
-						level.enemies[j].y += level.endZone[0].y - level.enemies[j].height / 2;
-					}
-				}
-	
-				console.log(this.levels);
-				_config2.default.levels = this.levels;
-				this.toGame();
-			}
-		}]);
-	
-		return LoadScreen;
-	}(_Screen3.default);
-	
-	exports.default = LoadScreen;
-
-/***/ },
-/* 203 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
 	var _pixi = __webpack_require__(1);
 	
 	var PIXI = _interopRequireWildcard(_pixi);
@@ -49237,9 +49009,9 @@
 		}, {
 			key: 'updateLifes',
 			value: function updateLifes() {
-				this.textScore.text = this.game.points;
+				this.textScore.text = GAME_DATA.points;
 				for (var i = this.lifesUI.length - 1; i >= 0; i--) {
-					if (i + 1 > this.lifes) {
+					if (i + 1 > GAME_DATA.lifes) {
 						this.lifesUI[i].tint = 0x000000;
 					}
 				}
@@ -49247,6 +49019,7 @@
 		}, {
 			key: 'createLifes',
 			value: function createLifes() {
+				console.log('LIFES');
 				this.textScore.text = 0;
 				if (this.lifesUI) {
 					for (var i = this.lifesUI.length - 1; i >= 0; i--) {
@@ -49256,7 +49029,7 @@
 					}
 				}
 				this.lifesUI = [];
-				for (var i = 0; i < this.lifes; i++) {
+				for (var i = 0; i < GAME_DATA.lifes; i++) {
 					var hearthUI = PIXI.Sprite.fromImage('assets/images/onion.png');
 					this.lifesUI.push(hearthUI);
 					hearthUI.x = _config2.default.width - 25 * i - 20;
@@ -49265,7 +49038,7 @@
 					hearthUI.width = 20;
 					hearthUI.height = 20;
 	
-					this.addChild(hearthUI);
+					this.game.ingameUIContainer.addChild(hearthUI);
 				}
 			}
 		}]);
@@ -49274,6 +49047,289 @@
 	}(PIXI.Container);
 	
 	exports.default = UIManager;
+
+/***/ },
+/* 203 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(191);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _Screen2 = __webpack_require__(192);
+	
+	var _Screen3 = _interopRequireDefault(_Screen2);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var LoadScreen = function (_Screen) {
+		_inherits(LoadScreen, _Screen);
+	
+		function LoadScreen(label) {
+			_classCallCheck(this, LoadScreen);
+	
+			return _possibleConstructorReturn(this, (LoadScreen.__proto__ || Object.getPrototypeOf(LoadScreen)).call(this, label));
+		}
+	
+		_createClass(LoadScreen, [{
+			key: 'build',
+			value: function build() {
+				_get(LoadScreen.prototype.__proto__ || Object.getPrototypeOf(LoadScreen.prototype), 'build', this).call(this);
+	
+				this.mapSrc = './assets/map.json';
+	
+				// this.screenManager.change('GameScreen')
+	
+				this.startLoad();
+			}
+		}, {
+			key: 'toGame',
+			value: function toGame() {
+				this.screenManager.change('StartScreen');
+			}
+		}, {
+			key: 'startLoad',
+			value: function startLoad() {
+				var loader = new PIXI.loaders.Loader(); // you can also create your own if you want
+				loader.add(this.mapSrc);
+				loader.once('complete', this.onAssetsLoaded.bind(this));
+				loader.load();
+			}
+		}, {
+			key: 'onAssetsLoaded',
+			value: function onAssetsLoaded(evt) {
+				this.toGame();
+				return;
+			}
+		}]);
+	
+		return LoadScreen;
+	}(_Screen3.default);
+	
+	exports.default = LoadScreen;
+
+/***/ },
+/* 204 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+			value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var GameData = function () {
+			function GameData(gameContainer) {
+					_classCallCheck(this, GameData);
+	
+					this.maxPoints = 0;
+					this.currentPoints = 0;
+					this.level = 1;
+					this.points = 0;
+					this.teamID = 0;
+					this.lifes = 0;
+					this.gameContainer = gameContainer;
+					this.updateGameBackground();
+			}
+	
+			_createClass(GameData, [{
+					key: 'updateGameBackground',
+					value: function updateGameBackground() {
+	
+							this.backgroundContaier = new PIXI.Container();
+							this.gameContainer.addChild(this.backgroundContaier);
+	
+							this.background = new PIXI.Graphics();
+							this.background.beginFill(0xababab);
+							this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
+							this.backgroundContaier.addChild(this.background);
+	
+							var tex = void 0;
+	
+							tex = PIXI.Texture.fromImage('./assets/images/torcida.jpg');
+							this.sky = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
+							this.backgroundContaier.addChild(this.sky);
+							this.sky.tileScale.x = 0.25;
+							this.sky.tileScale.y = 0.25;
+							this.sky.x = -50;
+							this.sky.y = -50;
+	
+							tex = PIXI.Texture.fromImage('./assets/images/grass1.png');
+							this.field = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
+							this.backgroundContaier.addChild(this.field);
+							this.field.tileScale.x = 0.25 / 2;
+							this.field.tileScale.y = 0.25 / 2;
+							this.field.y = 150;
+							this.field.x = -50;
+					}
+			}]);
+	
+			return GameData;
+	}();
+	
+	exports.default = GameData;
+
+/***/ },
+/* 205 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(191);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _Screen2 = __webpack_require__(192);
+	
+	var _Screen3 = _interopRequireDefault(_Screen2);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var StartScreen = function (_Screen) {
+		_inherits(StartScreen, _Screen);
+	
+		function StartScreen(label) {
+			_classCallCheck(this, StartScreen);
+	
+			var _this = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, label));
+	
+			_this.button = new PIXI.Container();
+			_this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
+			_this.button.addChild(_this.shape);
+			// this.outgameUIContainer.addChild(this.button)
+			_this.button.x = _config2.default.width / 2;
+			_this.button.y = _config2.default.height / 2;
+			_this.button.interactive = true;
+			_this.addChild(_this.button);
+	
+			_this.addEvents();
+	
+			return _this;
+		}
+	
+		_createClass(StartScreen, [{
+			key: 'build',
+			value: function build() {
+				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'build', this).call(this);
+			}
+		}, {
+			key: 'destroy',
+			value: function destroy() {}
+		}, {
+			key: 'startGame',
+			value: function startGame() {
+				this.screenManager.forceChange('InitScreen');
+			}
+		}, {
+			key: 'update',
+			value: function update(delta) {}
+		}, {
+			key: 'transitionOut',
+			value: function transitionOut(nextScreen) {
+	
+				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'transitionOut', this).call(this, nextScreen);
+			}
+		}, {
+			key: 'transitionIn',
+			value: function transitionIn() {
+	
+				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'transitionIn', this).call(this);
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				this.button.off('touchstart').off('mousedown');
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.removeEvents();
+				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+			}
+		}]);
+	
+		return StartScreen;
+	}(_Screen3.default);
+	
+	exports.default = StartScreen;
 
 /***/ }
 /******/ ]);

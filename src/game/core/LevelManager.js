@@ -38,11 +38,11 @@ export default class LevelManager{
 		this.levels.push(lvl)
 	}
 	
-	addTargets(){
+	// addTargets(){
 
-		this.game.goleira.addTargets();
+	// 	this.game.goleira.addTargets();
 		
-	}
+	// }
 
 	createObstacle(bounds = {x:0, y:0, w:50, h:400}){
 		let obstacle = this.getObstacle().build(bounds.w, {height:bounds.h});

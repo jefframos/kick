@@ -143,7 +143,10 @@ export default class Collisions{
 					this.game.shake()
 				}
 				this.game.colliding = true;
+				entity.resetCollisions();
 
+console.log('finished on coll');
+				this.game.finishedBall(750);
 				this.game.updateGame();
 			}
 		}
