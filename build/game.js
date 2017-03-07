@@ -37720,6 +37720,10 @@
 	
 	var _GameData2 = _interopRequireDefault(_GameData);
 	
+	var _GlobalGameView = __webpack_require__(209);
+	
+	var _GlobalGameView2 = _interopRequireDefault(_GlobalGameView);
+	
 	var _ScreenManager = __webpack_require__(186);
 	
 	var _ScreenManager2 = _interopRequireDefault(_ScreenManager);
@@ -37769,7 +37773,8 @@
 	
 		//create screen manager
 		var screenManager = new _ScreenManager2.default();
-		window.GAME_DATA = new _GameData2.default(screenManager);
+		window.GAME_DATA = new _GameData2.default();
+		window.GAME_VIEW = new _GlobalGameView2.default(screenManager);
 		//add screens
 		var initScreen = new _InitScreen2.default('InitScreen');
 		var loadScreen = new _LoadScreen2.default('LoadScreen');
@@ -49234,7 +49239,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-			value: true
+	    value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -49258,52 +49263,43 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var GameData = function () {
-			function GameData(gameContainer) {
-					_classCallCheck(this, GameData);
+	    function GameData() {
+	        _classCallCheck(this, GameData);
 	
-					this.maxPoints = 0;
-					this.currentPoints = 0;
-					this.level = 1;
-					this.points = 0;
-					this.teamID = 0;
-					this.lifes = 0;
-					this.gameContainer = gameContainer;
-					this.updateGameBackground();
-			}
+	        this.maxPoints = 0;
+	        this.currentPoints = 0;
+	        this.level = 1;
+	        this.points = 0;
+	        this.teamID = 0;
+	        this.lifes = 0;
+	        this.fieldsTextures = [];
+	        this.fieldsTextures.push('grass1.png');
+	        this.fieldsTextures.push('grass2.png');
+	        this.fieldsTextures.push('grass1.png');
+	        this.fieldsTextures.push('grass2.png');
 	
-			_createClass(GameData, [{
-					key: 'updateGameBackground',
-					value: function updateGameBackground() {
+	        this.teamsData = [];
+	        this.teamsData.push(0xFF0000);
+	        this.teamsData.push(0x0000FF);
+	        this.teamsData.push(0x00FF00);
+	        this.teamsData.push(0xFF0FF0);
+	    }
 	
-							this.backgroundContaier = new PIXI.Container();
-							this.gameContainer.addChild(this.backgroundContaier);
+	    _createClass(GameData, [{
+	        key: 'changeLevel',
+	        value: function changeLevel(level) {
+	            this.level = level;
+	            GAME_VIEW.updateField(this.fieldsTextures[this.level]);
+	        }
+	    }, {
+	        key: 'changeTeam',
+	        value: function changeTeam(team) {
+	            this.teamID = team;
+	            GAME_VIEW.updateTeam(this.teamsData[this.teamID]);
+	        }
+	    }]);
 	
-							this.background = new PIXI.Graphics();
-							this.background.beginFill(0xababab);
-							this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
-							this.backgroundContaier.addChild(this.background);
-	
-							var tex = void 0;
-	
-							tex = PIXI.Texture.fromFrame('torcida.jpg');
-							this.sky = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
-							this.backgroundContaier.addChild(this.sky);
-							this.sky.tileScale.x = 0.25;
-							this.sky.tileScale.y = 0.25;
-							this.sky.x = -50;
-							this.sky.y = -50;
-	
-							tex = PIXI.Texture.fromFrame('grass1.png');
-							this.field = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
-							this.backgroundContaier.addChild(this.field);
-							this.field.tileScale.x = 0.25 / 2;
-							this.field.tileScale.y = 0.25 / 2;
-							this.field.y = 150;
-							this.field.x = -50;
-					}
-			}]);
-	
-			return GameData;
+	    return GameData;
 	}();
 	
 	exports.default = GameData;
@@ -49557,11 +49553,17 @@
 			_this.backButton.interactive = true;
 			_this.addChild(_this.backButton);
 	
-			_this.addEvents();
-	
 			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
 			_this.addChild(_this.screenLabel);
 	
+			_this.buttons = [];
+			_this.addButton();
+			_this.addButton();
+			_this.addButton();
+			_this.addButton();
+			_this.addEvents();
+	
+			_this.addEvents();
 			return _this;
 		}
 	
@@ -49572,6 +49574,28 @@
 	
 				this.backButton.x = 50;
 				this.backButton.y = 50;
+			}
+		}, {
+			key: 'addButton',
+			value: function addButton() {
+	
+				var shape = PIXI.Sprite.fromFrame('big-button-up.png');
+				shape.anchor.set(0.5);
+				var backButton = new PIXI.Container();
+				backButton.addChild(shape);
+				backButton.interactive = true;
+				backButton.y = 300;
+				backButton.x = 50 + this.buttons.length * 100;
+				backButton.id = this.buttons.length;
+				this.addChild(backButton);
+	
+				this.buttons.push(backButton);
+			}
+		}, {
+			key: 'changeTeam',
+			value: function changeTeam(e) {
+				console.log(e.data.target.id);
+				GAME_DATA.changeTeam(e.data.target.id);
 			}
 		}, {
 			key: 'destroy',
@@ -49606,11 +49630,17 @@
 			value: function removeEvents() {
 				this.button.off('touchstart').off('mousedown');
 				this.backButton.off('touchstart').off('mousedown');
+				for (var i = this.buttons.length - 1; i >= 0; i--) {
+					this.buttons[i].off('touchstart').off('mousedown');
+				}
 			}
 		}, {
 			key: 'addEvents',
 			value: function addEvents() {
 				this.removeEvents();
+				for (var i = this.buttons.length - 1; i >= 0; i--) {
+					this.buttons[i].on('mousedown', this.changeTeam.bind(this)).on('touchstart', this.changeTeam.bind(this));
+				}
 				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
 			}
@@ -49692,19 +49722,38 @@
 			_this.backButton.interactive = true;
 			_this.addChild(_this.backButton);
 	
-			_this.addEvents();
-	
 			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
 			_this.addChild(_this.screenLabel);
 	
+			_this.buttons = [];
+			_this.addButton();
+			_this.addButton();
+			_this.addButton();
+			_this.addButton();
+			_this.addEvents();
 			return _this;
 		}
 	
 		_createClass(ChooseFieldScreen, [{
+			key: 'addButton',
+			value: function addButton() {
+	
+				var shape = PIXI.Sprite.fromFrame('big-button-up.png');
+				shape.anchor.set(0.5);
+				var backButton = new PIXI.Container();
+				backButton.addChild(shape);
+				backButton.interactive = true;
+				backButton.y = 300;
+				backButton.x = 50 + this.buttons.length * 100;
+				backButton.id = this.buttons.length;
+				this.addChild(backButton);
+	
+				this.buttons.push(backButton);
+			}
+		}, {
 			key: 'build',
 			value: function build() {
 				_get(ChooseFieldScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseFieldScreen.prototype), 'build', this).call(this);
-	
 				this.backButton.x = 50;
 				this.backButton.y = 50;
 			}
@@ -49736,15 +49785,27 @@
 				_get(ChooseFieldScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseFieldScreen.prototype), 'transitionIn', this).call(this);
 			}
 		}, {
+			key: 'changeField',
+			value: function changeField(e) {
+				console.log(e.data.target.id);
+				GAME_DATA.changeLevel(e.data.target.id);
+			}
+		}, {
 			key: 'removeEvents',
 			value: function removeEvents() {
 				this.button.off('touchstart').off('mousedown');
 				this.backButton.off('touchstart').off('mousedown');
+				for (var i = this.buttons.length - 1; i >= 0; i--) {
+					this.buttons[i].off('touchstart').off('mousedown');
+				}
 			}
 		}, {
 			key: 'addEvents',
 			value: function addEvents() {
 				this.removeEvents();
+				for (var i = this.buttons.length - 1; i >= 0; i--) {
+					this.buttons[i].on('mousedown', this.changeField.bind(this)).on('touchstart', this.changeField.bind(this));
+				}
 				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
 			}
@@ -49889,6 +49950,92 @@
 	}(_Screen3.default);
 	
 	exports.default = GameOverScreen;
+
+/***/ },
+/* 209 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+			value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var GlobalGameView = function () {
+			function GlobalGameView(gameContainer) {
+					_classCallCheck(this, GlobalGameView);
+	
+					this.gameContainer = gameContainer;
+					this.updateGameBackground();
+			}
+	
+			_createClass(GlobalGameView, [{
+					key: 'updateTeam',
+					value: function updateTeam(team) {
+							this.sky.tint = team;
+					}
+			}, {
+					key: 'updateField',
+					value: function updateField(textureSrc) {
+							var tex = PIXI.Texture.fromFrame(textureSrc);
+							this.field.texture = tex;
+					}
+			}, {
+					key: 'updateGameBackground',
+					value: function updateGameBackground() {
+	
+							this.backgroundContaier = new PIXI.Container();
+							this.gameContainer.addChild(this.backgroundContaier);
+	
+							this.background = new PIXI.Graphics();
+							this.background.beginFill(0xababab);
+							this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
+							this.backgroundContaier.addChild(this.background);
+	
+							var tex = void 0;
+	
+							tex = PIXI.Texture.fromFrame('torcida.jpg');
+							this.sky = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
+							this.backgroundContaier.addChild(this.sky);
+							this.sky.tileScale.x = 0.25;
+							this.sky.tileScale.y = 0.25;
+							this.sky.x = -50;
+							this.sky.y = -50;
+	
+							tex = PIXI.Texture.fromFrame('grass1.png');
+							this.field = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
+							this.backgroundContaier.addChild(this.field);
+							this.field.tileScale.x = 0.25 / 2;
+							this.field.tileScale.y = 0.25 / 2;
+							this.field.y = 150;
+							this.field.x = -50;
+					}
+			}]);
+	
+			return GlobalGameView;
+	}();
+	
+	exports.default = GlobalGameView;
 
 /***/ }
 /******/ ]);

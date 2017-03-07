@@ -2,6 +2,7 @@ import plugins from './plugins';
 import config  from './config';
 import Game from './Game';
 import GameData from './game/GameData';
+import GlobalGameView from './game/GlobalGameView';
 import ScreenManager from './screenManager/ScreenManager';
 import InitScreen from './game/screen/InitScreen';
 import LoadScreen from './game/screen/LoadScreen';
@@ -37,7 +38,8 @@ function configGame(){
 	
 	//create screen manager
 	let screenManager = new ScreenManager();
-	window.GAME_DATA = new GameData(screenManager);
+	window.GAME_DATA = new GameData();
+	window.GAME_VIEW = new GlobalGameView(screenManager);
 	//add screens
 	let initScreen = new InitScreen('InitScreen');
 	let loadScreen = new LoadScreen('LoadScreen');

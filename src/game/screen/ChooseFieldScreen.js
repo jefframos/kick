@@ -26,21 +26,37 @@ export default class ChooseFieldScreen extends Screen{
         
         this.backButton.interactive = true;
         this.addChild(this.backButton)
-
-        this.addEvents();
-
         
 
         this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
         this.addChild(this.screenLabel)
 
+        this.buttons = [];
+        this.addButton();
+        this.addButton();
+        this.addButton();
+        this.addButton();
+        this.addEvents();
+	}
+	addButton(){
+
+		let shape = PIXI.Sprite.fromFrame('big-button-up.png');
+		shape.anchor.set(0.5);
+		let backButton = new PIXI.Container();
+        backButton.addChild(shape)        
+        backButton.interactive = true;
+        backButton.y = 300;
+        backButton.x = 50 + this.buttons.length * 100;
+        backButton.id = this.buttons.length;
+        this.addChild(backButton)
+
+        this.buttons.push(backButton)
+
 	}
 	build(){
 		super.build();
-
 		this.backButton.x = 50;
         this.backButton.y = 50;
-
 	}
 
 	destroy(){
@@ -67,13 +83,22 @@ export default class ChooseFieldScreen extends Screen{
 		super.transitionIn();
 
 	}
-
+	changeField(e){
+		console.log(e.data.target.id);
+		GAME_DATA.changeLevel(e.data.target.id);
+	}
 	removeEvents(){
 		this.button.off('touchstart').off('mousedown');
 		this.backButton.off('touchstart').off('mousedown');
+		for (var i = this.buttons.length - 1; i >= 0; i--) {
+			this.buttons[i].off('touchstart').off('mousedown');
+		}
 	}
 	addEvents(){
 		this.removeEvents();
+		for (var i = this.buttons.length - 1; i >= 0; i--) {
+			this.buttons[i].on('mousedown', this.changeField.bind(this)).on('touchstart', this.changeField.bind(this));
+		}
 		this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 		this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
 	}
