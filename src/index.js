@@ -7,6 +7,8 @@ import InitScreen from './game/screen/InitScreen';
 import LoadScreen from './game/screen/LoadScreen';
 import StartScreen from './game/screen/StartScreen';
 import ChooseTeamScreen from './game/screen/ChooseTeamScreen';
+import ChooseFieldScreen from './game/screen/ChooseFieldScreen';
+import GameOverScreen from './game/screen/GameOverScreen';
 
 
 
@@ -22,8 +24,8 @@ PIXI.loader
 	// .add('./assets/images/onion.png')
 	// .add('./assets/images/goal.png')
 	// .add('./assets/images/ui.json')
-	.add('./assets/fonts/luckiestguy-webfont.woff')
-	.add('./assets/fonts/luckiestguy-webfont.woff2')
+	.add('./assets/fonts/mario-webfont.woff')
+	.add('./assets/fonts/mario-webfont.woff2')
 	.add('./assets/fonts/stylesheet.css')
 	.add('./assets/fonts/specimen_files/specimen_stylesheet.css')
 	.load(configGame);
@@ -41,6 +43,8 @@ function configGame(){
 	let loadScreen = new LoadScreen('LoadScreen');
 	let startScreen = new StartScreen('StartScreen');
 	let chooseTeamScreen = new ChooseTeamScreen('ChooseTeamScreen');
+	let chooseFieldScreen = new ChooseFieldScreen('ChooseFieldScreen');
+	let gameOverScreen = new GameOverScreen('GameOverScreen');
 
 	game.stage.addChild(screenManager);
 
@@ -48,6 +52,8 @@ function configGame(){
 	screenManager.addScreen(loadScreen);
 	screenManager.addScreen(startScreen);
 	screenManager.addScreen(chooseTeamScreen);
+	screenManager.addScreen(chooseFieldScreen);
+	screenManager.addScreen(gameOverScreen);
 	//change to init screen
 	screenManager.forceChange('LoadScreen');
 

@@ -13,12 +13,14 @@ export default class LoadScreen extends Screen{
 		
 		this.mapSrc = './assets/map.json';
 
+
 		// this.screenManager.change('GameScreen')
 
 		this.startLoad();
 	}
 
 	toGame(){
+		this.screenLabel = new PIXI.Text(this.label,{font : '46px mario', fill : 0xFFFFFF, align : 'right'});  
 		this.screenManager.change('StartScreen')
 	}
 	startLoad(){

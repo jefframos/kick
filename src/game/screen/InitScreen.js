@@ -110,14 +110,12 @@ export default class InitScreen extends Screen{
 
 		this.gameStarted = false;
 
-		this.screenManager.change('StartScreen')
+		this.screenManager.change('GameOverScreen')
 
 		// this.paused = true;
 
 	}
 	startGame(){
-
-		console.log('START GAME');
 		GAME_DATA.lifes = 3;
 		GAME_DATA.points = 0;
 		this.spotedBall = null;
@@ -131,6 +129,9 @@ export default class InitScreen extends Screen{
         // this.paused = false;
 	}
 	getNewBall(){
+		if(GAME_DATA.lifes <= 0){
+			return
+		}
 		console.log('BALLLLLLZ');
 		if(this.spotedBall && !this.spotedBall.shooting){
 		// 	console.log('spot',this.spotedBall.shooting);
@@ -165,6 +166,9 @@ export default class InitScreen extends Screen{
 
 	finishedBall(timer = 0){
 // console.log('FINIZED');
+		if(GAME_DATA.lifes <= 0){
+			return
+		}
 		setTimeout(function() {
 			this.getNewBall();
 		}.bind(this), timer);

@@ -13,8 +13,8 @@ export default class StartScreen extends Screen{
 		this.startButton = new PIXI.Container();
         //this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
         this.startButton.addChild(shape)
-        this.startButton.x = config.width / 2;
-        this.startButton.y = config.height / 2;
+        
+        
         this.startButton.interactive = true;
         this.addChild(this.startButton)
 
@@ -24,8 +24,8 @@ export default class StartScreen extends Screen{
 		this.teamButton = new PIXI.Container();
         //this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
         this.teamButton.addChild(shape)
-        this.teamButton.x = config.width / 2 + 120;
-        this.teamButton.y = config.height / 2 - 50;
+        
+        
         this.teamButton.interactive = true;
         this.addChild(this.teamButton)
 
@@ -35,11 +35,13 @@ export default class StartScreen extends Screen{
 		this.fieldButton = new PIXI.Container();
         //this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
         this.fieldButton.addChild(shape)
-        this.fieldButton.x = config.width / 2 - 120;
-        this.fieldButton.y = config.height / 2 - 50;
+        
+        
         this.fieldButton.interactive = true;
         this.addChild(this.fieldButton)
 
+        this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
+        this.addChild(this.screenLabel)
 
         this.addEvents();
 
@@ -47,6 +49,13 @@ export default class StartScreen extends Screen{
 	}
 	build(){
 		super.build();
+
+		this.startButton.x = config.width / 2;
+		this.startButton.y = config.height / 2;
+		this.teamButton.x = config.width / 2 + 120;
+		this.teamButton.y = config.height / 2 - 50;
+		this.fieldButton.x = config.width / 2 - 120;
+		this.fieldButton.y = config.height / 2 - 50;
 	}
 
 	destroy(){
@@ -54,7 +63,32 @@ export default class StartScreen extends Screen{
 	}
 
 	startGame(){
-		this.screenManager.change('InitScreen')
+
+		TweenLite.to(this.fieldButton.scale, 0.3, {delay:0, x:0, y:0, ease:'easeInBack'});
+		TweenLite.to(this.startButton.scale, 0.3, {delay:0.05, x:0, y:0, ease:'easeInBack'});
+		TweenLite.to(this.teamButton.scale, 0.3, {delay:0.1, x:0, y:0, ease:'easeInBack', onComplete:function(){
+			this.screenManager.change('InitScreen');
+		}, onCompleteScope:this})
+		
+	}
+
+	toTeamSelection(){
+		TweenLite.to(this.fieldButton, 0.4, {delay:0, x:-config.width / 2 - 120, ease:'easeInBack'});
+		TweenLite.to(this.startButton, 0.4, {delay:0.1, x:-config.width / 2,ease:'easeInBack'});
+		TweenLite.to(this.teamButton, 0.4, {delay:0.2, x:-config.width / 2 + 120, ease:'easeInBack', onComplete:function(){
+			this.screenManager.change('ChooseTeamScreen');
+		}, onCompleteScope:this})
+	}
+
+	toFieldSlection(){
+		TweenLite.to(this.fieldButton, 0.4, {delay:0.2, x:config.width + config.width / 2 - 120, ease:'easeInBack', onComplete:function(){
+			this.screenManager.change('ChooseFieldScreen');
+		}, onCompleteScope:this});
+		TweenLite.to(this.startButton, 0.4, {delay:0.1, x:config.width + config.width / 2,ease:'easeInBack'});
+		TweenLite.to(this.teamButton, 0.4, {delay:0, x:config.width + config.width / 2 + 120, ease:'easeInBack'})
+	}
+	destroy(){
+
 	}
 
 	update(delta){
@@ -62,26 +96,33 @@ export default class StartScreen extends Screen{
 	}
 
 	transitionOut(nextScreen){
-		this.nextScreen = nextScreen;
-		TweenLite.to(this.startButton.scale, 0.5, {x:0, y:0, ease:'easeInBack', onComplete:function(){
-			this.endTransitionOut();
-		}, onCompleteScope:this})
-
+		super.transitionOut(nextScreen);
 	}
 	transitionIn(){
 
 		super.transitionIn();
+
+		console.log('TRANSITION IN');
+
+		this.fieldButton.scale.set(0)
 		this.startButton.scale.set(0)
-		TweenLite.to(this.startButton.scale, 0.8, {delay:0.2, x:1, y:1, ease:'easeOutElastic'});
+		this.teamButton.scale.set(0)
+		TweenLite.to(this.fieldButton.scale, 0.8, {delay:0.2, x:1, y:1, ease:'easeOutElastic'});
+		TweenLite.to(this.startButton.scale, 0.8, {delay:0.3, x:1, y:1, ease:'easeOutElastic'});
+		TweenLite.to(this.teamButton.scale, 0.8, {delay:0.4, x:1, y:1, ease:'easeOutElastic'});
 
 
 	}
-
+	
 	removeEvents(){
 		this.startButton.off('touchstart').off('mousedown');
+		this.fieldButton.off('touchstart').off('mousedown');
+		this.teamButton.off('touchstart').off('mousedown');
 	}
 	addEvents(){
 		this.removeEvents();
 		this.startButton.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+		this.teamButton.on('mousedown', this.toTeamSelection.bind(this)).on('touchstart', this.toTeamSelection.bind(this));
+		this.fieldButton.on('mousedown', this.toFieldSlection.bind(this)).on('touchstart', this.toFieldSlection.bind(this));
 	}
 }

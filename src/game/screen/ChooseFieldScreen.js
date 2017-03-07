@@ -4,8 +4,8 @@ import config  from '../../config';
 import utils  from '../../utils';
 import Screen from '../../screenManager/Screen'
 
-export default class ChooseTeamScreen extends Screen{
-	constructor(label){
+export default class ChooseFieldScreen extends Screen{
+		constructor(label){
 		super(label);
 
 		this.button = new PIXI.Container();
@@ -29,6 +29,8 @@ export default class ChooseTeamScreen extends Screen{
 
         this.addEvents();
 
+        
+
         this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
         this.addChild(this.screenLabel)
 
@@ -50,7 +52,6 @@ export default class ChooseTeamScreen extends Screen{
 	}
 
 	toMainScreen(){
-		console.log('to start');
 		this.screenManager.change('StartScreen')
 	}
 

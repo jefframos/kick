@@ -37716,19 +37716,19 @@
 	
 	var _Game2 = _interopRequireDefault(_Game);
 	
-	var _GameData = __webpack_require__(186);
+	var _GameData = __webpack_require__(204);
 	
 	var _GameData2 = _interopRequireDefault(_GameData);
 	
-	var _ScreenManager = __webpack_require__(189);
+	var _ScreenManager = __webpack_require__(186);
 	
 	var _ScreenManager2 = _interopRequireDefault(_ScreenManager);
 	
-	var _InitScreen = __webpack_require__(190);
+	var _InitScreen = __webpack_require__(187);
 	
 	var _InitScreen2 = _interopRequireDefault(_InitScreen);
 	
-	var _LoadScreen = __webpack_require__(204);
+	var _LoadScreen = __webpack_require__(203);
 	
 	var _LoadScreen2 = _interopRequireDefault(_LoadScreen);
 	
@@ -37739,6 +37739,14 @@
 	var _ChooseTeamScreen = __webpack_require__(206);
 	
 	var _ChooseTeamScreen2 = _interopRequireDefault(_ChooseTeamScreen);
+	
+	var _ChooseFieldScreen = __webpack_require__(207);
+	
+	var _ChooseFieldScreen2 = _interopRequireDefault(_ChooseFieldScreen);
+	
+	var _GameOverScreen = __webpack_require__(208);
+	
+	var _GameOverScreen2 = _interopRequireDefault(_GameOverScreen);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -37753,7 +37761,7 @@
 	// .add('./assets/images/onion.png')
 	// .add('./assets/images/goal.png')
 	// .add('./assets/images/ui.json')
-	.add('./assets/fonts/luckiestguy-webfont.woff').add('./assets/fonts/luckiestguy-webfont.woff2').add('./assets/fonts/stylesheet.css').add('./assets/fonts/specimen_files/specimen_stylesheet.css').load(configGame);
+	.add('./assets/fonts/mario-webfont.woff').add('./assets/fonts/mario-webfont.woff2').add('./assets/fonts/stylesheet.css').add('./assets/fonts/specimen_files/specimen_stylesheet.css').load(configGame);
 	
 	function configGame() {
 	
@@ -37767,6 +37775,8 @@
 		var loadScreen = new _LoadScreen2.default('LoadScreen');
 		var startScreen = new _StartScreen2.default('StartScreen');
 		var chooseTeamScreen = new _ChooseTeamScreen2.default('ChooseTeamScreen');
+		var chooseFieldScreen = new _ChooseFieldScreen2.default('ChooseFieldScreen');
+		var gameOverScreen = new _GameOverScreen2.default('GameOverScreen');
 	
 		game.stage.addChild(screenManager);
 	
@@ -37774,6 +37784,8 @@
 		screenManager.addScreen(loadScreen);
 		screenManager.addScreen(startScreen);
 		screenManager.addScreen(chooseTeamScreen);
+		screenManager.addScreen(chooseFieldScreen);
+		screenManager.addScreen(gameOverScreen);
 		//change to init screen
 		screenManager.forceChange('LoadScreen');
 	
@@ -37957,7 +37969,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-			value: true
+		value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -37966,7 +37978,105 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var ScreenManager = function (_PIXI$Container) {
+		_inherits(ScreenManager, _PIXI$Container);
+	
+		function ScreenManager() {
+			_classCallCheck(this, ScreenManager);
+	
+			var _this = _possibleConstructorReturn(this, (ScreenManager.__proto__ || Object.getPrototypeOf(ScreenManager)).call(this));
+	
+			_this.currentScreen = null;
+			_this.screenList = [];
+			return _this;
+		}
+	
+		_createClass(ScreenManager, [{
+			key: 'addScreen',
+			value: function addScreen(screen) {
+				this.screenList.push(screen);
+				this.currentScreen = screen;
+				screen.screenManager = this;
+			}
+		}, {
+			key: 'change',
+			value: function change(screenLabel) {
+				var tempScreen = void 0;
+				for (var i = 0; i < this.screenList.length; i++) {
+					if (this.screenList[i].label == screenLabel) {
+						tempScreen = this.screenList[i];
+					}
+				}
+				if (this.currentScreen) {
+					this.currentScreen.transitionOut(tempScreen);
+				}
+			}
+			//change between screens
+	
+		}, {
+			key: 'forceChange',
+			value: function forceChange(screenLabel) {
+				if (this.currentScreen && this.currentScreen.parent) {
+					this.removeChild(this.currentScreen);
+				}
+				var tempScreen = void 0;
+				for (var i = 0; i < this.screenList.length; i++) {
+					if (this.screenList[i].label == screenLabel) {
+						tempScreen = this.screenList[i];
+					}
+				}
+				this.currentScreen = tempScreen;
+				this.currentScreen.build();
+				this.currentScreen.transitionIn();
+				this.addChild(this.currentScreen);
+			}
+			//update manager
+	
+		}, {
+			key: 'update',
+			value: function update(delta) {
+				if (this.screenList != null) {
+					this.currentScreen.update(delta);
+				}
+			}
+		}]);
+	
+		return ScreenManager;
+	}(PIXI.Container);
+	
+	exports.default = ScreenManager;
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _pixiFilters = __webpack_require__(188);
+	
+	var _pixiFilters2 = _interopRequireDefault(_pixiFilters);
+	
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -37974,65 +38084,557 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
+	var _utils = __webpack_require__(191);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _Screen2 = __webpack_require__(192);
+	
+	var _Screen3 = _interopRequireDefault(_Screen2);
+	
+	var _Obstacle = __webpack_require__(193);
+	
+	var _Obstacle2 = _interopRequireDefault(_Obstacle);
+	
+	var _Target = __webpack_require__(194);
+	
+	var _Target2 = _interopRequireDefault(_Target);
+	
+	var _Collisions = __webpack_require__(195);
+	
+	var _Collisions2 = _interopRequireDefault(_Collisions);
+	
+	var _TrailManager = __webpack_require__(196);
+	
+	var _TrailManager2 = _interopRequireDefault(_TrailManager);
+	
+	var _ViewManager = __webpack_require__(198);
+	
+	var _ViewManager2 = _interopRequireDefault(_ViewManager);
+	
+	var _LevelManager = __webpack_require__(199);
+	
+	var _LevelManager2 = _interopRequireDefault(_LevelManager);
+	
+	var _Goal = __webpack_require__(201);
+	
+	var _Goal2 = _interopRequireDefault(_Goal);
+	
+	var _UIManager = __webpack_require__(202);
+	
+	var _UIManager2 = _interopRequireDefault(_UIManager);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var GameData = function () {
-			function GameData(gameContainer) {
-					_classCallCheck(this, GameData);
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
-					this.maxPoints = 0;
-					this.currentPoints = 0;
-					this.level = 1;
-					this.points = 0;
-					this.teamID = 0;
-					this.lifes = 0;
-					this.gameContainer = gameContainer;
-					this.updateGameBackground();
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var InitScreen = function (_Screen) {
+		_inherits(InitScreen, _Screen);
+	
+		function InitScreen(label) {
+			_classCallCheck(this, InitScreen);
+	
+			return _possibleConstructorReturn(this, (InitScreen.__proto__ || Object.getPrototypeOf(InitScreen)).call(this, label));
+		}
+	
+		_createClass(InitScreen, [{
+			key: 'build',
+			value: function build() {
+	
+				_get(InitScreen.prototype.__proto__ || Object.getPrototypeOf(InitScreen.prototype), 'build', this).call(this);
+	
+				this.gameContainer = new PIXI.Container();
+				this.addChild(this.gameContainer);
+	
+				this.ingameUIContainer = new PIXI.Container();
+				this.addChild(this.ingameUIContainer);
+	
+				this.outgameUIContainer = new PIXI.Container();
+				this.addChild(this.outgameUIContainer);
+	
+				this.uiManager = new _UIManager2.default(this);
+				this.uiManager.build();
+				this.collisions = new _Collisions2.default(this);
+				this.viewManager = new _ViewManager2.default();
+				this.levelManager = new _LevelManager2.default(this);
+				this.trailManager = new _TrailManager2.default(this.ingameUIContainer);
+	
+				this.pixelate = new PIXI.filters.PixelateFilter();
+				this.pixelate.size.x = 4;
+				this.pixelate.size.y = 4;
+				this.gameContainer.filters = [this.pixelate];
+				// this.ingameUIContainer.filters = [this.pixelate]
+				// this.outgameUIContainer.filters = [this.pixelate]
+	
+	
+				this.updateList = [];
+				this.targets = [];
+				this.currentBalls = [];
+				GAME_DATA.lifes = 3;
+				this.currentTrail = false;
+	
+				this.goleira = new _Goal2.default(this);
+				this.goleira.build();
+				this.goleira.x = _config2.default.width / 2;
+				this.goleira.y = 150;
+	
+				this.gameContainer.addChild(this.goleira);
+				this.add(this.goleira);
+				this.goleira.addTargets();
+				this.goleira.show();
+				this.addEvents();
+				this.startGame();
 			}
-	
-			_createClass(GameData, [{
-					key: 'updateGameBackground',
-					value: function updateGameBackground() {
-	
-							this.backgroundContaier = new PIXI.Container();
-							this.gameContainer.addChild(this.backgroundContaier);
-	
-							this.background = new PIXI.Graphics();
-							this.background.beginFill(0xababab);
-							this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
-							this.backgroundContaier.addChild(this.background);
-	
-							var tex = void 0;
-	
-							tex = PIXI.Texture.fromFrame('torcida.jpg');
-							this.sky = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
-							this.backgroundContaier.addChild(this.sky);
-							this.sky.tileScale.x = 0.25;
-							this.sky.tileScale.y = 0.25;
-							this.sky.x = -50;
-							this.sky.y = -50;
-	
-							tex = PIXI.Texture.fromFrame('grass1.png');
-							this.field = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
-							this.backgroundContaier.addChild(this.field);
-							this.field.tileScale.x = 0.25 / 2;
-							this.field.tileScale.y = 0.25 / 2;
-							this.field.y = 150;
-							this.field.x = -50;
+		}, {
+			key: 'remove',
+			value: function remove(entity) {
+				for (var i = this.updateList.length - 1; i >= 0; i--) {
+					if (this.updateList[i] == entity) {
+						this.updateList.splice(i, 1);
 					}
-			}]);
+				}
+			}
+		}, {
+			key: 'add',
+			value: function add(entity) {
+				this.remove(entity);
+				for (var i = this.updateList.length - 1; i >= 0; i--) {
+					if (this.updateList[i] == entity) {
+						return;
+					}
+				}
+				this.updateList.push(entity);
+				this.gameContainer.addChild(entity);
+			}
+		}, {
+			key: 'gameOver',
+			value: function gameOver() {
+				// this.button.visible = true;
+				// this.button.scale.set(0);
+				// TweenLite.to(this.button.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'})
 	
-			return GameData;
-	}();
+				for (var i = this.levelManager.obstacles.length - 1; i >= 0; i--) {
+					if (this.levelManager.obstacles[i].parent) {
+						this.levelManager.obstacles[i].parent.removeChild(this.levelManager.obstacles[i]);
+					}
+				}
 	
-	exports.default = GameData;
+				// for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+				// 	if(this.currentBalls[i].parent){
+				// 		this.currentBalls[i].parent.removeChild(this.currentBalls[i])
+				// 	}
+				// }
+	
+				this.goleira.reset();
+				// this.currentBalls = [];
+				this.levelManager.obstacles = [];
+	
+				this.gameStarted = false;
+	
+				this.screenManager.change('GameOverScreen');
+	
+				// this.paused = true;
+			}
+		}, {
+			key: 'startGame',
+			value: function startGame() {
+				GAME_DATA.lifes = 3;
+				GAME_DATA.points = 0;
+				this.spotedBall = null;
+				this.getNewBall();
+				this.uiManager.createLifes();
+				this.levelManager.createObstacles();
+				// this.levelManager.addTargets();
+				// TweenLite.to(this.button.scale, 0.2, {x:0, y:0, ease:'easeInBack'})
+				// this.button.visible = false;
+				this.gameStarted = true;
+				// this.paused = false;
+			}
+		}, {
+			key: 'getNewBall',
+			value: function getNewBall() {
+				if (GAME_DATA.lifes <= 0) {
+					return;
+				}
+				console.log('BALLLLLLZ');
+				if (this.spotedBall && !this.spotedBall.shooting) {
+					// 	console.log('spot',this.spotedBall.shooting);
+					return;
+				}
+				var ball = this.levelManager.getBall();
+				this.spotedBall = ball;
+				this.currentBalls.push(this.spotedBall);
+			}
+		}, {
+			key: 'reset',
+			value: function reset() {
+				if (!this.gameStarted) {
+					return;
+				}
+				this.finishedBall();
+				console.log('reset');
+				this.paused = false;
+				this.colliding = false;
+			}
+		}, {
+			key: 'removeBalls',
+			value: function removeBalls() {
+				for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+					this.currentBalls[i].killBall();
+				}
+			}
+		}, {
+			key: 'debugBall',
+			value: function debugBall(ballPosition, entity) {
+				if (this.testeBall && this.testeBall.parent) {
+					this.testeBall.parent.removeChild(this.testeBall);
+				}
+				this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x, ballPosition.y, entity.getRadius());
+				this.addChild(this.testeBall);
+			}
+		}, {
+			key: 'finishedBall',
+			value: function finishedBall() {
+				var timer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+	
+				// console.log('FINIZED');
+				if (GAME_DATA.lifes <= 0) {
+					return;
+				}
+				setTimeout(function () {
+					this.getNewBall();
+				}.bind(this), timer);
+			}
+		}, {
+			key: 'updateGame',
+			value: function updateGame() {
+				this.uiManager.updateLifes();
+				if (GAME_DATA.lifes) {
+					this.levelManager.createObstacles();
+				}
+			}
+		}, {
+			key: 'missShoot',
+			value: function missShoot() {
+				if (GAME_DATA.lifes <= 0) {
+					return;
+				}
+				GAME_DATA.lifes--;
+				this.uiManager.updateLifes();
+	
+				if (GAME_DATA.lifes <= 0) {
+					this.gameStarted = false;
+					setTimeout(function () {
+						this.removeBalls();
+					}.bind(this), 500);
+					setTimeout(function () {
+						this.gameOver();
+					}.bind(this), 1200);
+				}
+			}
+		}, {
+			key: 'update',
+			value: function update(delta) {
+				this.trailManager.update(delta, this.mousePosition);
+				if (this.paused) {
+					return;
+				}
+				_get(InitScreen.prototype.__proto__ || Object.getPrototypeOf(InitScreen.prototype), 'update', this).call(this, delta);
+	
+				if (this.spotedBall) {
+					// this.dot.x = this.spotedBall.x
+					// this.dot.y = this.spotedBall.y + this.spotedBall.spriteContainer.y
+	
+					// this.trail.update(delta, {x:this.dot.x, y:this.dot.y})
+				}
+	
+				this.uiManager.debug2.text = delta;
+	
+				for (var i = this.updateList.length - 1; i >= 0; i--) {
+					if (this.updateList[i].update) {
+						this.updateList[i].update(delta);
+					}
+					this.viewManager.updateObjectScale(this.updateList[i], _config2.default.height);
+				}
+	
+				this.gameContainer.children.sort(_utils2.default.depthCompare);
+	
+				if (this.tapping) {
+					this.mousePosition = renderer.plugins.interaction.pointer.global;
+				}
+				// if(this.currentTrail)
+	
+				// this.collide(delta, this.currentBalls, this.currentBalls2)
+				// console.log(this.currentBalls.length);
+				// if(this.uiManager.debug2.text != this.currentBalls.length){
+				// 	this.uiManager.debug2.text = this.currentBalls.length;
+				// }
+				this.goleira.update(delta);
+	
+				// console.log(this.levelManager.obstacles.length);
+				if (this.gameStarted) {
+					var collideObs = false;
+					for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+						if (!this.currentBalls[i].collided) {
+							for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
+								if (this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])) {
+									this.shake();
+									collideObs = this.currentBalls[i];
+								}
+							}
+						}
+	
+						if (this.mousePosition && this.mousePosition.x > 0 && this.mousePosition.x < _config2.default.width && this.mousePosition.y > 0 && this.mousePosition.y < _config2.default.height) {
+							this.verifyInterception(this.currentBalls[i]);
+						}
+						this.collisions.collideBounds(delta, this.currentBalls[i]);
+	
+						if (this.currentBalls[i].killed) {
+							this.currentBalls.splice(i, 1);
+						}
+					}
+	
+					if (collideObs && collideObs.velocity.y > 10) {
+						collideObs.stickCollide();
+						// collideObs.inObstacle();
+						this.missShoot();
+	
+						this.finishedBall(500);
+						this.updateGame();
+						collideObs = false;
+					} else if (collideObs) {
+						collideObs.inObstacle();
+					}
+				}
+			}
+		}, {
+			key: 'goal',
+			value: function goal() {
+				var goals = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+	
+				GAME_DATA.points += goals;
+				this.uiManager.updateLifes();
+			}
+		}, {
+			key: 'noGoal',
+			value: function noGoal() {
+				GAME_DATA.lifes--;
+				this.uiManager.updateLifes();
+			}
+		}, {
+			key: 'debugGoal',
+			value: function debugGoal(rect) {
+				if (this.testeRect) {
+					this.testeRect.parent.removeChild(this.testeRect);
+				}
+				this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x, rect.y, rect.w, rect.h);
+				this.addChild(this.testeRect);
+				this.testeRect.alpha = 0.2;
+			}
+		}, {
+			key: 'debugStick',
+			value: function debugStick(target) {
+				this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(target.p1.x, target.p1.y);
+				this.testee.lineTo(target.p2.x, target.p2.y);
+				this.addChild(this.testee);
+			}
+		}, {
+			key: 'verifyInterception',
+			value: function verifyInterception(entity) {
+				if (!this.tapping || this.firstPoint && this.firstPoint.y < this.mousePosition.y) {
+					return;
+				}
+	
+				this.secPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
+				var interception = this.collisions.inteceptCircleLineSeg(entity, { p1: this.firstPoint, p2: this.secPoint });
+	
+				//just shoot if have two points of intersection
+				// if(interception.length == 1){
+				// 	console.log(interception[0].y);
+				// 	if(interception[0].y < entity.y){
+				// 		alert('cavadinha')
+				// 	}
+				// }
+				if (interception.length < 2) {
+					return;
+				}
+				this.tapping = false;
+	
+				//angle btx the intersection points
+				var angleColision = -Math.atan2(interception[0].y - interception[1].y, interception[0].x - interception[1].x);
+				angleColision += 90 / 180 * 3.14;;
+				var frontBall = { x: entity.x, y: entity.y - entity.getRadius() };
+	
+				//angle btw front of the ball and the points
+				//let mid = this.getMiddlePoint(this.firstPoint.x,this.firstPoint.y, this.secPoint.x,this.secPoint.y);
+				var angle = -Math.atan2(this.firstPoint.y - frontBall.y, this.secPoint.x - frontBall.x);
+				// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
+				angle += 90 / 180 * 3.14;
+	
+				//0.022
+				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.032;
+	
+				this.uiManager.debug2.text = force;
+	
+				entity.shoot(force, angle, angleColision);
+	
+				// this.reset();
+	
+				this.paused = true;
+				setTimeout(function () {
+					this.paused = false;
+				}.bind(this), 100);
+			}
+		}, {
+			key: 'getMiddlePoint',
+			value: function getMiddlePoint(x0, y0, x1, y1) {
+				var dx = x1 - x0;
+				var dy = y1 - y0;
+				var midX = x0 + dx * 0.50;
+				var midY = y0 + dy * 0.50;
+	
+				return { x: midX, y: midY };
+			}
+		}, {
+			key: 'detectTopCollision',
+			value: function detectTopCollision(target, entity, ballPosition) {
+				// this.debugStick(target)
+				return this.collisions.detectTopCollision(target, entity, ballPosition);
+			}
+		}, {
+			key: 'detectSideCollision',
+			value: function detectSideCollision(target, entity, ballPosition) {
+				// this.debugStick(target)
+				return this.collisions.detectSideCollision(target, entity, ballPosition);
+			}
+		}, {
+			key: 'onTapUp',
+			value: function onTapUp() {
+				this.trailManager.removeTrail();
+				this.tapping = false;
+			}
+		}, {
+			key: 'shootLeft',
+			value: function shootLeft() {
+				var tempBall = this.levelManager.getBall();
+				this.currentBalls.push(tempBall);
+				tempBall.stopMiddle();
+				tempBall.shoot(4.5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.35);
+			}
+		}, {
+			key: 'shootRight',
+			value: function shootRight() {
+				var tempBall = this.levelManager.getBall();
+				this.currentBalls.push(tempBall);
+				tempBall.stopMiddle();
+				tempBall.shoot(4.5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 - 0.35);
+			}
+		}, {
+			key: 'shootTop',
+			value: function shootTop() {
+				var tempBall = this.levelManager.getBall();
+				this.currentBalls.push(tempBall);
+				tempBall.stopMiddle();
+				tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
+			}
+		}, {
+			key: 'shootMiddle',
+			value: function shootMiddle() {
+				var tempBall = this.levelManager.getBall();
+				this.currentBalls.push(tempBall);
+				tempBall.stopMiddle();
+				tempBall.shoot(5 + Math.random() * 0.5, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
+			}
+		}, {
+			key: 'onTapDown',
+			value: function onTapDown() {
+				// this.currentBalls.shoot(6.5 , 0,  0);
+				// for (var i = 51; i >= 0; i--) {
+				// 	let rnd = Math.random()
+				// 	if(rnd < 0.33){
+				// 		this.shootTop()
+				// 	}else if(rnd < 0.66){
+				// this.shootLeft()
+				// 	}else{
+				// 		this.shootRight()
+				// this.shootMiddle();
+				// 	}
+				// }
+				// this.shootLeft()
+				// this.shootRight()
+				// this.shootTop()
+				// // //TOP SHOOT
+				// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
+				this.tapping = true;
+				this.mousePosition = renderer.plugins.interaction.pointer.global;
+				this.firstPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
+				this.trailManager.startNewTrail(this.mousePosition);
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				this.ingameUIContainer.interactive = false;
+				this.ingameUIContainer.off('touchstart').off('mousedown');
+				this.ingameUIContainer.off('touchend').off('mouseup');
+				// this.button.off('touchstart').off('mousedown');
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.removeEvents();
+				this.ingameUIContainer.interactive = true;
+				this.ingameUIContainer.on('mousedown', this.onTapDown.bind(this)).on('touchstart', this.onTapDown.bind(this));
+				this.ingameUIContainer.on('mouseup', this.onTapUp.bind(this)).on('touchend', this.onTapUp.bind(this));
+				// this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+			}
+		}, {
+			key: 'shake',
+			value: function shake() {
+				var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.5;
+				var steps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
+				var time = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.4;
+	
+				var timelinePosition = new TimelineLite();
+				var positionForce = force * 50;
+				var spliterForce = force * 20;
+				var speed = time / steps;
+				var currentPosition = { x: this.x, y: this.y };
+				for (var i = steps; i >= 0; i--) {
+					timelinePosition.append(_gsap2.default.to(this.position, speed, { x: currentPosition.x + Math.random() * positionForce - positionForce / 2, y: currentPosition.y + Math.random() * positionForce - positionForce / 2, ease: "easeNoneLinear" }));
+				};
+	
+				timelinePosition.append(_gsap2.default.to(this.position, speed, { x: currentPosition.x, y: currentPosition.y, ease: "easeeaseNoneLinear" }));
+			}
+		}]);
+	
+		return InitScreen;
+	}(_Screen3.default);
+	
+	exports.default = InitScreen;
 
 /***/ },
-/* 187 */
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var require;var require;/*!
+	 * pixi-filters - v1.0.6
+	 * Compiled Wed Aug 31 2016 08:37:40 GMT-0400 (EDT)
+	 *
+	 * pixi-filters is licensed under the MIT License.
+	 * http://www.opensource.org/licenses/mit-license
+	 */
+	!function(t){if(true)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var e;e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,e.filters=t()}}(function(){return function t(e,r,n){function o(l,u){if(!r[l]){if(!e[l]){var a="function"==typeof require&&require;if(!u&&a)return require(l,!0);if(i)return i(l,!0);var c=new Error("Cannot find module '"+l+"'");throw c.code="MODULE_NOT_FOUND",c}var s=r[l]={exports:{}};e[l][0].call(s.exports,function(t){var r=e[l][1][t];return o(r?r:t)},s,s.exports,t,e,r,n)}return r[l].exports}for(var i="function"==typeof require&&require,l=0;l<n.length;l++)o(n[l]);return o}({1:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform vec4 filterArea;\nuniform float pixelSize;\nuniform sampler2D uSampler;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n    return floor( coord / size ) * size;\n}\n\nvec2 getMod(vec2 coord, vec2 size)\n{\n    return mod( coord , size) / size;\n}\n\nfloat character(float n, vec2 p)\n{\n    p = floor(p*vec2(4.0, -4.0) + 2.5);\n    if (clamp(p.x, 0.0, 4.0) == p.x && clamp(p.y, 0.0, 4.0) == p.y)\n    {\n        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;\n    }\n    return 0.0;\n}\n\nvoid main()\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    // get the rounded color..\n    vec2 pixCoord = pixelate(coord, vec2(pixelSize));\n    pixCoord = unmapCoord(pixCoord);\n\n    vec4 color = texture2D(uSampler, pixCoord);\n\n    // determine the character to use\n    float gray = (color.r + color.g + color.b) / 3.0;\n\n    float n =  65536.0;             // .\n    if (gray > 0.2) n = 65600.0;    // :\n    if (gray > 0.3) n = 332772.0;   // *\n    if (gray > 0.4) n = 15255086.0; // o\n    if (gray > 0.5) n = 23385164.0; // &\n    if (gray > 0.6) n = 15252014.0; // 8\n    if (gray > 0.7) n = 13199452.0; // @\n    if (gray > 0.8) n = 11512810.0; // #\n\n    // get the mod..\n    vec2 modd = getMod(coord, vec2(pixelSize));\n\n    gl_FragColor = color * character( n, vec2(-1.0) + modd * 2.0);\n\n}"),this.size=8}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.pixelSize},set:function(t){this.uniforms.pixelSize=t}}})},{}],2:[function(t,e,r){function n(){PIXI.Filter.call(this),this.blurXFilter=new o,this.blurYFilter=new i,this.blurYFilter.blendMode=PIXI.BLEND_MODES.SCREEN,this.defaultFilter=new l}var o=PIXI.filters.BlurXFilter,i=PIXI.filters.BlurYFilter,l=PIXI.filters.VoidFilter;n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.defaultFilter.apply(t,e,r),this.blurXFilter.apply(t,e,n),this.blurYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=this.blurYFilter.blur=t}},blurX:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=t}},blurY:{get:function(){return this.blurYFilter.blur},set:function(t){this.blurYFilter.blur=t}}})},{}],3:[function(t,e,r){if("undefined"==typeof PIXI)throw new Error("pixi.js is required to be included")},{}],4:[function(t,e,r){function n(t,e,r){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying mediump vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 texelSize;\nuniform float matrix[9];\n\nvoid main(void)\n{\n   vec4 c11 = texture2D(uSampler, vTextureCoord - texelSize); // top left\n   vec4 c12 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - texelSize.y)); // top center\n   vec4 c13 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y - texelSize.y)); // top right\n\n   vec4 c21 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y)); // mid left\n   vec4 c22 = texture2D(uSampler, vTextureCoord); // mid center\n   vec4 c23 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y)); // mid right\n\n   vec4 c31 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y + texelSize.y)); // bottom left\n   vec4 c32 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + texelSize.y)); // bottom center\n   vec4 c33 = texture2D(uSampler, vTextureCoord + texelSize); // bottom right\n\n   gl_FragColor =\n       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +\n       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +\n       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];\n\n   gl_FragColor.a = c22.a;\n}\n"),this.matrix=t,this.width=e,this.height=r}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{matrix:{get:function(){return this.uniforms.matrix},set:function(t){this.uniforms.matrix=new Float32Array(t)}},width:{get:function(){return 1/this.uniforms.texelSize[0]},set:function(t){this.uniforms.texelSize[0]=1/t}},height:{get:function(){return 1/this.uniforms.texelSize[1]},set:function(t){this.uniforms.texelSize[1]=1/t}}})},{}],5:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);\n\n    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\n    if (lum < 1.00)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.75)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.50)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.3)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n}\n")}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n},{}],6:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec4 filterArea;\nuniform sampler2D uSampler;\n\nuniform float angle;\nuniform float scale;\n\nfloat pattern()\n{\n   float s = sin(angle), c = cos(angle);\n   vec2 tex = vTextureCoord * filterArea.xy;\n   vec2 point = vec2(\n       c * tex.x - s * tex.y,\n       s * tex.x + c * tex.y\n   ) * scale;\n   return (sin(point.x) * sin(point.y)) * 4.0;\n}\n\nvoid main()\n{\n   vec4 color = texture2D(uSampler, vTextureCoord);\n   float average = (color.r + color.g + color.b) / 3.0;\n   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);\n}\n"),this.scale=1,this.angle=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{scale:{get:function(){return this.uniforms.scale},set:function(t){this.uniforms.scale=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],7:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float strength;\nuniform vec4 filterArea;\n\nvoid main(void)\n{\n\tvec2 onePixel = vec2(1.0 / filterArea);\n\n\tvec4 color;\n\n\tcolor.rgb = vec3(0.5);\n\n\tcolor -= texture2D(uSampler, vTextureCoord - onePixel) * strength;\n\tcolor += texture2D(uSampler, vTextureCoord + onePixel) * strength;\n\n\tcolor.rgb = vec3((color.r + color.g + color.b) / 3.0);\n\n\tfloat alpha = texture2D(uSampler, vTextureCoord).a;\n\n\tgl_FragColor = vec4(color.rgb * alpha, alpha);\n}\n"),this.strength=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{strength:{get:function(){return this.uniforms.strength},set:function(t){this.uniforms.strength=t}}})},{}],8:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform vec2 size;\nuniform sampler2D uSampler;\n\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n\treturn floor( coord / size ) * size;\n}\n\nvoid main(void)\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = pixelate(coord, size);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord);\n}\n"),this.size=[10,10]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.size},set:function(t){this.uniforms.size.value=t}}})},{}],9:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 filterArea;\nuniform vec2 red;\nuniform vec2 green;\nuniform vec2 blue;\n\nvoid main(void)\n{\n   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/filterArea.xy).r;\n   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/filterArea.xy).g;\n   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/filterArea.xy).b;\n   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;\n}\n"),this.red=[-10,0],this.green=[0,10],this.blue=[0,0]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{red:{get:function(){return this.uniforms.red},set:function(t){this.uniforms.red=t}},green:{get:function(){return this.uniforms.green},set:function(t){this.uniforms.green=t}},blue:{get:function(){return this.uniforms.blue.value},set:function(t){this.uniforms.blue.value=t}}})},{}],10:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nuniform vec2 center;\nuniform vec3 params; // 10.0, 0.8, 0.1\nuniform float time;\n\nvoid main()\n{\n    vec2 uv = vTextureCoord;\n    vec2 texCoord = uv;\n\n    float dist = distance(uv, center);\n\n    if ( (dist <= (time + params.z)) && (dist >= (time - params.z)) )\n    {\n        float diff = (dist - time);\n        float powDiff = 1.0 - pow(abs(diff*params.x), params.y);\n\n        float diffTime = diff  * powDiff;\n        vec2 diffUV = normalize(uv - center);\n        texCoord = uv + (diffUV * diffTime);\n    }\n\n    gl_FragColor = texture2D(uSampler, texCoord);\n}\n",{center:{type:"v2",value:{x:.5,y:.5}},params:{type:"v3",value:{x:10,y:.8,z:.1}},time:{type:"1f",value:0}}),this.center=[.5,.5],this.params=[10,.8,.1],this.time=0}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{center:{get:function(){return this.uniforms.center},set:function(t){this.uniforms.center=t}},params:{get:function(){return this.uniforms.params},set:function(t){this.uniforms.params=t}},time:{get:function(){return this.uniforms.time},set:function(t){this.uniforms.time=t}}})},{}],11:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float blur;\nuniform float gradientBlur;\nuniform vec2 start;\nuniform vec2 end;\nuniform vec2 delta;\nuniform vec2 texSize;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));\n    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n"),this.uniforms.blur=100,this.uniforms.gradientBlur=600,this.uniforms.start=new PIXI.Point(0,window.innerHeight/2),this.uniforms.end=new PIXI.Point(600,window.innerHeight/2),this.uniforms.delta=new PIXI.Point(30,30),this.uniforms.texSize=new PIXI.Point(window.innerWidth,window.innerHeight),this.updateDelta()}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){this.uniforms.delta.x=0,this.uniforms.delta.y=0},Object.defineProperties(n.prototype,{blur:{get:function(){return this.uniforms.blur},set:function(t){this.uniforms.blur=t}},gradientBlur:{get:function(){return this.uniforms.gradientBlur},set:function(t){this.uniforms.gradientBlur=t}},start:{get:function(){return this.uniforms.start},set:function(t){this.uniforms.start=t,this.updateDelta()}},end:{get:function(){return this.uniforms.end},set:function(t){this.uniforms.end=t,this.updateDelta()}}})},{}],12:[function(t,e,r){function n(){PIXI.Filter.call(this),this.tiltShiftXFilter=new o,this.tiltShiftYFilter=new i}var o=t("./TiltShiftXFilter"),i=t("./TiltShiftYFilter");n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.tiltShiftXFilter.apply(t,e,n),this.tiltShiftYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.tiltShiftXFilter.blur},set:function(t){this.tiltShiftXFilter.blur=this.tiltShiftYFilter.blur=t}},gradientBlur:{get:function(){return this.tiltShiftXFilter.gradientBlur},set:function(t){this.tiltShiftXFilter.gradientBlur=this.tiltShiftYFilter.gradientBlur=t}},start:{get:function(){return this.tiltShiftXFilter.start},set:function(t){this.tiltShiftXFilter.start=this.tiltShiftYFilter.start=t}},end:{get:function(){return this.tiltShiftXFilter.end},set:function(t){this.tiltShiftXFilter.end=this.tiltShiftYFilter.end=t}}})},{"./TiltShiftXFilter":13,"./TiltShiftYFilter":14}],13:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=t/r,this.uniforms.delta.y=e/r}},{"./TiltShiftAxisFilter":11}],14:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=-e/r,this.uniforms.delta.y=t/r}},{"./TiltShiftAxisFilter":11}],15:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 twist(vec2 coord)\n{\n    coord -= offset;\n\n    float dist = length(coord);\n\n    if (dist < radius)\n    {\n        float ratioDist = (radius - dist) / radius;\n        float angleMod = ratioDist * ratioDist * angle;\n        float s = sin(angleMod);\n        float c = cos(angleMod);\n        coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n    }\n\n    coord += offset;\n\n    return coord;\n}\n\nvoid main(void)\n{\n\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = twist(coord);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord );\n\n}\n"),this.radius=200,this.angle=4,this.padding=20}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{offset:{get:function(){return this.uniforms.offset},set:function(t){this.uniforms.offset=t}},radius:{get:function(){return this.uniforms.radius},set:function(t){this.uniforms.radius=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],16:[function(t,e,r){t("./check");var n={AsciiFilter:t("./ascii/AsciiFilter"),BloomFilter:t("./bloom/BloomFilter"),ConvolutionFilter:t("./convolution/ConvolutionFilter"),CrossHatchFilter:t("./crosshatch/CrossHatchFilter"),DotFilter:t("./dot/DotFilter"),EmbossFilter:t("./emboss/EmbossFilter"),PixelateFilter:t("./pixelate/PixelateFilter"),RGBSplitFilter:t("./rgb/RGBSplitFilter"),ShockwaveFilter:t("./shockwave/ShockwaveFilter"),TiltShiftFilter:t("./tiltshift/TiltShiftFilter"),TiltShiftAxisFilter:t("./tiltshift/TiltShiftAxisFilter"),TiltShiftXFilter:t("./tiltshift/TiltShiftXFilter"),TiltShiftYFilter:t("./tiltshift/TiltShiftYFilter"),TwistFilter:t("./twist/TwistFilter")};Object.assign(PIXI.filters,n),"undefined"!=typeof e&&e.exports&&(e.exports=n)},{"./ascii/AsciiFilter":1,"./bloom/BloomFilter":2,"./check":3,"./convolution/ConvolutionFilter":4,"./crosshatch/CrossHatchFilter":5,"./dot/DotFilter":6,"./emboss/EmbossFilter":7,"./pixelate/PixelateFilter":8,"./rgb/RGBSplitFilter":9,"./shockwave/ShockwaveFilter":10,"./tiltshift/TiltShiftAxisFilter":11,"./tiltshift/TiltShiftFilter":12,"./tiltshift/TiltShiftXFilter":13,"./tiltshift/TiltShiftYFilter":14,"./twist/TwistFilter":15}]},{},[16])(16)});
+	//# sourceMappingURL=filters.min.js.map
+
+
+/***/ },
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -44078,7 +44680,7 @@
 							if (global) {
 								_globals[n] = _exports[n] = cl; //provides a way to avoid global namespace pollution. By default, the main classes like TweenLite, Power1, Strong, etc. are added to window unless a GreenSockGlobals is defined. So if you want to have things added to a custom object instead, just do something like window.GreenSockGlobals = {} before loading any GreenSock files. You can even set up an alias like window.GreenSockGlobals = windows.gs = {} so that you can access everything like gs.TweenLite. Also remember that ALL classes are added to the window.com.greensock object (in their respective packages, like com.greensock.easing.Power1, com.greensock.TweenLite, etc.)
 								hasModule = (typeof(module) !== "undefined" && module.exports);
-								if (!hasModule && "function" === "function" && __webpack_require__(188)){ //AMD
+								if (!hasModule && "function" === "function" && __webpack_require__(190)){ //AMD
 									!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() { return cl; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 								} else if (hasModule){ //node
 									if (ns === moduleName) {
@@ -45895,7 +46497,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 188 */
+/* 190 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -45903,674 +46505,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var ScreenManager = function (_PIXI$Container) {
-		_inherits(ScreenManager, _PIXI$Container);
-	
-		function ScreenManager() {
-			_classCallCheck(this, ScreenManager);
-	
-			var _this = _possibleConstructorReturn(this, (ScreenManager.__proto__ || Object.getPrototypeOf(ScreenManager)).call(this));
-	
-			_this.currentScreen = null;
-			_this.screenList = [];
-			return _this;
-		}
-	
-		_createClass(ScreenManager, [{
-			key: 'addScreen',
-			value: function addScreen(screen) {
-				this.screenList.push(screen);
-				this.currentScreen = screen;
-				screen.screenManager = this;
-			}
-		}, {
-			key: 'change',
-			value: function change(screenLabel) {
-				var tempScreen = void 0;
-				for (var i = 0; i < this.screenList.length; i++) {
-					if (this.screenList[i].label == screenLabel) {
-						tempScreen = this.screenList[i];
-					}
-				}
-				if (this.currentScreen) {
-					this.currentScreen.transitionOut(tempScreen);
-				}
-			}
-			//change between screens
-	
-		}, {
-			key: 'forceChange',
-			value: function forceChange(screenLabel) {
-				if (this.currentScreen && this.currentScreen.parent) {
-					this.removeChild(this.currentScreen);
-				}
-				var tempScreen = void 0;
-				for (var i = 0; i < this.screenList.length; i++) {
-					if (this.screenList[i].label == screenLabel) {
-						tempScreen = this.screenList[i];
-					}
-				}
-				this.currentScreen = tempScreen;
-				this.currentScreen.build();
-				this.currentScreen.transitionIn();
-				this.addChild(this.currentScreen);
-			}
-			//update manager
-	
-		}, {
-			key: 'update',
-			value: function update(delta) {
-				if (this.screenList != null) {
-					this.currentScreen.update(delta);
-				}
-			}
-		}]);
-	
-		return ScreenManager;
-	}(PIXI.Container);
-	
-	exports.default = ScreenManager;
-
-/***/ },
-/* 190 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _pixiFilters = __webpack_require__(191);
-	
-	var _pixiFilters2 = _interopRequireDefault(_pixiFilters);
-	
-	var _gsap = __webpack_require__(187);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _utils = __webpack_require__(192);
-	
-	var _utils2 = _interopRequireDefault(_utils);
-	
-	var _Screen2 = __webpack_require__(193);
-	
-	var _Screen3 = _interopRequireDefault(_Screen2);
-	
-	var _Obstacle = __webpack_require__(194);
-	
-	var _Obstacle2 = _interopRequireDefault(_Obstacle);
-	
-	var _Target = __webpack_require__(195);
-	
-	var _Target2 = _interopRequireDefault(_Target);
-	
-	var _Collisions = __webpack_require__(196);
-	
-	var _Collisions2 = _interopRequireDefault(_Collisions);
-	
-	var _TrailManager = __webpack_require__(197);
-	
-	var _TrailManager2 = _interopRequireDefault(_TrailManager);
-	
-	var _ViewManager = __webpack_require__(199);
-	
-	var _ViewManager2 = _interopRequireDefault(_ViewManager);
-	
-	var _LevelManager = __webpack_require__(200);
-	
-	var _LevelManager2 = _interopRequireDefault(_LevelManager);
-	
-	var _Goal = __webpack_require__(202);
-	
-	var _Goal2 = _interopRequireDefault(_Goal);
-	
-	var _UIManager = __webpack_require__(203);
-	
-	var _UIManager2 = _interopRequireDefault(_UIManager);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var InitScreen = function (_Screen) {
-		_inherits(InitScreen, _Screen);
-	
-		function InitScreen(label) {
-			_classCallCheck(this, InitScreen);
-	
-			return _possibleConstructorReturn(this, (InitScreen.__proto__ || Object.getPrototypeOf(InitScreen)).call(this, label));
-		}
-	
-		_createClass(InitScreen, [{
-			key: 'build',
-			value: function build() {
-	
-				_get(InitScreen.prototype.__proto__ || Object.getPrototypeOf(InitScreen.prototype), 'build', this).call(this);
-	
-				this.gameContainer = new PIXI.Container();
-				this.addChild(this.gameContainer);
-	
-				this.ingameUIContainer = new PIXI.Container();
-				this.addChild(this.ingameUIContainer);
-	
-				this.outgameUIContainer = new PIXI.Container();
-				this.addChild(this.outgameUIContainer);
-	
-				this.uiManager = new _UIManager2.default(this);
-				this.uiManager.build();
-				this.collisions = new _Collisions2.default(this);
-				this.viewManager = new _ViewManager2.default();
-				this.levelManager = new _LevelManager2.default(this);
-				this.trailManager = new _TrailManager2.default(this.ingameUIContainer);
-	
-				this.pixelate = new PIXI.filters.PixelateFilter();
-				this.pixelate.size.x = 4;
-				this.pixelate.size.y = 4;
-				this.gameContainer.filters = [this.pixelate];
-				// this.ingameUIContainer.filters = [this.pixelate]
-				// this.outgameUIContainer.filters = [this.pixelate]
-	
-	
-				this.updateList = [];
-				this.targets = [];
-				this.currentBalls = [];
-				GAME_DATA.lifes = 3;
-				this.currentTrail = false;
-	
-				this.goleira = new _Goal2.default(this);
-				this.goleira.build();
-				this.goleira.x = _config2.default.width / 2;
-				this.goleira.y = 150;
-	
-				this.gameContainer.addChild(this.goleira);
-				this.add(this.goleira);
-				this.goleira.addTargets();
-				this.goleira.show();
-				this.addEvents();
-				this.startGame();
-			}
-		}, {
-			key: 'remove',
-			value: function remove(entity) {
-				for (var i = this.updateList.length - 1; i >= 0; i--) {
-					if (this.updateList[i] == entity) {
-						this.updateList.splice(i, 1);
-					}
-				}
-			}
-		}, {
-			key: 'add',
-			value: function add(entity) {
-				this.remove(entity);
-				for (var i = this.updateList.length - 1; i >= 0; i--) {
-					if (this.updateList[i] == entity) {
-						return;
-					}
-				}
-				this.updateList.push(entity);
-				this.gameContainer.addChild(entity);
-			}
-		}, {
-			key: 'gameOver',
-			value: function gameOver() {
-				// this.button.visible = true;
-				// this.button.scale.set(0);
-				// TweenLite.to(this.button.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'})
-	
-				for (var i = this.levelManager.obstacles.length - 1; i >= 0; i--) {
-					if (this.levelManager.obstacles[i].parent) {
-						this.levelManager.obstacles[i].parent.removeChild(this.levelManager.obstacles[i]);
-					}
-				}
-	
-				// for (var i = this.currentBalls.length - 1; i >= 0; i--) {
-				// 	if(this.currentBalls[i].parent){
-				// 		this.currentBalls[i].parent.removeChild(this.currentBalls[i])
-				// 	}
-				// }
-	
-				this.goleira.reset();
-				// this.currentBalls = [];
-				this.levelManager.obstacles = [];
-	
-				this.gameStarted = false;
-	
-				this.screenManager.change('StartScreen');
-	
-				// this.paused = true;
-			}
-		}, {
-			key: 'startGame',
-			value: function startGame() {
-	
-				console.log('START GAME');
-				GAME_DATA.lifes = 3;
-				GAME_DATA.points = 0;
-				this.spotedBall = null;
-				this.getNewBall();
-				this.uiManager.createLifes();
-				this.levelManager.createObstacles();
-				// this.levelManager.addTargets();
-				// TweenLite.to(this.button.scale, 0.2, {x:0, y:0, ease:'easeInBack'})
-				// this.button.visible = false;
-				this.gameStarted = true;
-				// this.paused = false;
-			}
-		}, {
-			key: 'getNewBall',
-			value: function getNewBall() {
-				console.log('BALLLLLLZ');
-				if (this.spotedBall && !this.spotedBall.shooting) {
-					// 	console.log('spot',this.spotedBall.shooting);
-					return;
-				}
-				var ball = this.levelManager.getBall();
-				this.spotedBall = ball;
-				this.currentBalls.push(this.spotedBall);
-			}
-		}, {
-			key: 'reset',
-			value: function reset() {
-				if (!this.gameStarted) {
-					return;
-				}
-				this.finishedBall();
-				console.log('reset');
-				this.paused = false;
-				this.colliding = false;
-			}
-		}, {
-			key: 'removeBalls',
-			value: function removeBalls() {
-				for (var i = this.currentBalls.length - 1; i >= 0; i--) {
-					this.currentBalls[i].killBall();
-				}
-			}
-		}, {
-			key: 'debugBall',
-			value: function debugBall(ballPosition, entity) {
-				if (this.testeBall && this.testeBall.parent) {
-					this.testeBall.parent.removeChild(this.testeBall);
-				}
-				this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x, ballPosition.y, entity.getRadius());
-				this.addChild(this.testeBall);
-			}
-		}, {
-			key: 'finishedBall',
-			value: function finishedBall() {
-				var timer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-	
-				// console.log('FINIZED');
-				setTimeout(function () {
-					this.getNewBall();
-				}.bind(this), timer);
-			}
-		}, {
-			key: 'updateGame',
-			value: function updateGame() {
-				this.uiManager.updateLifes();
-				if (GAME_DATA.lifes) {
-					this.levelManager.createObstacles();
-				}
-			}
-		}, {
-			key: 'missShoot',
-			value: function missShoot() {
-				if (GAME_DATA.lifes <= 0) {
-					return;
-				}
-				GAME_DATA.lifes--;
-				this.uiManager.updateLifes();
-	
-				if (GAME_DATA.lifes <= 0) {
-					this.gameStarted = false;
-					setTimeout(function () {
-						this.removeBalls();
-					}.bind(this), 500);
-					setTimeout(function () {
-						this.gameOver();
-					}.bind(this), 1200);
-				}
-			}
-		}, {
-			key: 'update',
-			value: function update(delta) {
-				this.trailManager.update(delta, this.mousePosition);
-				if (this.paused) {
-					return;
-				}
-				_get(InitScreen.prototype.__proto__ || Object.getPrototypeOf(InitScreen.prototype), 'update', this).call(this, delta);
-	
-				if (this.spotedBall) {
-					// this.dot.x = this.spotedBall.x
-					// this.dot.y = this.spotedBall.y + this.spotedBall.spriteContainer.y
-	
-					// this.trail.update(delta, {x:this.dot.x, y:this.dot.y})
-				}
-	
-				this.uiManager.debug2.text = delta;
-	
-				for (var i = this.updateList.length - 1; i >= 0; i--) {
-					if (this.updateList[i].update) {
-						this.updateList[i].update(delta);
-					}
-					this.viewManager.updateObjectScale(this.updateList[i], _config2.default.height);
-				}
-	
-				this.gameContainer.children.sort(_utils2.default.depthCompare);
-	
-				if (this.tapping) {
-					this.mousePosition = renderer.plugins.interaction.pointer.global;
-				}
-				// if(this.currentTrail)
-	
-				// this.collide(delta, this.currentBalls, this.currentBalls2)
-				// console.log(this.currentBalls.length);
-				// if(this.uiManager.debug2.text != this.currentBalls.length){
-				// 	this.uiManager.debug2.text = this.currentBalls.length;
-				// }
-				this.goleira.update(delta);
-	
-				// console.log(this.levelManager.obstacles.length);
-				if (this.gameStarted) {
-					var collideObs = false;
-					for (var i = this.currentBalls.length - 1; i >= 0; i--) {
-						if (!this.currentBalls[i].collided) {
-							for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
-								if (this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])) {
-									this.shake();
-									collideObs = this.currentBalls[i];
-								}
-							}
-						}
-	
-						if (this.mousePosition && this.mousePosition.x > 0 && this.mousePosition.x < _config2.default.width && this.mousePosition.y > 0 && this.mousePosition.y < _config2.default.height) {
-							this.verifyInterception(this.currentBalls[i]);
-						}
-						this.collisions.collideBounds(delta, this.currentBalls[i]);
-	
-						if (this.currentBalls[i].killed) {
-							this.currentBalls.splice(i, 1);
-						}
-					}
-	
-					if (collideObs && collideObs.velocity.y > 10) {
-						collideObs.stickCollide();
-						// collideObs.inObstacle();
-						this.missShoot();
-	
-						this.finishedBall(500);
-						this.updateGame();
-						collideObs = false;
-					} else if (collideObs) {
-						collideObs.inObstacle();
-					}
-				}
-			}
-		}, {
-			key: 'goal',
-			value: function goal() {
-				var goals = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
-	
-				GAME_DATA.points += goals;
-				this.uiManager.updateLifes();
-			}
-		}, {
-			key: 'noGoal',
-			value: function noGoal() {
-				GAME_DATA.lifes--;
-				this.uiManager.updateLifes();
-			}
-		}, {
-			key: 'debugGoal',
-			value: function debugGoal(rect) {
-				if (this.testeRect) {
-					this.testeRect.parent.removeChild(this.testeRect);
-				}
-				this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x, rect.y, rect.w, rect.h);
-				this.addChild(this.testeRect);
-				this.testeRect.alpha = 0.2;
-			}
-		}, {
-			key: 'debugStick',
-			value: function debugStick(target) {
-				this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(target.p1.x, target.p1.y);
-				this.testee.lineTo(target.p2.x, target.p2.y);
-				this.addChild(this.testee);
-			}
-		}, {
-			key: 'verifyInterception',
-			value: function verifyInterception(entity) {
-				if (!this.tapping || this.firstPoint && this.firstPoint.y < this.mousePosition.y) {
-					return;
-				}
-	
-				this.secPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
-				var interception = this.collisions.inteceptCircleLineSeg(entity, { p1: this.firstPoint, p2: this.secPoint });
-	
-				//just shoot if have two points of intersection
-				// if(interception.length == 1){
-				// 	console.log(interception[0].y);
-				// 	if(interception[0].y < entity.y){
-				// 		alert('cavadinha')
-				// 	}
-				// }
-				if (interception.length < 2) {
-					return;
-				}
-				this.tapping = false;
-	
-				//angle btx the intersection points
-				var angleColision = -Math.atan2(interception[0].y - interception[1].y, interception[0].x - interception[1].x);
-				angleColision += 90 / 180 * 3.14;;
-				var frontBall = { x: entity.x, y: entity.y - entity.getRadius() };
-	
-				//angle btw front of the ball and the points
-				//let mid = this.getMiddlePoint(this.firstPoint.x,this.firstPoint.y, this.secPoint.x,this.secPoint.y);
-				var angle = -Math.atan2(this.firstPoint.y - frontBall.y, this.secPoint.x - frontBall.x);
-				// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
-				angle += 90 / 180 * 3.14;
-	
-				//0.022
-				var force = _utils2.default.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.032;
-	
-				this.uiManager.debug2.text = force;
-	
-				entity.shoot(force, angle, angleColision);
-	
-				// this.reset();
-	
-				this.paused = true;
-				setTimeout(function () {
-					this.paused = false;
-				}.bind(this), 100);
-			}
-		}, {
-			key: 'getMiddlePoint',
-			value: function getMiddlePoint(x0, y0, x1, y1) {
-				var dx = x1 - x0;
-				var dy = y1 - y0;
-				var midX = x0 + dx * 0.50;
-				var midY = y0 + dy * 0.50;
-	
-				return { x: midX, y: midY };
-			}
-		}, {
-			key: 'detectTopCollision',
-			value: function detectTopCollision(target, entity, ballPosition) {
-				// this.debugStick(target)
-				return this.collisions.detectTopCollision(target, entity, ballPosition);
-			}
-		}, {
-			key: 'detectSideCollision',
-			value: function detectSideCollision(target, entity, ballPosition) {
-				// this.debugStick(target)
-				return this.collisions.detectSideCollision(target, entity, ballPosition);
-			}
-		}, {
-			key: 'onTapUp',
-			value: function onTapUp() {
-				this.trailManager.removeTrail();
-				this.tapping = false;
-			}
-		}, {
-			key: 'shootLeft',
-			value: function shootLeft() {
-				var tempBall = this.levelManager.getBall();
-				this.currentBalls.push(tempBall);
-				tempBall.stopMiddle();
-				tempBall.shoot(4.5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.35);
-			}
-		}, {
-			key: 'shootRight',
-			value: function shootRight() {
-				var tempBall = this.levelManager.getBall();
-				this.currentBalls.push(tempBall);
-				tempBall.stopMiddle();
-				tempBall.shoot(4.5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 - 0.35);
-			}
-		}, {
-			key: 'shootTop',
-			value: function shootTop() {
-				var tempBall = this.levelManager.getBall();
-				this.currentBalls.push(tempBall);
-				tempBall.stopMiddle();
-				tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
-			}
-		}, {
-			key: 'shootMiddle',
-			value: function shootMiddle() {
-				var tempBall = this.levelManager.getBall();
-				this.currentBalls.push(tempBall);
-				tempBall.stopMiddle();
-				tempBall.shoot(5 + Math.random() * 0.5, Math.random() * 0.4 - 0.2, Math.random() * 0.1 - 0.05);
-			}
-		}, {
-			key: 'onTapDown',
-			value: function onTapDown() {
-				// this.currentBalls.shoot(6.5 , 0,  0);
-				// for (var i = 51; i >= 0; i--) {
-				// 	let rnd = Math.random()
-				// 	if(rnd < 0.33){
-				// 		this.shootTop()
-				// 	}else if(rnd < 0.66){
-				// this.shootLeft()
-				// 	}else{
-				// 		this.shootRight()
-				// this.shootMiddle();
-				// 	}
-				// }
-				// this.shootLeft()
-				// this.shootRight()
-				// this.shootTop()
-				// // //TOP SHOOT
-				// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
-				this.tapping = true;
-				this.mousePosition = renderer.plugins.interaction.pointer.global;
-				this.firstPoint = { x: this.mousePosition.x, y: this.mousePosition.y };
-				this.trailManager.startNewTrail(this.mousePosition);
-			}
-		}, {
-			key: 'removeEvents',
-			value: function removeEvents() {
-				this.ingameUIContainer.interactive = false;
-				this.ingameUIContainer.off('touchstart').off('mousedown');
-				this.ingameUIContainer.off('touchend').off('mouseup');
-				// this.button.off('touchstart').off('mousedown');
-			}
-		}, {
-			key: 'addEvents',
-			value: function addEvents() {
-				this.removeEvents();
-				this.ingameUIContainer.interactive = true;
-				this.ingameUIContainer.on('mousedown', this.onTapDown.bind(this)).on('touchstart', this.onTapDown.bind(this));
-				this.ingameUIContainer.on('mouseup', this.onTapUp.bind(this)).on('touchend', this.onTapUp.bind(this));
-				// this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
-			}
-		}, {
-			key: 'shake',
-			value: function shake() {
-				var force = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.5;
-				var steps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 4;
-				var time = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.4;
-	
-				var timelinePosition = new TimelineLite();
-				var positionForce = force * 50;
-				var spliterForce = force * 20;
-				var speed = time / steps;
-				var currentPosition = { x: this.x, y: this.y };
-				for (var i = steps; i >= 0; i--) {
-					timelinePosition.append(_gsap2.default.to(this.position, speed, { x: currentPosition.x + Math.random() * positionForce - positionForce / 2, y: currentPosition.y + Math.random() * positionForce - positionForce / 2, ease: "easeNoneLinear" }));
-				};
-	
-				timelinePosition.append(_gsap2.default.to(this.position, speed, { x: currentPosition.x, y: currentPosition.y, ease: "easeeaseNoneLinear" }));
-			}
-		}]);
-	
-		return InitScreen;
-	}(_Screen3.default);
-	
-	exports.default = InitScreen;
-
-/***/ },
 /* 191 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var require;var require;/*!
-	 * pixi-filters - v1.0.6
-	 * Compiled Wed Aug 31 2016 08:37:40 GMT-0400 (EDT)
-	 *
-	 * pixi-filters is licensed under the MIT License.
-	 * http://www.opensource.org/licenses/mit-license
-	 */
-	!function(t){if(true)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var e;e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,e.filters=t()}}(function(){return function t(e,r,n){function o(l,u){if(!r[l]){if(!e[l]){var a="function"==typeof require&&require;if(!u&&a)return require(l,!0);if(i)return i(l,!0);var c=new Error("Cannot find module '"+l+"'");throw c.code="MODULE_NOT_FOUND",c}var s=r[l]={exports:{}};e[l][0].call(s.exports,function(t){var r=e[l][1][t];return o(r?r:t)},s,s.exports,t,e,r,n)}return r[l].exports}for(var i="function"==typeof require&&require,l=0;l<n.length;l++)o(n[l]);return o}({1:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform vec4 filterArea;\nuniform float pixelSize;\nuniform sampler2D uSampler;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n    return floor( coord / size ) * size;\n}\n\nvec2 getMod(vec2 coord, vec2 size)\n{\n    return mod( coord , size) / size;\n}\n\nfloat character(float n, vec2 p)\n{\n    p = floor(p*vec2(4.0, -4.0) + 2.5);\n    if (clamp(p.x, 0.0, 4.0) == p.x && clamp(p.y, 0.0, 4.0) == p.y)\n    {\n        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;\n    }\n    return 0.0;\n}\n\nvoid main()\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    // get the rounded color..\n    vec2 pixCoord = pixelate(coord, vec2(pixelSize));\n    pixCoord = unmapCoord(pixCoord);\n\n    vec4 color = texture2D(uSampler, pixCoord);\n\n    // determine the character to use\n    float gray = (color.r + color.g + color.b) / 3.0;\n\n    float n =  65536.0;             // .\n    if (gray > 0.2) n = 65600.0;    // :\n    if (gray > 0.3) n = 332772.0;   // *\n    if (gray > 0.4) n = 15255086.0; // o\n    if (gray > 0.5) n = 23385164.0; // &\n    if (gray > 0.6) n = 15252014.0; // 8\n    if (gray > 0.7) n = 13199452.0; // @\n    if (gray > 0.8) n = 11512810.0; // #\n\n    // get the mod..\n    vec2 modd = getMod(coord, vec2(pixelSize));\n\n    gl_FragColor = color * character( n, vec2(-1.0) + modd * 2.0);\n\n}"),this.size=8}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.pixelSize},set:function(t){this.uniforms.pixelSize=t}}})},{}],2:[function(t,e,r){function n(){PIXI.Filter.call(this),this.blurXFilter=new o,this.blurYFilter=new i,this.blurYFilter.blendMode=PIXI.BLEND_MODES.SCREEN,this.defaultFilter=new l}var o=PIXI.filters.BlurXFilter,i=PIXI.filters.BlurYFilter,l=PIXI.filters.VoidFilter;n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.defaultFilter.apply(t,e,r),this.blurXFilter.apply(t,e,n),this.blurYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=this.blurYFilter.blur=t}},blurX:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=t}},blurY:{get:function(){return this.blurYFilter.blur},set:function(t){this.blurYFilter.blur=t}}})},{}],3:[function(t,e,r){if("undefined"==typeof PIXI)throw new Error("pixi.js is required to be included")},{}],4:[function(t,e,r){function n(t,e,r){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying mediump vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 texelSize;\nuniform float matrix[9];\n\nvoid main(void)\n{\n   vec4 c11 = texture2D(uSampler, vTextureCoord - texelSize); // top left\n   vec4 c12 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - texelSize.y)); // top center\n   vec4 c13 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y - texelSize.y)); // top right\n\n   vec4 c21 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y)); // mid left\n   vec4 c22 = texture2D(uSampler, vTextureCoord); // mid center\n   vec4 c23 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y)); // mid right\n\n   vec4 c31 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y + texelSize.y)); // bottom left\n   vec4 c32 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + texelSize.y)); // bottom center\n   vec4 c33 = texture2D(uSampler, vTextureCoord + texelSize); // bottom right\n\n   gl_FragColor =\n       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +\n       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +\n       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];\n\n   gl_FragColor.a = c22.a;\n}\n"),this.matrix=t,this.width=e,this.height=r}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{matrix:{get:function(){return this.uniforms.matrix},set:function(t){this.uniforms.matrix=new Float32Array(t)}},width:{get:function(){return 1/this.uniforms.texelSize[0]},set:function(t){this.uniforms.texelSize[0]=1/t}},height:{get:function(){return 1/this.uniforms.texelSize[1]},set:function(t){this.uniforms.texelSize[1]=1/t}}})},{}],5:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);\n\n    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\n    if (lum < 1.00)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.75)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.50)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.3)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n}\n")}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n},{}],6:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec4 filterArea;\nuniform sampler2D uSampler;\n\nuniform float angle;\nuniform float scale;\n\nfloat pattern()\n{\n   float s = sin(angle), c = cos(angle);\n   vec2 tex = vTextureCoord * filterArea.xy;\n   vec2 point = vec2(\n       c * tex.x - s * tex.y,\n       s * tex.x + c * tex.y\n   ) * scale;\n   return (sin(point.x) * sin(point.y)) * 4.0;\n}\n\nvoid main()\n{\n   vec4 color = texture2D(uSampler, vTextureCoord);\n   float average = (color.r + color.g + color.b) / 3.0;\n   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);\n}\n"),this.scale=1,this.angle=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{scale:{get:function(){return this.uniforms.scale},set:function(t){this.uniforms.scale=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],7:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float strength;\nuniform vec4 filterArea;\n\nvoid main(void)\n{\n\tvec2 onePixel = vec2(1.0 / filterArea);\n\n\tvec4 color;\n\n\tcolor.rgb = vec3(0.5);\n\n\tcolor -= texture2D(uSampler, vTextureCoord - onePixel) * strength;\n\tcolor += texture2D(uSampler, vTextureCoord + onePixel) * strength;\n\n\tcolor.rgb = vec3((color.r + color.g + color.b) / 3.0);\n\n\tfloat alpha = texture2D(uSampler, vTextureCoord).a;\n\n\tgl_FragColor = vec4(color.rgb * alpha, alpha);\n}\n"),this.strength=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{strength:{get:function(){return this.uniforms.strength},set:function(t){this.uniforms.strength=t}}})},{}],8:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform vec2 size;\nuniform sampler2D uSampler;\n\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n\treturn floor( coord / size ) * size;\n}\n\nvoid main(void)\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = pixelate(coord, size);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord);\n}\n"),this.size=[10,10]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.size},set:function(t){this.uniforms.size.value=t}}})},{}],9:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 filterArea;\nuniform vec2 red;\nuniform vec2 green;\nuniform vec2 blue;\n\nvoid main(void)\n{\n   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/filterArea.xy).r;\n   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/filterArea.xy).g;\n   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/filterArea.xy).b;\n   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;\n}\n"),this.red=[-10,0],this.green=[0,10],this.blue=[0,0]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{red:{get:function(){return this.uniforms.red},set:function(t){this.uniforms.red=t}},green:{get:function(){return this.uniforms.green},set:function(t){this.uniforms.green=t}},blue:{get:function(){return this.uniforms.blue.value},set:function(t){this.uniforms.blue.value=t}}})},{}],10:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nuniform vec2 center;\nuniform vec3 params; // 10.0, 0.8, 0.1\nuniform float time;\n\nvoid main()\n{\n    vec2 uv = vTextureCoord;\n    vec2 texCoord = uv;\n\n    float dist = distance(uv, center);\n\n    if ( (dist <= (time + params.z)) && (dist >= (time - params.z)) )\n    {\n        float diff = (dist - time);\n        float powDiff = 1.0 - pow(abs(diff*params.x), params.y);\n\n        float diffTime = diff  * powDiff;\n        vec2 diffUV = normalize(uv - center);\n        texCoord = uv + (diffUV * diffTime);\n    }\n\n    gl_FragColor = texture2D(uSampler, texCoord);\n}\n",{center:{type:"v2",value:{x:.5,y:.5}},params:{type:"v3",value:{x:10,y:.8,z:.1}},time:{type:"1f",value:0}}),this.center=[.5,.5],this.params=[10,.8,.1],this.time=0}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{center:{get:function(){return this.uniforms.center},set:function(t){this.uniforms.center=t}},params:{get:function(){return this.uniforms.params},set:function(t){this.uniforms.params=t}},time:{get:function(){return this.uniforms.time},set:function(t){this.uniforms.time=t}}})},{}],11:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float blur;\nuniform float gradientBlur;\nuniform vec2 start;\nuniform vec2 end;\nuniform vec2 delta;\nuniform vec2 texSize;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));\n    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n"),this.uniforms.blur=100,this.uniforms.gradientBlur=600,this.uniforms.start=new PIXI.Point(0,window.innerHeight/2),this.uniforms.end=new PIXI.Point(600,window.innerHeight/2),this.uniforms.delta=new PIXI.Point(30,30),this.uniforms.texSize=new PIXI.Point(window.innerWidth,window.innerHeight),this.updateDelta()}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){this.uniforms.delta.x=0,this.uniforms.delta.y=0},Object.defineProperties(n.prototype,{blur:{get:function(){return this.uniforms.blur},set:function(t){this.uniforms.blur=t}},gradientBlur:{get:function(){return this.uniforms.gradientBlur},set:function(t){this.uniforms.gradientBlur=t}},start:{get:function(){return this.uniforms.start},set:function(t){this.uniforms.start=t,this.updateDelta()}},end:{get:function(){return this.uniforms.end},set:function(t){this.uniforms.end=t,this.updateDelta()}}})},{}],12:[function(t,e,r){function n(){PIXI.Filter.call(this),this.tiltShiftXFilter=new o,this.tiltShiftYFilter=new i}var o=t("./TiltShiftXFilter"),i=t("./TiltShiftYFilter");n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.tiltShiftXFilter.apply(t,e,n),this.tiltShiftYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.tiltShiftXFilter.blur},set:function(t){this.tiltShiftXFilter.blur=this.tiltShiftYFilter.blur=t}},gradientBlur:{get:function(){return this.tiltShiftXFilter.gradientBlur},set:function(t){this.tiltShiftXFilter.gradientBlur=this.tiltShiftYFilter.gradientBlur=t}},start:{get:function(){return this.tiltShiftXFilter.start},set:function(t){this.tiltShiftXFilter.start=this.tiltShiftYFilter.start=t}},end:{get:function(){return this.tiltShiftXFilter.end},set:function(t){this.tiltShiftXFilter.end=this.tiltShiftYFilter.end=t}}})},{"./TiltShiftXFilter":13,"./TiltShiftYFilter":14}],13:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=t/r,this.uniforms.delta.y=e/r}},{"./TiltShiftAxisFilter":11}],14:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=-e/r,this.uniforms.delta.y=t/r}},{"./TiltShiftAxisFilter":11}],15:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 twist(vec2 coord)\n{\n    coord -= offset;\n\n    float dist = length(coord);\n\n    if (dist < radius)\n    {\n        float ratioDist = (radius - dist) / radius;\n        float angleMod = ratioDist * ratioDist * angle;\n        float s = sin(angleMod);\n        float c = cos(angleMod);\n        coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n    }\n\n    coord += offset;\n\n    return coord;\n}\n\nvoid main(void)\n{\n\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = twist(coord);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord );\n\n}\n"),this.radius=200,this.angle=4,this.padding=20}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{offset:{get:function(){return this.uniforms.offset},set:function(t){this.uniforms.offset=t}},radius:{get:function(){return this.uniforms.radius},set:function(t){this.uniforms.radius=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],16:[function(t,e,r){t("./check");var n={AsciiFilter:t("./ascii/AsciiFilter"),BloomFilter:t("./bloom/BloomFilter"),ConvolutionFilter:t("./convolution/ConvolutionFilter"),CrossHatchFilter:t("./crosshatch/CrossHatchFilter"),DotFilter:t("./dot/DotFilter"),EmbossFilter:t("./emboss/EmbossFilter"),PixelateFilter:t("./pixelate/PixelateFilter"),RGBSplitFilter:t("./rgb/RGBSplitFilter"),ShockwaveFilter:t("./shockwave/ShockwaveFilter"),TiltShiftFilter:t("./tiltshift/TiltShiftFilter"),TiltShiftAxisFilter:t("./tiltshift/TiltShiftAxisFilter"),TiltShiftXFilter:t("./tiltshift/TiltShiftXFilter"),TiltShiftYFilter:t("./tiltshift/TiltShiftYFilter"),TwistFilter:t("./twist/TwistFilter")};Object.assign(PIXI.filters,n),"undefined"!=typeof e&&e.exports&&(e.exports=n)},{"./ascii/AsciiFilter":1,"./bloom/BloomFilter":2,"./check":3,"./convolution/ConvolutionFilter":4,"./crosshatch/CrossHatchFilter":5,"./dot/DotFilter":6,"./emboss/EmbossFilter":7,"./pixelate/PixelateFilter":8,"./rgb/RGBSplitFilter":9,"./shockwave/ShockwaveFilter":10,"./tiltshift/TiltShiftAxisFilter":11,"./tiltshift/TiltShiftFilter":12,"./tiltshift/TiltShiftXFilter":13,"./tiltshift/TiltShiftYFilter":14,"./twist/TwistFilter":15}]},{},[16])(16)});
-	//# sourceMappingURL=filters.min.js.map
-
-
-/***/ },
-/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46848,7 +46783,7 @@
 	};
 
 /***/ },
-/* 193 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46980,7 +46915,7 @@
 	exports.default = Screen;
 
 /***/ },
-/* 194 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47239,7 +47174,7 @@
 	exports.default = Obstacle;
 
 /***/ },
-/* 195 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47352,7 +47287,7 @@
 	exports.default = Target;
 
 /***/ },
-/* 196 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47371,7 +47306,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(192);
+	var _utils = __webpack_require__(191);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
@@ -47779,7 +47714,7 @@
 	exports.default = Collisions;
 
 /***/ },
-/* 197 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47798,7 +47733,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Trail = __webpack_require__(198);
+	var _Trail = __webpack_require__(197);
 	
 	var _Trail2 = _interopRequireDefault(_Trail);
 	
@@ -47867,7 +47802,7 @@
 	exports.default = TrailManager;
 
 /***/ },
-/* 198 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47886,7 +47821,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -48190,7 +48125,7 @@
 	exports.default = Trail;
 
 /***/ },
-/* 199 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48235,7 +48170,7 @@
 	exports.default = ViewManager;
 
 /***/ },
-/* 200 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48254,11 +48189,11 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Ball = __webpack_require__(201);
+	var _Ball = __webpack_require__(200);
 	
 	var _Ball2 = _interopRequireDefault(_Ball);
 	
-	var _Obstacle = __webpack_require__(194);
+	var _Obstacle = __webpack_require__(193);
 	
 	var _Obstacle2 = _interopRequireDefault(_Obstacle);
 	
@@ -48412,7 +48347,7 @@
 	exports.default = LevelManager;
 
 /***/ },
-/* 201 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48431,7 +48366,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Trail = __webpack_require__(198);
+	var _Trail = __webpack_require__(197);
 	
 	var _Trail2 = _interopRequireDefault(_Trail);
 	
@@ -48875,7 +48810,7 @@
 	exports.default = Ball;
 
 /***/ },
-/* 202 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -48894,7 +48829,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _Target = __webpack_require__(195);
+	var _Target = __webpack_require__(194);
 	
 	var _Target2 = _interopRequireDefault(_Target);
 	
@@ -49093,7 +49028,7 @@
 	exports.default = Goal;
 
 /***/ },
-/* 203 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49108,7 +49043,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _utils = __webpack_require__(192);
+	var _utils = __webpack_require__(191);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
@@ -49202,7 +49137,7 @@
 	exports.default = UIManager;
 
 /***/ },
-/* 204 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49219,7 +49154,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -49227,11 +49162,11 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(192);
+	var _utils = __webpack_require__(191);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Screen2 = __webpack_require__(193);
+	var _Screen2 = __webpack_require__(192);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
@@ -49268,6 +49203,7 @@
 		}, {
 			key: 'toGame',
 			value: function toGame() {
+				this.screenLabel = new PIXI.Text(this.label, { font: '46px mario', fill: 0xFFFFFF, align: 'right' });
 				this.screenManager.change('StartScreen');
 			}
 		}, {
@@ -49292,6 +49228,87 @@
 	exports.default = LoadScreen;
 
 /***/ },
+/* 204 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+			value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var GameData = function () {
+			function GameData(gameContainer) {
+					_classCallCheck(this, GameData);
+	
+					this.maxPoints = 0;
+					this.currentPoints = 0;
+					this.level = 1;
+					this.points = 0;
+					this.teamID = 0;
+					this.lifes = 0;
+					this.gameContainer = gameContainer;
+					this.updateGameBackground();
+			}
+	
+			_createClass(GameData, [{
+					key: 'updateGameBackground',
+					value: function updateGameBackground() {
+	
+							this.backgroundContaier = new PIXI.Container();
+							this.gameContainer.addChild(this.backgroundContaier);
+	
+							this.background = new PIXI.Graphics();
+							this.background.beginFill(0xababab);
+							this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
+							this.backgroundContaier.addChild(this.background);
+	
+							var tex = void 0;
+	
+							tex = PIXI.Texture.fromFrame('torcida.jpg');
+							this.sky = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
+							this.backgroundContaier.addChild(this.sky);
+							this.sky.tileScale.x = 0.25;
+							this.sky.tileScale.y = 0.25;
+							this.sky.x = -50;
+							this.sky.y = -50;
+	
+							tex = PIXI.Texture.fromFrame('grass1.png');
+							this.field = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
+							this.backgroundContaier.addChild(this.field);
+							this.field.tileScale.x = 0.25 / 2;
+							this.field.tileScale.y = 0.25 / 2;
+							this.field.y = 150;
+							this.field.x = -50;
+					}
+			}]);
+	
+			return GameData;
+	}();
+	
+	exports.default = GameData;
+
+/***/ },
 /* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -49309,7 +49326,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -49317,11 +49334,11 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(192);
+	var _utils = __webpack_require__(191);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Screen2 = __webpack_require__(193);
+	var _Screen2 = __webpack_require__(192);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
@@ -49348,8 +49365,7 @@
 			_this.startButton = new PIXI.Container();
 			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
 			_this.startButton.addChild(shape);
-			_this.startButton.x = _config2.default.width / 2;
-			_this.startButton.y = _config2.default.height / 2;
+	
 			_this.startButton.interactive = true;
 			_this.addChild(_this.startButton);
 	
@@ -49358,8 +49374,7 @@
 			_this.teamButton = new PIXI.Container();
 			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
 			_this.teamButton.addChild(shape);
-			_this.teamButton.x = _config2.default.width / 2 + 120;
-			_this.teamButton.y = _config2.default.height / 2 - 50;
+	
 			_this.teamButton.interactive = true;
 			_this.addChild(_this.teamButton);
 	
@@ -49368,10 +49383,12 @@
 			_this.fieldButton = new PIXI.Container();
 			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
 			_this.fieldButton.addChild(shape);
-			_this.fieldButton.x = _config2.default.width / 2 - 120;
-			_this.fieldButton.y = _config2.default.height / 2 - 50;
+	
 			_this.fieldButton.interactive = true;
 			_this.addChild(_this.fieldButton);
+	
+			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
+			_this.addChild(_this.screenLabel);
 	
 			_this.addEvents();
 	
@@ -49382,6 +49399,13 @@
 			key: 'build',
 			value: function build() {
 				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'build', this).call(this);
+	
+				this.startButton.x = _config2.default.width / 2;
+				this.startButton.y = _config2.default.height / 2;
+				this.teamButton.x = _config2.default.width / 2 + 120;
+				this.teamButton.y = _config2.default.height / 2 - 50;
+				this.fieldButton.x = _config2.default.width / 2 - 120;
+				this.fieldButton.y = _config2.default.height / 2 - 50;
 			}
 		}, {
 			key: 'destroy',
@@ -49389,37 +49413,71 @@
 		}, {
 			key: 'startGame',
 			value: function startGame() {
-				this.screenManager.change('InitScreen');
+	
+				_gsap2.default.to(this.fieldButton.scale, 0.3, { delay: 0, x: 0, y: 0, ease: 'easeInBack' });
+				_gsap2.default.to(this.startButton.scale, 0.3, { delay: 0.05, x: 0, y: 0, ease: 'easeInBack' });
+				_gsap2.default.to(this.teamButton.scale, 0.3, { delay: 0.1, x: 0, y: 0, ease: 'easeInBack', onComplete: function onComplete() {
+						this.screenManager.change('InitScreen');
+					}, onCompleteScope: this });
 			}
+		}, {
+			key: 'toTeamSelection',
+			value: function toTeamSelection() {
+				_gsap2.default.to(this.fieldButton, 0.4, { delay: 0, x: -_config2.default.width / 2 - 120, ease: 'easeInBack' });
+				_gsap2.default.to(this.startButton, 0.4, { delay: 0.1, x: -_config2.default.width / 2, ease: 'easeInBack' });
+				_gsap2.default.to(this.teamButton, 0.4, { delay: 0.2, x: -_config2.default.width / 2 + 120, ease: 'easeInBack', onComplete: function onComplete() {
+						this.screenManager.change('ChooseTeamScreen');
+					}, onCompleteScope: this });
+			}
+		}, {
+			key: 'toFieldSlection',
+			value: function toFieldSlection() {
+				_gsap2.default.to(this.fieldButton, 0.4, { delay: 0.2, x: _config2.default.width + _config2.default.width / 2 - 120, ease: 'easeInBack', onComplete: function onComplete() {
+						this.screenManager.change('ChooseFieldScreen');
+					}, onCompleteScope: this });
+				_gsap2.default.to(this.startButton, 0.4, { delay: 0.1, x: _config2.default.width + _config2.default.width / 2, ease: 'easeInBack' });
+				_gsap2.default.to(this.teamButton, 0.4, { delay: 0, x: _config2.default.width + _config2.default.width / 2 + 120, ease: 'easeInBack' });
+			}
+		}, {
+			key: 'destroy',
+			value: function destroy() {}
 		}, {
 			key: 'update',
 			value: function update(delta) {}
 		}, {
 			key: 'transitionOut',
 			value: function transitionOut(nextScreen) {
-				this.nextScreen = nextScreen;
-				_gsap2.default.to(this.startButton.scale, 0.5, { x: 0, y: 0, ease: 'easeInBack', onComplete: function onComplete() {
-						this.endTransitionOut();
-					}, onCompleteScope: this });
+				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'transitionOut', this).call(this, nextScreen);
 			}
 		}, {
 			key: 'transitionIn',
 			value: function transitionIn() {
 	
 				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'transitionIn', this).call(this);
+	
+				console.log('TRANSITION IN');
+	
+				this.fieldButton.scale.set(0);
 				this.startButton.scale.set(0);
-				_gsap2.default.to(this.startButton.scale, 0.8, { delay: 0.2, x: 1, y: 1, ease: 'easeOutElastic' });
+				this.teamButton.scale.set(0);
+				_gsap2.default.to(this.fieldButton.scale, 0.8, { delay: 0.2, x: 1, y: 1, ease: 'easeOutElastic' });
+				_gsap2.default.to(this.startButton.scale, 0.8, { delay: 0.3, x: 1, y: 1, ease: 'easeOutElastic' });
+				_gsap2.default.to(this.teamButton.scale, 0.8, { delay: 0.4, x: 1, y: 1, ease: 'easeOutElastic' });
 			}
 		}, {
 			key: 'removeEvents',
 			value: function removeEvents() {
 				this.startButton.off('touchstart').off('mousedown');
+				this.fieldButton.off('touchstart').off('mousedown');
+				this.teamButton.off('touchstart').off('mousedown');
 			}
 		}, {
 			key: 'addEvents',
 			value: function addEvents() {
 				this.removeEvents();
 				this.startButton.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+				this.teamButton.on('mousedown', this.toTeamSelection.bind(this)).on('touchstart', this.toTeamSelection.bind(this));
+				this.fieldButton.on('mousedown', this.toFieldSlection.bind(this)).on('touchstart', this.toFieldSlection.bind(this));
 			}
 		}]);
 	
@@ -49446,7 +49504,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -49454,11 +49512,11 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _utils = __webpack_require__(192);
+	var _utils = __webpack_require__(191);
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Screen2 = __webpack_require__(193);
+	var _Screen2 = __webpack_require__(192);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
 	
@@ -49487,9 +49545,22 @@
 			_this.button.x = _config2.default.width / 2;
 			_this.button.y = _config2.default.height / 2;
 			_this.button.interactive = true;
-			_this.addChild(_this.button);
+			// this.addChild(this.button)
+	
+	
+			var shape = PIXI.Sprite.fromFrame('big-button-up.png');
+			shape.anchor.set(0.5);
+			_this.backButton = new PIXI.Container();
+			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+			_this.backButton.addChild(shape);
+	
+			_this.backButton.interactive = true;
+			_this.addChild(_this.backButton);
 	
 			_this.addEvents();
+	
+			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
+			_this.addChild(_this.screenLabel);
 	
 			return _this;
 		}
@@ -49498,6 +49569,9 @@
 			key: 'build',
 			value: function build() {
 				_get(ChooseTeamScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseTeamScreen.prototype), 'build', this).call(this);
+	
+				this.backButton.x = 50;
+				this.backButton.y = 50;
 			}
 		}, {
 			key: 'destroy',
@@ -49508,16 +49582,18 @@
 				this.screenManager.change('InitScreen');
 			}
 		}, {
+			key: 'toMainScreen',
+			value: function toMainScreen() {
+				console.log('to start');
+				this.screenManager.change('StartScreen');
+			}
+		}, {
 			key: 'update',
 			value: function update(delta) {}
 		}, {
 			key: 'transitionOut',
 			value: function transitionOut(nextScreen) {
-				this.nextScreen = nextScreen;
-				console.log('transitionOut');
-				_gsap2.default.to(this.button.scale, 0.5, { x: 0, y: 0, ease: 'easeInBack', onComplete: function onComplete() {
-						this.endTransitionOut();
-					}, onCompleteScope: this });
+				_get(ChooseTeamScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseTeamScreen.prototype), 'transitionOut', this).call(this, nextScreen);
 			}
 		}, {
 			key: 'transitionIn',
@@ -49529,12 +49605,14 @@
 			key: 'removeEvents',
 			value: function removeEvents() {
 				this.button.off('touchstart').off('mousedown');
+				this.backButton.off('touchstart').off('mousedown');
 			}
 		}, {
 			key: 'addEvents',
 			value: function addEvents() {
 				this.removeEvents();
 				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
 			}
 		}]);
 	
@@ -49542,6 +49620,275 @@
 	}(_Screen3.default);
 	
 	exports.default = ChooseTeamScreen;
+
+/***/ },
+/* 207 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(191);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _Screen2 = __webpack_require__(192);
+	
+	var _Screen3 = _interopRequireDefault(_Screen2);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var ChooseFieldScreen = function (_Screen) {
+		_inherits(ChooseFieldScreen, _Screen);
+	
+		function ChooseFieldScreen(label) {
+			_classCallCheck(this, ChooseFieldScreen);
+	
+			var _this = _possibleConstructorReturn(this, (ChooseFieldScreen.__proto__ || Object.getPrototypeOf(ChooseFieldScreen)).call(this, label));
+	
+			_this.button = new PIXI.Container();
+			_this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
+			_this.button.addChild(_this.shape);
+			// this.outgameUIContainer.addChild(this.button)
+			_this.button.x = _config2.default.width / 2;
+			_this.button.y = _config2.default.height / 2;
+			_this.button.interactive = true;
+			// this.addChild(this.button)
+	
+	
+			var shape = PIXI.Sprite.fromFrame('big-button-up.png');
+			shape.anchor.set(0.5);
+			_this.backButton = new PIXI.Container();
+			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+			_this.backButton.addChild(shape);
+	
+			_this.backButton.interactive = true;
+			_this.addChild(_this.backButton);
+	
+			_this.addEvents();
+	
+			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
+			_this.addChild(_this.screenLabel);
+	
+			return _this;
+		}
+	
+		_createClass(ChooseFieldScreen, [{
+			key: 'build',
+			value: function build() {
+				_get(ChooseFieldScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseFieldScreen.prototype), 'build', this).call(this);
+	
+				this.backButton.x = 50;
+				this.backButton.y = 50;
+			}
+		}, {
+			key: 'destroy',
+			value: function destroy() {}
+		}, {
+			key: 'startGame',
+			value: function startGame() {
+				this.screenManager.change('InitScreen');
+			}
+		}, {
+			key: 'toMainScreen',
+			value: function toMainScreen() {
+				this.screenManager.change('StartScreen');
+			}
+		}, {
+			key: 'update',
+			value: function update(delta) {}
+		}, {
+			key: 'transitionOut',
+			value: function transitionOut(nextScreen) {
+				_get(ChooseFieldScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseFieldScreen.prototype), 'transitionOut', this).call(this, nextScreen);
+			}
+		}, {
+			key: 'transitionIn',
+			value: function transitionIn() {
+	
+				_get(ChooseFieldScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseFieldScreen.prototype), 'transitionIn', this).call(this);
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				this.button.off('touchstart').off('mousedown');
+				this.backButton.off('touchstart').off('mousedown');
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.removeEvents();
+				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
+			}
+		}]);
+	
+		return ChooseFieldScreen;
+	}(_Screen3.default);
+	
+	exports.default = ChooseFieldScreen;
+
+/***/ },
+/* 208 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(191);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _Screen2 = __webpack_require__(192);
+	
+	var _Screen3 = _interopRequireDefault(_Screen2);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var GameOverScreen = function (_Screen) {
+		_inherits(GameOverScreen, _Screen);
+	
+		function GameOverScreen(label) {
+			_classCallCheck(this, GameOverScreen);
+	
+			var _this = _possibleConstructorReturn(this, (GameOverScreen.__proto__ || Object.getPrototypeOf(GameOverScreen)).call(this, label));
+	
+			_this.button = new PIXI.Container();
+			var shape = PIXI.Sprite.fromFrame('big-button-up.png');
+			shape.anchor.set(0.5);
+			_this.button.addChild(shape);
+			// this.outgameUIContainer.addChild(this.button)
+			_this.button.x = _config2.default.width / 2;
+			_this.button.y = _config2.default.height / 2;
+			_this.button.interactive = true;
+			_this.addChild(_this.button);
+	
+			shape = PIXI.Sprite.fromFrame('big-button-up.png');
+			shape.anchor.set(0.5);
+			_this.backButton = new PIXI.Container();
+			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+			_this.backButton.addChild(shape);
+	
+			_this.backButton.interactive = true;
+			_this.addChild(_this.backButton);
+	
+			_this.addEvents();
+	
+			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
+			_this.addChild(_this.screenLabel);
+	
+			return _this;
+		}
+	
+		_createClass(GameOverScreen, [{
+			key: 'build',
+			value: function build() {
+				_get(GameOverScreen.prototype.__proto__ || Object.getPrototypeOf(GameOverScreen.prototype), 'build', this).call(this);
+	
+				this.backButton.x = 50;
+				this.backButton.y = 50;
+			}
+		}, {
+			key: 'destroy',
+			value: function destroy() {}
+		}, {
+			key: 'startGame',
+			value: function startGame() {
+				this.screenManager.change('InitScreen');
+			}
+		}, {
+			key: 'toMainScreen',
+			value: function toMainScreen() {
+				console.log('to start');
+				this.screenManager.change('StartScreen');
+			}
+		}, {
+			key: 'update',
+			value: function update(delta) {}
+		}, {
+			key: 'transitionOut',
+			value: function transitionOut(nextScreen) {
+				_get(GameOverScreen.prototype.__proto__ || Object.getPrototypeOf(GameOverScreen.prototype), 'transitionOut', this).call(this, nextScreen);
+			}
+		}, {
+			key: 'transitionIn',
+			value: function transitionIn() {
+	
+				_get(GameOverScreen.prototype.__proto__ || Object.getPrototypeOf(GameOverScreen.prototype), 'transitionIn', this).call(this);
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				this.button.off('touchstart').off('mousedown');
+				this.backButton.off('touchstart').off('mousedown');
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.removeEvents();
+				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
+			}
+		}]);
+	
+		return GameOverScreen;
+	}(_Screen3.default);
+	
+	exports.default = GameOverScreen;
 
 /***/ }
 /******/ ]);
