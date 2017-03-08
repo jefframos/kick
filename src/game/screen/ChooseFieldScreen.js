@@ -64,7 +64,7 @@ export default class ChooseFieldScreen extends Screen{
 	}
 
 	startGame(){
-		this.screenManager.change('InitScreen')
+		this.screenManager.change('GameScreen')
 	}
 
 	toMainScreen(){
@@ -84,8 +84,9 @@ export default class ChooseFieldScreen extends Screen{
 
 	}
 	changeField(e){
-		console.log(e.data.target.id);
-		GAME_DATA.changeLevel(e.data.target.id);
+		let target = e.target || e.data.target;
+		console.log(target);
+		GAME_DATA.changeLevel(target.id);
 	}
 	removeEvents(){
 		this.button.off('touchstart').off('mousedown');

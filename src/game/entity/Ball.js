@@ -4,22 +4,19 @@ import Trail from './Trail';
 export default class Ball extends PIXI.Container {
 
     constructor(game, radius = 20) {
-        super();  
-        this.game = game;
+        super();
         this.virtualVelocity = {x:0,y:0};
         this.velocity = {x:0,y:0};
         this.speed = {x:230,y:230};
         this.friction = {x:250,y:200};
         this.standardFriction = {x:275,y:200};
-        // this.rotationFriction = {x:100,y:200};
         this.rotationInfluence = {x:0,y:0};
         this.rotationSpeed = 0;
         this.scaleFator = 1;
         this.standardScale = 1;
         this.speedScale = 1;
         this.starterScale = 0.5;
-        this.radius = radius;
-        this.externalRadius = this.radius*1;
+        
         this.static = false;
         this.side = 1;
         this.maxLife = 5;
@@ -36,23 +33,40 @@ export default class Ball extends PIXI.Container {
         this.container = new PIXI.Container();
         this.addChild(this.container);
 
+       
+
         this.shadow = new PIXI.Graphics();
         this.shadow.beginFill(0x000000);
-        this.shadow.drawCircle(0,this.radius,this.radius);
+        this.shadow.drawCircle(0,1,1);
         this.shadow.alpha = 0.5;
         this.container.addChild(this.shadow);
         this.shadow.scale.y = 0.5
-        this.shadow.y = this.radius / 2;
-
 
         this.spriteContainer = new PIXI.Container();
         this.container.addChild(this.spriteContainer);
 
-        // if(this.radius > 20){
         let texture = PIXI.Texture.fromFrame('ball.png');
         this.sprite = new PIXI.Sprite(texture)
         this.spriteContainer.addChild(this.sprite);
         this.sprite.anchor.set(0.5);
+
+       
+
+       
+    }
+   build(game, radius = 50){
+        this.game = game;
+        this.radius = radius;
+        this.externalRadius = this.radius*1;
+
+        
+        this.shadow.width = this.radius * 2
+        this.shadow.height = this.radius
+        this.shadow.y = this.radius / 2;
+        TweenLite.to(this.shadow, 0.2, {alpha:1})
+
+         // if(this.radius > 20){
+        
         this.sprite.width = this.radius * 2
         this.sprite.height = this.radius * 2
         // this.sprite.scale.set(this.radius / this.sprite.width);
@@ -62,9 +76,7 @@ export default class Ball extends PIXI.Container {
         this.killed = false;
         this.obstacleCollided = [];
 
-       
-    }
-   
+   }
 
     shoot(force, angle, angleColision) {
 
@@ -73,7 +85,7 @@ export default class Ball extends PIXI.Container {
         }
 
         if(!this.trail){
-            this.trail = new Trail(this.game.ingameUIContainer, 20, PIXI.Texture.from('assets/images/trail1.jpg'));
+            this.trail = new Trail(this.game.trailContainer, 20, PIXI.Texture.from('assets/images/trail1.jpg'));
             this.trail.trailTick = 10;
             this.trail.speed = 0.1;
             this.trail.frequency = 0.001
@@ -142,7 +154,7 @@ export default class Ball extends PIXI.Container {
         console.log('RESET');
         //this.updateable = true;
 
-        this.shadow.alpha = 0.5;
+        // this.shadow.alpha = 0.5;
 
         this.obstacleCollided = [];
         this.shooting = false;

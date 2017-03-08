@@ -65,8 +65,8 @@ export default class ChooseTeamScreen extends Screen{
 	}
 
 	changeTeam(e){
-		console.log(e.data.target.id);
-		GAME_DATA.changeTeam(e.data.target.id);
+		let target = e.target || e.data.target;
+		GAME_DATA.changeTeam(target.id);
 	}
 
 	destroy(){
@@ -74,7 +74,7 @@ export default class ChooseTeamScreen extends Screen{
 	}
 
 	startGame(){
-		this.screenManager.change('InitScreen')
+		this.screenManager.change('GameScreen')
 	}
 
 	toMainScreen(){

@@ -1,690 +1,461 @@
 import * as PIXI from 'pixi.js';
+import Filters from 'pixi-filters';
 import TweenLite from 'gsap';
 import config  from '../../config';
-import InputManager  from '../InputManager';
-import CookieManager  from '../CookieManager';
 import utils  from '../../utils';
-import Screen from '../../screenManager/Screen';
-import Player from '../entity/Player';
-import StartGameContainer from '../container/StartGameContainer';
-import EndGameContainer from '../container/EndGameContainer';
-import Camera from '../Camera';
-import LevelBuilder from '../level/LevelBuilder';
+import Screen from '../../screenManager/Screen'
 
-export default class GameScreen extends Screen{
+import Obstacle from '../entity/Obstacle'
+import Target from '../entity/Target'
+
+import Collisions from '../core/Collisions';
+import TrailManager from '../core/TrailManager';
+import ViewManager from '../core/ViewManager';
+import LevelManager from '../core/LevelManager';
+import ComboSystem from '../core/ComboSystem';
+import Goal from '../entity/Goal';
+
+import UIManager from '../ui/UIManager';
+
+
+export default class GameScreen extends Screen{	
 	constructor(label){
 		super(label);
 
+		this.uiManager = new UIManager(this);
+		this.collisions = new Collisions(this);
+		this.viewManager = new ViewManager();
+		this.comboSystem = new ComboSystem();
+		this.levelManager = new LevelManager(this);
 
-		this.background = new PIXI.extras.TilingSprite(PIXI.Texture.fromImage('texture_sky.png', config.width, config.height))
-		this.addChild(this.background)
-
-		this.background.width = config.width
-		this.background.height = config.height
-		this.background.tileScale.y = 50
-		this.background.tilePosition.y = (this.background.height) //+  config.height//* 50
-
-		//console.log(config.height * 50);
-
-
-		//this.background = new PIXI.Graphics().beginFill(config.colors.background).drawRect(0,0,config.width, config.height);
-		// this.addChild(this.background)
-
-		this.gameContainer = new PIXI.Container();
-		this.addChild(this.gameContainer)
-
-		this.ingameUIContainer = new PIXI.Container();
-		this.backgroundIngameUI = new PIXI.Graphics().beginFill(0x023548).drawRect(0,0,config.width, config.height);
-		this.addChild(this.ingameUIContainer)
-		this.backgroundIngameUI.alpha = 0;
-		this.ingameUIContainer.addChild(this.backgroundIngameUI)
-
-		this.UIContainer = new PIXI.Container();
-		this.addChild(this.UIContainer)
-
-		//this.backgroundLine = new PIXI.Graphics().lineStyle(5,0xaa3548).drawRect(0,0,config.width, config.height);
-		//this.gameContainer.addChild(this.backgroundLine);
-
-
-		let ww = 0.7
-		this.cameraBounds = {x:config.width * (ww/2), y:config.height * 0.2, w:config.width - config.width * ww, h:config.height - config.height * 0.4};
-		this.camera = new Camera(this, this.gameContainer, this.cameraBounds);
-		ww = 0.3
-		this.containersBounds = {x:config.width * (ww/2), y:config.height * 0.2, w:config.width - config.width * ww, h:config.height - config.height * 0.4};
-
-		this.darkShape = new PIXI.Graphics().beginFill(0x000000).drawRect(0,0,config.width, config.height);
-		this.darkShape.alpha = 0;
-		this.UIContainer.addChild(this.darkShape);
-
-		this.startGameContainer = new StartGameContainer(this, this.containersBounds);
-		this.startGameContainer.x = this.containersBounds.x;
-		this.startGameContainer.y = this.containersBounds.y;
-		this.startGameContainer.hide(true)
-		this.UIContainer.addChild(this.startGameContainer);
-
-		this.endGameContainer = new EndGameContainer(this, this.containersBounds);
-		this.endGameContainer.x = this.containersBounds.x;
-		this.endGameContainer.y = this.containersBounds.y;
-		this.endGameContainer.hide(true)
-
-		// this.endGameContainer.show(0.5);
-
-		this.UIContainer.addChild(this.endGameContainer);
-
-
-		let backButtonConfig = this.createButton("II");
-		this.pauseButton = backButtonConfig.button;
-		this.addChild(this.pauseButton);
-		this.pauseButton.position.set(30);
-		this.UIContainer.addChild(this.pauseButton);
-		this.pauseButton.on('tap', this.togglePause.bind(this)).on('click', this.togglePause.bind(this));
-
-		this.currentCoins = 0;
-		this.coinsLabel = new PIXI.Text(this.currentCoins,{font : '20px luckiest_guyregular', fill : 0xFFFFFF, align : 'right'});
-		this.ingameUIContainer.addChild(this.coinsLabel);
-		this.coinsLabel.x = config.width - this.coinsLabel.width - 20;
-		this.coinsLabel.y = 20;
-
-		this.playerStatus = new PIXI.Text('',{font : '15px luckiest_guyregular', fill : 0xFFFFFF, align : 'right'});
-		this.ingameUIContainer.addChild(this.playerStatus);
-		this.playerStatus.x = config.width - this.playerStatus.width - 20;
-		this.playerStatus.y = 50;
-
-		this.currentSpawnPoint = {x:0,y:0,side:1}
-
-
-		window.gamee = this;
-
-		this.currentHeight = 0;
-
-
-		 if (location.href.indexOf("#debug") != -1) {
-	        // Your code in here accessing the string like this
-	        // location.href.substr(location.href.indexOf("#"))
-	        this.debugging = true;
-	    }else{
-			this.debugging = false;
-	    }
-
-	    if (location.href.indexOf("#pattern=") != -1) {
-	    	var type = window.location.hash.substr(9)
-	    	this.fixedPattern = type;
-	    }else{
-	    	this.fixedPattern = null;
-	    }
-
-	    	//// console.log(location.href.indexOf("#zoom="));
-	    if (location.href.indexOf("#zoom=") != -1) {
-	    	var type = window.location.hash.substr(6)
-	    	this.forcedZoom = parseFloat(type);
-	    }else{
-	    	this.forcedZoom = null;
-	    }
-
-	    this.currentMiddlePoint = {x:0, y:0};
-
-	    this.levelBuilder = new LevelBuilder(this);
-
-	}
-
-	createButton(label) {
-	    let button = new PIXI.Container()
-	    let descriptionLabel = new PIXI.Text(label,{font : '20px luckiest_guyregular', fill : 0xFFFFFF, align : 'right'});
-	    let color = 0x00FFFF;
-	    button.addChild(descriptionLabel);
-	    button.interactive = true
-	    button.buttonMode = true
-	    return {button:button, size:{width:descriptionLabel.width, height:descriptionLabel.height}, label:descriptionLabel}
-	}
-	
-	showDark(){
-		if(this.debugging)return
-		TweenLite.to(this.darkShape, 0.5, {alpha:0.3})
-	}
-	hideDark(){
-		TweenLite.to(this.darkShape, 0.5, {alpha:0})
-	}
-	build(){
-		super.build();
-
-		this.resetGame();
 		
 	}
-		//destroy game
-	destroyGame(){
-		while(this.gameContainer.children.length){
-			this.gameContainer.removeChildAt(0);
-		}
-		this.removeEvents();
-	}
-	resetGame(force){
+	build(){
 
-		//console.log('RESET GAME');
-		// this.endZoneLine = new PIXI.Graphics().beginFill(0x00ffff).drawRect(-500,0,config.width + 1000, 5);
-		// this.gameContainer.addChild(this.endZoneLine);
+		super.build();
 
-		// this.beginZoneLine = new PIXI.Graphics().beginFill(0xffff00).drawRect(-500,0,config.width + 1000, 5);
-		// this.gameContainer.addChild(this.beginZoneLine);
+		this.gameContainer = new PIXI.Container();
+		this.addChild(this.gameContainer);
+		
+        this.ingameUIContainer = new PIXI.Container();        
+		this.addChild(this.ingameUIContainer);
+
+		this.trailContainer = new PIXI.Container();        
+		this.addChild(this.trailContainer);
+
+		this.outgameUIContainer = new PIXI.Container();
+		this.addChild(this.outgameUIContainer);
+
+		this.uiManager.build();
+		
+		this.trailManager = new TrailManager(this.trailContainer);
+
+		this.pixelate = new PIXI.filters.PixelateFilter()
+		this.pixelate.size.x = 4;
+		this.pixelate.size.y = 4;
+		this.gameContainer.filters = [this.pixelate]
+		this.trailContainer.filters = [this.pixelate]
+		// this.outgameUIContainer.filters = [this.pixelate]
 
 
 		this.updateList = [];
+		this.targets = [];
+		this.currentBalls = [];
+		GAME_DATA.lifes = 3;
+		this.currentTrail = false;
 
-		this.wallList = [];
-		this.coinList = [];
-		this.chainsList = [];
-		this.enemyList = [];
-		this.itemList = [];
+		this.goleira = new Goal(this)
+		this.goleira.build();
+		this.goleira.x = config.width / 2
+		this.goleira.y = 150
+
+		this.gameContainer.addChild(this.goleira);
+        this.add(this.goleira);
+        this.goleira.addTargets();
+        this.goleira.show();
 		this.addEvents();
-
-		window.walls = this.wallList
-
-		this.forceSingleLane = 0;
-
-		this.playerList = [];
-
-		let player = new Player(this);
-		player.x = config.width / 2;
-		player.y = -config.height/2;
-
-
-		this.playerList.push(player);
-
-		this.mainPlayer = player;
-
-		this.gameSpeed = 350;
-		
-		this.gameContainer.addChild(player);
-		this.updateList.push(player);
-
-
-		this.endZone = 0;
-		this.beginZone = 0;
-
-		this.currentHeight = 0//this.player.y;
-		this.checkPoints = [];
-
-		this.levelBuilder.buildPattern(true);
-
-		this.resetPlayerPositionJump();
-		this.startJump();
-
-		this.camera.follow(this.mainPlayer)
-
-		//console.log('zoom 2 reset');
-		this.camera.zoom(2)
-		this.camera.updatePosition(true);
-
-		// this.addShadowPlayer();
-
-		this.levelBuilder.buildPattern();
-
-		this.finishingGame = false;
-
-
-		this.currentCoins = 0;
-
-
-		if(!force){
-			this.startGameContainer.show(0.3);
-			if(this.debugging)
-				this.startGameContainer.visible = false
-			this.pause();
-		}
-
+		this.startGame();
 	}
-	addShadowPlayer(position){
-		let player = new Player(this, 'SHADOW');
-		player.x = position.x;
-		player.y = position.y;
-
-
-		this.gameContainer.addChild(player);
-		this.updateList.push(player);
-		this.playerList.push(player);
-
-		player.reset();
-		player.clone(this.mainPlayer);
-
-	}
-	resetPlayerPositionJump(){
-		this.mainPlayer.reset('wall');//this.currentSpawnPoint
-		this.mainPlayer.side = this.currentSpawnPoint.side * -1;
-		this.mainPlayer.x = this.currentSpawnPoint.x//config.width / 2 //+ this.currentPattern.middle + this.mainPlayer.getRadius();
-		this.mainPlayer.y = this.currentSpawnPoint.y//config.width / 2 //+ this.currentPattern.middle + this.mainPlayer.getRadius();
-
-		//console.log(this.mainPlayer.side);
-	}
-	startJump(){
-		
-		this.mainPlayer.jump(true);
-	}
-	togglePause(){
-		this.isPause = !this.isPause
-	}
-	pause(){
-		this.isPause = true;
-	}
-	unpause(){
-		this.isPause = false;
-	}
-	getItem(item){
-		this.mainPlayer.applyItem(item);
-	}
-	entryOnPortal(portal){
-		// return
-		//// console.log(portal);
-		if(this.lastPortal == portal || this.lastTargetPortal == portal || !portal.portalData || !portal.portalData.targets){
-			return;
-		}
-		// this.lastPortal = portal;
-		if(portal.type == 'TELEPORT'){
-			// this.mainPlayer.x = portal.portalData.targets[0].x;
-			// this.mainPlayer.y = portal.portalData.targets[0].y;
-			this.mainPlayer.teleport(portal.portalData.targets[0]);
-			// this.lastTargetPortal = portal.portalData.targets[0];
-		}else{
-
-			this.mainPlayer.x = portal.x;
-			this.mainPlayer.y = portal.y;
-
-			for (var i = 0; i < portal.portalData.targets.length; i++) {
-				let target = portal.portalData.targets[i];
-				this.addShadowPlayer({x:target.x, y:target.y + this.mainPlayer.getRadius()});
+	remove(entity){
+		for (var i = this.updateList.length - 1; i >= 0; i--) {
+			if(this.updateList[i] == entity){
+				this.updateList.splice(i,1)
 			}
 		}
-		// this.pause();
 	}
-	getChain(chainBox){
-		this.currentChain = chainBox.chain;
-		this.chainCoins = 0;
-	}
-	getChainCoin(coin){
-		// this.currentCoins += coin.value;
-		this.chainCoins ++;
-
-		let getCoinLabel = new PIXI.Text(this.chainCoins,{font : '50px luckiest_guyregular', fill : 0xFF0000, align : 'right'});
-		let container = new PIXI.Container();
-		container.addChild(getCoinLabel);
-		getCoinLabel.x = -getCoinLabel.width / 2;
-		getCoinLabel.y = -getCoinLabel.height * 2;
-		let pos = {x:coin.x, y:coin.y}//coin.toGlobal(new PIXI.Point());
-		container.x = pos.x;
-		container.y = pos.y;
-
-		container.scale.set(0.5);
-		TweenLite.to(container, 0.8, {y:container.y - container.height});
-		TweenLite.to(container.scale, 1, {x:1, y:1, ease:'easeOutBounce', onComplete:this.removeFromUI, onCompleteParams:[container]});
-
-		// this.ingameUIContainer.addChild(container);
-		this.gameContainer.addChild(container);
-
-
-		if(this.chainCoins >= this.currentChain.chainList.length){
-			this.currentChain.endChain.show();
+	add(entity){
+		this.remove(entity)
+		for (var i = this.updateList.length - 1; i >= 0; i--) {
+			if(this.updateList[i] == entity){
+				return
+			}
 		}
-	}
-	getCoin(coin){
-		this.currentCoins += coin.value;
-
-		let getCoinLabel = new PIXI.Text(coin.value,{font : '20px luckiest_guyregular', fill : 0xFFFFFF, align : 'right'});
-		let container = new PIXI.Container();
-		container.addChild(getCoinLabel);
-		getCoinLabel.x = -getCoinLabel.width / 2;
-		getCoinLabel.y = -getCoinLabel.height * 2;
-		let pos = {x:coin.x, y:coin.y}//coin.toGlobal(new PIXI.Point());
-		container.x = pos.x;
-		container.y = pos.y;
-
-		container.scale.set(0.5);
-		TweenLite.to(container, 0.8, {y:container.y - container.height});
-		TweenLite.to(container.scale, 1, {x:1, y:1, ease:'easeOutBounce', onComplete:this.removeFromUI, onCompleteParams:[container]});
-
-		// this.ingameUIContainer.addChild(container);
-		this.gameContainer.addChild(container);
-	}
-	removeFromUI(object){
-		if(object && object.parent){
-			object.parent.removeChild(object);
-		}
-	}
-	updateSpeed(){
-		for (var i = 0; i < this.wallList.length; i++) {
-			this.wallList[i].velocity.y = this.gameSpeed;
-		}
-	}
-	normalSpeed(){
-		this.gameSpeed = 350;
-		this.updateSpeed();
-	}
-	reduceSpeed(){
-		this.gameSpeed = 150;
-		this.updateSpeed();
+		this.updateList.push(entity)
+		this.gameContainer.addChild(entity)
 	}
 	
-	updateCurrentLevel(){
+	gameOver(){
+        // this.button.visible = true;
+        // this.button.scale.set(0);
+        // TweenLite.to(this.button.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'})
 
+		for (var i = this.levelManager.obstacles.length - 1; i >= 0; i--) {
+			if(this.levelManager.obstacles[i].parent){
+				this.levelManager.obstacles[i].parent.removeChild(this.levelManager.obstacles[i])
+			}
+		}
 
-	}
-	updateComboBar(){
+		// for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+		// 	if(this.currentBalls[i].parent){
+		// 		this.currentBalls[i].parent.removeChild(this.currentBalls[i])
+		// 	}
+		// }
 		
-	}
-	addCombo(){
-		
+		this.goleira.reset();
+		// this.currentBalls = [];
+		this.levelManager.obstacles = [];
+
+		this.gameStarted = false;
+
+		this.screenManager.change('GameOverScreen')
+
+		// this.paused = true;
 
 	}
-	//EVENTS
-	onReviveCallback(){
-		//console.log('REVIVE');
+	startGame(){
+		GAME_DATA.lifes = 3;
+		GAME_DATA.points = 0;
+		this.spotedBall = null;
+		this.comboSystem.reset();
+        this.getNewBall();
+        this.uiManager.createLifes();
+        this.levelManager.createObstacles();
+        // this.levelManager.addTargets();
+        // TweenLite.to(this.button.scale, 0.2, {x:0, y:0, ease:'easeInBack'})
+        // this.button.visible = false;
+        this.gameStarted = true;
+        // this.paused = false;
+	}
+	getNewBall(){
+		if(GAME_DATA.lifes <= 0){
+			return
+		}
+		console.log('BALLLLLLZ');
+		if(this.spotedBall && !this.spotedBall.shooting){
+		// 	console.log('spot',this.spotedBall.shooting);
+			return
+		}
+		let ball = POOL.getBall();
+		ball.build(this, 50);
+		ball.reset();
+		this.add(ball);
+		this.spotedBall = ball;
+		this.currentBalls.push(this.spotedBall)
+	}
+	reset(){
+		if(!this.gameStarted){
+			return
+		}
+		this.finishedBall();
+		console.log('reset');
+		this.paused = false;		
+		this.colliding = false;
+        
+	}
+	removeBalls(){
+		for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+			this.currentBalls[i].killBall();
+		}
+	}
+	debugBall(ballPosition, entity){
+		if(this.testeBall && this.testeBall.parent){
+			this.testeBall.parent.removeChild(this.testeBall)
+		}
+		this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x,ballPosition.y, entity.getRadius());
+		this.addChild(this.testeBall);
+	}
 
-		this.endGameContainer.hide();
+	finishedBall(timer = 0){
+// console.log('FINIZED');
+		if(GAME_DATA.lifes <= 0){
+			return
+		}
+		setTimeout(function() {
+			this.getNewBall();
+		}.bind(this), timer);
+	}
 
-		let forceWall = true;
+	updateGame(){
+		this.uiManager.updateLifes();
+		if(GAME_DATA.lifes){
+			this.levelManager.createObstacles();
+		}
+	}
+	missShoot(){
+		if(GAME_DATA.lifes <= 0){
+			return
+		}
+		GAME_DATA.lifes -- ;
+		this.comboSystem.missGoal();
+		this.uiManager.updateLifes();
 
-		this.finishingGame = false;
+		if(GAME_DATA.lifes <= 0){
+			this.gameStarted = false;
+			setTimeout(function() {
+				this.removeBalls();
+			}.bind(this), 500);
+			setTimeout(function() {
+				this.gameOver();
+			}.bind(this), 1200);
+			
+		}
 
-		//// console.log(this.levelBuilder.currentPattern);
-		this.mainPlayer.reset();
-		this.mainPlayer.revive(forceWall);
+	}
+	update(delta){
+		this.trailManager.update(delta, this.mousePosition);
+		if(this.paused){
+			return
+		}
+		super.update(delta);
 
-		if(this.levelBuilder.currentPattern.playerPosition){
-			this.resetPlayerPositionJump();
-			this.startJump();
-			forceWall = false;
+		if(this.spotedBall){
+			// this.dot.x = this.spotedBall.x
+			// this.dot.y = this.spotedBall.y + this.spotedBall.spriteContainer.y
+
+			// this.trail.update(delta, {x:this.dot.x, y:this.dot.y})
+		}
+
+		this.uiManager.debug2.text = this.comboSystem.chain; //delta
+
+		for (var i = this.updateList.length - 1; i >= 0; i--) {
+			if(this.updateList[i].update){
+				this.updateList[i].update(delta)
+			}
+			this.viewManager.updateObjectScale(this.updateList[i], config.height)
+		}
+
+		this.gameContainer.children.sort(utils.depthCompare);
+
+		if(this.tapping){
+			this.mousePosition = renderer.plugins.interaction.pointer.global;
+		}
+		// if(this.currentTrail)
+
+		// this.collide(delta, this.currentBalls, this.currentBalls2)
+		// console.log(this.currentBalls.length);
+		// if(this.uiManager.debug2.text != this.currentBalls.length){
+		// 	this.uiManager.debug2.text = this.currentBalls.length;
+		// }
+		this.goleira.update(delta);
+
+		// console.log(this.levelManager.obstacles.length);
+		if(this.gameStarted){
+			let collideObs = false	
+			for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+				if(!this.currentBalls[i].collided){
+					for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
+						if(this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])){
+							this.shake();
+							collideObs = this.currentBalls[i];	
+						}
+					}
+				}
+				
+				if(
+					this.mousePosition &&
+					(this.mousePosition.x > 0 && this.mousePosition.x < config.width) &&
+					(this.mousePosition.y > 0 && this.mousePosition.y < config.height)
+				){
+					this.verifyInterception(this.currentBalls[i]);
+				}
+				this.collisions.collideBounds(delta, this.currentBalls[i])
+
+				if(this.currentBalls[i].killed){
+					this.currentBalls.splice(i, 1);
+				}
+			}
+
+			if(collideObs && collideObs.velocity.y > 10){
+				collideObs.stickCollide();
+				// collideObs.inObstacle();
+				this.missShoot();
+
+				this.finishedBall(500);
+				this.updateGame();
+				collideObs = false;
+
+			}else if(collideObs){
+				collideObs.inObstacle();
+			}
 		}
 
 
-		this.camera.follow(this.mainPlayer)
 
-		//console.log('zoom 2 REVIVE');
-
-		this.camera.zoom(2)
-		this.camera.updatePosition(true);
-
-		
-		this.pause();
-		this.startGame(1000);
 	}
-	onStartCallback(){
-		this.startGame()
+	goal(goals = 1){
+		GAME_DATA.points += goals;
+		this.comboSystem.addGoal(goals);
+		this.uiManager.updateLifes();
+	}
+	noGoal(){
+		GAME_DATA.lifes --;
+		
+		this.uiManager.updateLifes();
+	}
+
+	debugGoal(rect){
+		if(this.testeRect){
+			this.testeRect.parent.removeChild(this.testeRect)
+		}
+		this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x,rect.y, rect.w,rect.h);
+		this.addChild(this.testeRect)
+		this.testeRect.alpha = 0.2
+	}
+
+	debugStick(target){
+		this.testee = new PIXI.Graphics().lineStyle(2, 0xff0000).moveTo(target.p1.x,target.p1.y);
+		this.testee.lineTo(target.p2.x,target.p2.y);
+		this.addChild(this.testee);
+	}
+
+	verifyInterception(entity){
+		if(!this.tapping || (this.firstPoint && this.firstPoint.y < this.mousePosition.y)){
+			return
+		}
+
+		this.secPoint = {x:this.mousePosition.x,y:this.mousePosition.y};
+		let interception = this.collisions.inteceptCircleLineSeg(entity, {p1:this.firstPoint, p2:this.secPoint});
+		
+		//just shoot if have two points of intersection
+		// if(interception.length == 1){
+		// 	console.log(interception[0].y);
+		// 	if(interception[0].y < entity.y){
+		// 		alert('cavadinha')
+		// 	}
+		// }
+		if(interception.length < 2){
+			return
+		}
+		this.tapping = false;
+
+		//angle btx the intersection points
+		let angleColision = -Math.atan2(interception[0].y - interception[1].y, interception[0].x - interception[1].x);
+		angleColision += 90 / 180 * 3.14;;
+		let frontBall = {x:entity.x, y:entity.y - entity.getRadius()}
+		
+		//angle btw front of the ball and the points
+		//let mid = this.getMiddlePoint(this.firstPoint.x,this.firstPoint.y, this.secPoint.x,this.secPoint.y);
+		let angle = -Math.atan2(this.firstPoint.y - frontBall.y, this.secPoint.x - frontBall.x);
+		// let angle = -Math.atan2(this.firstPoint.y - this.secPoint.y, this.firstPoint.x - this.secPoint.x);
+		angle += 90 / 180 * 3.14;
+
+//0.022
+        let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.032
+
+        this.uiManager.debug2.text = force;
+       
+        entity.shoot(force, angle, angleColision);
+
+        // this.reset();
+
+        this.paused = true;
+        setTimeout(function() {this.paused = false;}.bind(this), 100);
+	}
+	getMiddlePoint(x0,y0,x1,y1){
+		let dx = x1-x0;
+		let dy = y1-y0
+		let midX = x0 + dx*0.50;
+		let midY = y0 + dy*0.50;
+
+		return {x:midX, y:midY}
+	}
+	
+	detectTopCollision(target, entity,ballPosition){
+		// this.debugStick(target)
+		return this.collisions.detectTopCollision(target, entity,ballPosition);
+	}
+
+	detectSideCollision(target, entity,ballPosition){
+		// this.debugStick(target)
+		return this.collisions.detectSideCollision(target, entity,ballPosition);
+	}
+	onTapUp(){
+		this.trailManager.removeTrail();
+		this.tapping = false;
+	}
+	shootLeft(){
+		let tempBall = this.levelManager.getBall()
+		this.currentBalls.push(tempBall)
+		tempBall.stopMiddle();
+		tempBall.shoot(4.5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 + 0.35);
+	}
+	shootRight(){
+		let tempBall = this.levelManager.getBall()
+		this.currentBalls.push(tempBall)
+		tempBall.stopMiddle();
+		tempBall.shoot(4.5 + Math.random() * 0.8, 0, Math.random() * 0.03 - 0.015 - 0.35);
+	}
+	shootTop(){
+		let tempBall = this.levelManager.getBall()
+		this.currentBalls.push(tempBall)
+		tempBall.stopMiddle();
+		tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
+	}
+
+	shootMiddle(){
+		let tempBall = this.levelManager.getBall()
+		this.currentBalls.push(tempBall)
+		tempBall.stopMiddle();
+		tempBall.shoot(5 + Math.random() * 0.5, Math.random() * 0.4 - 0.2,   Math.random() * 0.1 - 0.05);
+	}
+
+	onTapDown(){
+		// this.currentBalls.shoot(6.5 , 0,  0);
+		// for (var i = 51; i >= 0; i--) {
+		// 	let rnd = Math.random()
+		// 	if(rnd < 0.33){
+		// 		this.shootTop()
+		// 	}else if(rnd < 0.66){
+				// this.shootLeft()
+		// 	}else{
+		// 		this.shootRight()
+		// this.shootMiddle();
+		// 	}
+		// }
+		// this.shootLeft()
+		// this.shootRight()
+		// this.shootTop()
+		// // //TOP SHOOT
+		// tempBall.shoot(6.5 + Math.random() * 0.8, Math.random() * 0.4 - 0.2,  Math.random() * 0.1 - 0.05);
+		this.tapping = true;
+		this.mousePosition = renderer.plugins.interaction.pointer.global;
+		this.firstPoint = {x:this.mousePosition.x,y:this.mousePosition.y};
+		this.trailManager.startNewTrail(this.mousePosition);
 	}
 	removeEvents(){
+		this.ingameUIContainer.interactive = false;
 		this.ingameUIContainer.off('touchstart').off('mousedown');
 		this.ingameUIContainer.off('touchend').off('mouseup');
+		// this.button.off('touchstart').off('mousedown');
 	}
 	addEvents(){
 		this.removeEvents();
 		this.ingameUIContainer.interactive = true;
-		this.ingameUIContainer.on('mousedown', this.onTapDown.bind(this)).on('touchstart', this.onTapDown.bind(this)); 
-		this.ingameUIContainer.on('mouseup', this.onTapUp.bind(this)).on('touchend', this.onTapUp.bind(this)); 	    
+		this.ingameUIContainer.on('mousedown', this.onTapDown.bind(this)).on('touchstart', this.onTapDown.bind(this));
+		this.ingameUIContainer.on('mouseup', this.onTapUp.bind(this)).on('touchend', this.onTapUp.bind(this));
+		// this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 	}
-	onMouseMoveCallback(e) {
-		
-	}
-	onTapUp(e) {
-		//// console.log('up');
-	}
-	onTapDown(e) {
-		if(this.isPause){
-			return;
-		}
-		//// console.log('down');
+	shake(force = 0.5, steps = 4, time = 0.4){
+		let timelinePosition = new TimelineLite();
+		let positionForce = (force * 50);
+		let spliterForce = (force * 20);
+		let speed = time / steps;
+		let currentPosition = {x:this.x, y:this.y};
+		for (var i = steps; i >= 0; i--) {
+			timelinePosition.append(TweenLite.to(this.position, speed, {x:currentPosition.x+ Math.random() * positionForce - positionForce/2, y:currentPosition.y+ Math.random() * positionForce - positionForce/2, ease:"easeNoneLinear"}));
+		};
 
-		//// console.log(this.playerList);
-		for (var i = 0; i < this.playerList.length; i++) {
-			this.playerList[i].jump();
-		}
-		// this.player.jump()
-
-	}
-	onPauseCallback() {
-		
-	}
-
-	//GAMEPLAY
-	
-	//end game
-	endGame() {
-		
+		timelinePosition.append(TweenLite.to(this.position, speed, {x:currentPosition.x, y:currentPosition.y, ease:"easeeaseNoneLinear"}));		
 	}
 	
-	addBottomHUD() {
-		
-	}
-	
-	addInfoLabel(label, addEffects, dontRemove, grey) {
-		
-	}
-	initGame() {
-		
-
-	}
-	
-	showGame(){
-		
-	}
-	hideGame(){
-		
-	}
-	showMenu(){
-		
-		
-	}
-	updateMenu(){
-
-	}
-	//end timer
-	selectMenu(){
-	}
-	showEndContainer(){
-	}
-
-	onReestartCallback(){
-		this.reestartGame();
-	}
-
-	reestartGame(){
-		this.pause();
-		this.destroyGame();
-		this.resetGame(true);
-		this.startGame(2000);
-	}
-
-	
-	startGame(delay = 500) {
-
-		this.background.tilePosition.y = (this.background.height)
-
-		this.lastPortal = null;
-		this.lastTargetPortal = null;
-
-		this.startGameContainer.hide();
-
-		this.resetPlayerPositionJump();
-		//console.log('zoom 1 start game');
-
-		setTimeout(function() {
-			this.camera.zoom(1, 0.5)
-			this.camera.follow(this.mainPlayer);
-			this.camera.updatePosition(true);
-			this.unpause();
-		}.bind(this), delay);
-		
-	}
-	gameOver() {
-
-		for (var i = 0; i < this.playerList.length; i++) {
-			if(this.playerList[i] != this.mainPlayer)
-				this.playerList[i].kill = true;
-		}
-		this.mainPlayer.cameraType = 'AIR';
-		this.camera.shake(1,20,0.5);
-		this.camera.zoomBounce(0.5,2);
-		this.gameSpeed = 0;
-		this.finishingGame = true;
-		this.updateSpeed();
-
-		this.endGameContainer.currentCoins = this.currentCoins;
-		this.endGameContainer.show(0.5);
-		
-	}
-	//SCREEN
-	
-	
-	//UPDATE
-	//update timer
-	updatePlayerPosition(){
-		let playerBounds = this.mainPlayer.getHeadBounds();
-
-		for (var i = 0; i < this.checkPoints.length; i++) {
-			for (var j = 0; j < this.checkPoints[i].boundsEnd.length; j++) {
-				let check = this.checkPoints[i].boundsEnd[j];
-				if(check.x < playerBounds.x + playerBounds.width &&
-				   check.x + check.width > playerBounds.x &&
-				   check.y < playerBounds.y + playerBounds.height &&
-				   check.height + check.y > playerBounds.y){
-
-					this.currentSpawnPoint = this.checkPoints[i+1].respawPoint;
-
-				   	let middlePoint = null;//{x:check.x - 32,y:check.y}
-
-				   	if(this.checkPoints[i] && this.checkPoints[i + 1] && !this.checkPoints[i].single){
-				   		this.nextMiddlePoint = {x:0, y:0};
-				   		this.nextMiddlePoint.x = check.x;
-				   		this.nextMiddlePoint.y = this.checkPoints[i + 1].boundsEnd[0].y;
-				   		
-				   		//// console.log(this.nextMiddlePoint, 'tenho que guardar esse middlepoint aqui');
-
-				   	}
-
-				   	if(this.checkPoints[i + 1] && !this.checkPoints[i + 1].single){
-				   		//// console.log('tenho que guardar esse middlepoint aqui');
-
-				   	}else{
-
-				   		if(this.nextMiddlePoint){
-				   			middlePoint = {x:0,y:0};
-				   			middlePoint.x = this.nextMiddlePoint.x - 32;
-				   			middlePoint.y = this.nextMiddlePoint.y;
-				   			this.forceSingleLane = 1;
-				   			this.nextMiddlePoint = null;
-				   		}
-					   	this.levelBuilder.buildPattern(false, middlePoint, this.forceSingleLane > 0);
-					   	this.forceSingleLane --;
-					   	this.checkPoints.splice(i,1)
-				   	}
-
-				}
-			}
-		}
-
-		//// console.log(this.currentMiddlePoint);
-	}
-	updateTimer(delta){
-		if(this.ended){
-			return;
-		}
-		
-	}
-	
-	update(delta){
-		delta *= 1.2;
-		
-		// delta = delta.toFixed(2) * 0.5
-		super.update(delta);
-
-		// if(this.debugging)
-		if(this.forcedZoom){
-			this.camera.zoom(this.forcedZoom)
-		}
-		if(this.isPause || !this.mainPlayer){
-			return;
-		}
-		//// console.log('coinPool',this.levelBuilder.coinPool.length)
-		//// console.log('redCoinPool',this.levelBuilder.redCoinPool.length)
-		//// console.log('portalPool',this.levelBuilder.portalPool.length)
-		//// console.log('diamondPool',this.levelBuilder.diamondPool.length)
-		//// console.log('enemyPool',this.levelBuilder.enemyPool.length)
-		//// console.log('itemPool',this.levelBuilder.itemPool.length)
-		//// console.log('wallPool',this.levelBuilder.wallPool.length)
-
-		this.updatePlayerPosition();
-		this.camera.update(delta, this.mainPlayer.cameraType);
-
-			
-			// if(this.background.tilePosition.y < config.height * 50 && this.mainPlayer){
-			// 	this.background.tilePosition.y -= this.mainPlayer.velocity.y //* delta
-			//// 	//console.log(this.background.tilePosition.y);
-			// }
-			if(this.background.tilePosition.y < (config.height*0.60  * 50) && this.mainPlayer){
-				if(this.mainPlayer.velocity.y < 0){
-					this.background.tilePosition.y -= this.mainPlayer.velocity.y * delta * 0.5
-				}
-				//// console.log(this.background.tilePosition.y);
-			}
-
-
-		if(!this.finishingGame){
-
-
-			this.coinsLabel.text = this.currentCoins//this.player.velocity.x+' - '+ this.player.velocity.y//this.currentCoins;
-			this.coinsLabel.x = config.width - this.coinsLabel.width - 20;
-
-
-			this.playerStatus.text = '';
-
-			for (var i = 0; i < this.mainPlayer.itens.length; i++) {
-				this.playerStatus.text += this.mainPlayer.itens[i].data.type + ' - '+ this.mainPlayer.itens[i].timer.toFixed(2) + '\n';
-			}
-			this.playerStatus.x = config.width - this.playerStatus.width - 20;
-		}
-		for (var i = 0; i < this.wallList.length; i++) {
-			if(this.wallList[i].kill){
-				this.wallList.splice(i,1);
-			}
-		}	
-
-		for (var i = 0; i < this.coinList.length; i++) {
-			if(this.coinList[i].kill){
-				this.coinList.splice(i,1);
-			}
-		}
-
-		for (var i = 0; i < this.enemyList.length; i++) {
-			if(this.enemyList[i].kill){
-				this.enemyList.splice(i,1);
-			}
-		}
-
-		for (var i = 0; i < this.itemList.length; i++) {
-			if(this.itemList[i].kill){
-				this.itemList.splice(i,1);
-			}
-		}
-
-		for (var i = 0; i < this.playerList.length; i++) {
-			if(this.playerList[i] != this.mainPlayer && this.playerList[i].kill){
-				this.playerList.splice(i,1);
-			}
-		}
-
-		for (var i = 0; i < this.checkPoints.length; i++) {
-			let pos = this.checkPoints[i].shape.toGlobal(new PIXI.Point());
-			if(pos.y > config.height * 5){
-				if(this.checkPoints[i].shape.parent){
-					this.checkPoints[i].shape.parent.removeChild(this.checkPoints[i].shape);
-				}
-				this.checkPoints.splice(i,1);
-			}
-		}
-
-		for (var i = 0; i < this.updateList.length; i++) {
-			this.updateList[i].update(delta)
-			if(this.updateList[i].kill){
-				if(this.updateList[i].parent)
-					this.updateList[i].parent.removeChild(this.updateList[i]);
-				this.updateList.splice(i,1);
-			}
-		}
-		
-	}
 }

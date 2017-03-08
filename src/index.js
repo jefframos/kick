@@ -4,14 +4,15 @@ import Game from './Game';
 import GameData from './game/GameData';
 import GlobalGameView from './game/GlobalGameView';
 import ScreenManager from './screenManager/ScreenManager';
-import InitScreen from './game/screen/InitScreen';
+import GameScreen from './game/screen/GameScreen';
 import LoadScreen from './game/screen/LoadScreen';
 import StartScreen from './game/screen/StartScreen';
 import ChooseTeamScreen from './game/screen/ChooseTeamScreen';
 import ChooseFieldScreen from './game/screen/ChooseFieldScreen';
 import GameOverScreen from './game/screen/GameOverScreen';
+import Pool from './game/core/Pool';
 
-
+window.POOL = new Pool();
 
 PIXI.loader
 	// .add('./assets/map.json')
@@ -41,7 +42,7 @@ function configGame(){
 	window.GAME_DATA = new GameData();
 	window.GAME_VIEW = new GlobalGameView(screenManager);
 	//add screens
-	let initScreen = new InitScreen('InitScreen');
+	let gameScreen = new GameScreen('GameScreen');
 	let loadScreen = new LoadScreen('LoadScreen');
 	let startScreen = new StartScreen('StartScreen');
 	let chooseTeamScreen = new ChooseTeamScreen('ChooseTeamScreen');
@@ -50,7 +51,7 @@ function configGame(){
 
 	game.stage.addChild(screenManager);
 
-	screenManager.addScreen(initScreen);
+	screenManager.addScreen(gameScreen);
 	screenManager.addScreen(loadScreen);
 	screenManager.addScreen(startScreen);
 	screenManager.addScreen(chooseTeamScreen);

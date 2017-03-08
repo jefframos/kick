@@ -47,7 +47,7 @@ export default class GameOverScreen extends Screen{
 	}
 
 	startGame(){
-		this.screenManager.change('InitScreen')
+		this.screenManager.change('GameScreen')
 	}
 
 	toMainScreen(){

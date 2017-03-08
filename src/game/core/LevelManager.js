@@ -1,11 +1,9 @@
 import * as PIXI from 'pixi.js';
 import config  from '../../config';
-import Ball from '../entity/Ball'
-import Obstacle from '../entity/Obstacle'
+
 export default class LevelManager{
 	constructor(game){
-		this.ballPool = []
-		this.obstaclePool = []
+		
 		this.obstacles = []
 		this.game = game;
 
@@ -56,7 +54,7 @@ export default class LevelManager{
 	// }
 
 	createObstacle(bounds = {x:0, y:0, w:50, h:400}){
-		let obstacle = this.getObstacle().build(bounds.w, {height:bounds.h});
+		let obstacle = POOL.getObstacle().build(bounds.w, {height:bounds.h});
 		obstacle.x = bounds.x;
 		obstacle.y = bounds.y;
 		// this.game.add.(obstacle);
@@ -65,15 +63,18 @@ export default class LevelManager{
 	}
 	createObstacles(){
 
-		for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
-			// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
-			// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){
-			// 		this.game.add.updateList.splice(j,1);
-			// 	}
-			// }
-			if(this.obstaclePool[i].parent)
-				this.obstaclePool[i].kill();
-				// this.obstaclePool[i].parent.removeChild(this.obstaclePool[i])
+		// for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
+		// 	// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
+		// 	// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){
+		// 	// 		this.game.add.updateList.splice(j,1);
+		// 	// 	}
+		// 	// }
+		// 	if(this.obstaclePool[i].parent)
+		// 		this.obstaclePool[i].kill();
+		// 		// this.obstaclePool[i].parent.removeChild(this.obstaclePool[i])
+		// }
+		for (var i = this.obstacles.length - 1; i >= 0; i--) {
+			this.obstacles[i].kill();
 		}
 		this.obstacles = [];
 		let obstacle = null;
@@ -91,45 +92,5 @@ export default class LevelManager{
 			obs.y = Math.floor(obs.y / 4) * 4;
 		// 	this.viewManager.updateObjectScale(this.game.obstacles[i]);
 		}
-	}
-
-	getObstacle(){
-		for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
-			if(this.obstaclePool[i].killed){
-				this.obstaclePool[i].reset();
-				return this.obstaclePool[i]
-			}
-		}
-		let obstacle = new Obstacle(this);
-		this.obstaclePool.push(obstacle);
-		this.game.add(obstacle)
-
-		return obstacle;
-	}
-
-	getBall(){
-		// console.log(this.ballPool.length);
-		for (var i = this.ballPool.length - 1; i >= 0; i--) {
-				// console.log(this.ballPool[i].killed , this.ballPool[i].shooting);
-			if(this.ballPool[i].killed){
-			// if((!this.ballPool[i].killed && !this.ballPool[i].shooting) || (this.ballPool[i].shooting && this.ballPool[i].killed)){
-
-
-				this.ballPool[i].reset();
-				return this.ballPool[i]
-			}
-		}
-		let ball = new Ball(this.game,50);
-		this.ballPool.push(ball);
-		ball.reset();
-
-		// for (var i = this.game.updateList.length - 1; i >= 0; i--) {
-		// 	if(this.game.updateList[i] == ball){
-		// 		this.game.updateList.splice(i,1);
-		// 	}
-		// }
-		this.game.add(ball)
-
-		return ball;
 	}
 }

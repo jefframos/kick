@@ -108,11 +108,11 @@ export default class Collisions{
 							targets[i].target.onTarget();
 							if(this.game.lifes < 5)
 								this.game.lifes ++
-							points = 10;
+							points = GAME_DATA.perfectShoot;
 						}else if(dist < radiusDistance){
 							targets[i].target.onTarget();
 							this.game.uiManager.textLabel.text = 'no angulo'
-							points = 5;
+							points =  GAME_DATA.goodShoot;
 						}
 					}
 

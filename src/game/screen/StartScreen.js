@@ -67,7 +67,7 @@ export default class StartScreen extends Screen{
 		TweenLite.to(this.fieldButton.scale, 0.3, {delay:0, x:0, y:0, ease:'easeInBack'});
 		TweenLite.to(this.startButton.scale, 0.3, {delay:0.05, x:0, y:0, ease:'easeInBack'});
 		TweenLite.to(this.teamButton.scale, 0.3, {delay:0.1, x:0, y:0, ease:'easeInBack', onComplete:function(){
-			this.screenManager.change('InitScreen');
+			this.screenManager.change('GameScreen');
 		}, onCompleteScope:this})
 		
 	}

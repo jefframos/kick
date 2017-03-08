@@ -21,6 +21,9 @@ export default class GameData{
     	this.teamsData.push(0x0000FF)    	
     	this.teamsData.push(0x00FF00)
     	this.teamsData.push(0xFF0FF0)
+
+        this.goodShoot = 5,
+        this.perfectShoot = 10;
     }
     changeLevel(level){
     	this.level = level;
