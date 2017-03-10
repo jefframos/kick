@@ -21,7 +21,7 @@ export default class LoadScreen extends Screen{
 
 	toGame(){
 		this.screenLabel = new PIXI.Text(this.label,{font : '46px mario', fill : 0xFFFFFF, align : 'right'});  
-		this.screenManager.change('StartScreen')
+		this.screenManager.change('GameScreen')
 	}
 	startLoad(){
 		let loader = new PIXI.loaders.Loader(); // you can also create your own if you want

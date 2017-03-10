@@ -128,10 +128,10 @@ export default class Ball extends PIXI.Container {
 
         let force2 = force*0.35
 
-        console.log('FORCE', force);
-        if(force < 5){
-            force2 += 5 / force - 0.1
-        }
+        // console.log('FORCE', force);
+        // if(force < 5){
+        //     force2 += 5 / force - 0.1
+        // }
 
         this.verticalVelocity.y += this.shootYSpeed * force2;
         this.spriteDirection = 1;
@@ -162,6 +162,7 @@ export default class Ball extends PIXI.Container {
         this.collideObstacle = false;
 
         this.collided = false;
+        this.goalkeeperTesting = false;
 
         this.virtualVelocity = {x:0,y:0};
         this.velocity = {x:0,y:0};
@@ -220,6 +221,9 @@ export default class Ball extends PIXI.Container {
     }
     stickCollide() {
         this.collided = true;
+    }
+    goalkeeperTest() {
+        this.goalkeeperTesting = true;
     }
     getRadius() {
         // this.standardScale

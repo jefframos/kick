@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import config  from '../../config';
+import Goalkeeper from '../entity/Goalkeeper'
 
 export default class LevelManager{
 	constructor(game){
@@ -7,7 +8,8 @@ export default class LevelManager{
 		this.obstacles = []
 		this.game = game;
 
-
+		
+		//this.game.add(this.goalkeeper)
 		this.levels = [];
 
 		let lvl = [];
@@ -62,7 +64,7 @@ export default class LevelManager{
 		this.obstacles.push(obstacle)
 	}
 	createObstacles(){
-
+		// return
 		// for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
 		// 	// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
 		// 	// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){

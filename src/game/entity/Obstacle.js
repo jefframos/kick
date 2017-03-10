@@ -2,14 +2,14 @@ import * as PIXI from 'pixi.js';
 import config  from '../../config';
 export default class Obstacle extends PIXI.Container {
 
-    constructor(game, radius = 20, bounds = {height:400}) {
+    constructor(game) {
         super();  
         this.game = game;
         
-        this.radius = radius;
-        this.externalRadius = this.radius*1;
+        // this.radius = radius;
+        // this.externalRadius = this.radius*1;
        
-        this.bounds = bounds
+        // this.bounds = bounds
 
         this.container = new PIXI.Container();
         this.addChild(this.container);

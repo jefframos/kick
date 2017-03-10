@@ -148,7 +148,7 @@ export default class Collisions{
 				this.game.colliding = true;
 				entity.resetCollisions();
 
-console.log('finished on coll');
+				console.log('finished on coll');
 				this.game.finishedBall(750);
 				this.game.updateGame();
 			}
@@ -234,6 +234,58 @@ console.log('finished on coll');
 
 		return realCollide
 	}
+
+
+	collideGoalkeeper(delta, entity, goalkeeper){
+		if(entity.goalkeeperTesting){
+			return
+		}
+		let ball = {
+			x: entity.x,
+			y: entity.y + entity.spriteContainer.y * entity.scale.y,
+			getRadius:function(){
+				return 1
+			}
+		}
+
+		if(entity.y - entity.getRadius() <= goalkeeper.y){
+			console.log(ball, goalkeeper.y);
+			entity.goalkeeperTest()
+			// this.game.debugBall(ball, entity);
+			let parts = goalkeeper.returnBodyParts();
+			// for (var i = parts.length - 1; i >= 0; i--) {				
+			// 	this.game.debugBall(parts[i], parts[i]);
+			// }
+
+			let collided = null;
+			for (var i = parts.length - 1; i >= 0; i--) {
+				let partRadius = parts[i].getRadius();
+				let distance = utils.distance(parts[i].x, parts[i].y, ball.x, ball.y)
+
+				if(distance < partRadius + entity.getRadius()){
+
+
+					if(!collided || (collided && collided.distance > distance))
+					{
+						collided = {distance:distance, entity:parts[i]}
+					}
+
+				}
+			}
+			if(collided){
+				let angle = -Math.atan2(collided.entity.y - ball.y, collided.entity.x - ball.x);
+				angle += Math.PI * 90 / 180
+				entity.velocity.x = entity.velocity.y * Math.sin(angle);
+
+				entity.velocity.y = Math.abs(entity.velocity.y) / 3;
+
+				return true
+			}
+		}
+		return false
+
+	}
+
 
 	collideSticks(delta, entity, toCollide, ballPosition){
 		let distance = utils.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
@@ -366,5 +418,55 @@ console.log('finished on coll');
 	        ret[ret.length] = retP2;
 	    }       
 	    return ret;
+	}
+
+	collideCircleWithRotatedRectangle ( circle, rect ) {
+		
+		var rectCenterX = rect.x;
+		var rectCenterY = rect.y;
+
+		var rectX = rectCenterX - rect.width / 2;
+		var rectY = rectCenterY - rect.height / 2;
+
+		var rectReferenceX = rectX;
+		var rectReferenceY = rectY;
+		
+		// Rotate circle's center point back
+		var unrotatedCircleX = Math.cos( rect.rotation ) * ( circle.x - rectCenterX ) - Math.sin( rect.rotation ) * ( circle.y - rectCenterY ) + rectCenterX;
+		var unrotatedCircleY = Math.sin( rect.rotation ) * ( circle.x - rectCenterX ) + Math.cos( rect.rotation ) * ( circle.y - rectCenterY ) + rectCenterY;
+
+		// Closest point in the rectangle to the center of circle rotated backwards(unrotated)
+		var closestX, closestY;
+
+		// Find the unrotated closest x point from center of unrotated circle
+		if ( unrotatedCircleX < rectReferenceX ) {
+			closestX = rectReferenceX;
+		} else if ( unrotatedCircleX > rectReferenceX + rect.width ) {
+			closestX = rectReferenceX + rect.width;
+		} else {
+			closestX = unrotatedCircleX;
+		}
+	 
+		// Find the unrotated closest y point from center of unrotated circle
+		if ( unrotatedCircleY < rectReferenceY ) {
+			closestY = rectReferenceY;
+		} else if ( unrotatedCircleY > rectReferenceY + rect.height ) {
+			closestY = rectReferenceY + rect.height;
+		} else {
+			closestY = unrotatedCircleY;
+		}
+	 
+		// Determine collision
+		var collision = false;
+		var distance = utils.distance( unrotatedCircleX, unrotatedCircleY, closestX, closestY );
+		
+		if ( distance < circle.getRadius() ) {
+			collision = true;
+		}
+		else {
+			collision = false;
+		}
+
+		return collision;
 	}
 }

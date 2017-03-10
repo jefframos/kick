@@ -14,6 +14,7 @@ import ViewManager from '../core/ViewManager';
 import LevelManager from '../core/LevelManager';
 import ComboSystem from '../core/ComboSystem';
 import Goal from '../entity/Goal';
+import Goalkeeper from '../entity/Goalkeeper'
 
 import UIManager from '../ui/UIManager';
 
@@ -75,6 +76,16 @@ export default class GameScreen extends Screen{
         this.goleira.show();
 		this.addEvents();
 		this.startGame();
+
+		this.goalkeeper = new Goalkeeper(this, 50);
+		// this.goalkeeper.build();
+		this.add(this.goalkeeper)
+		this.goalkeeper.build(50, {height:400})
+		this.goalkeeper.x = 200
+		this.goalkeeper.y = 155
+		this.viewManager.updateObjectScale(this.goalkeeper)
+		
+
 	}
 	remove(entity){
 		for (var i = this.updateList.length - 1; i >= 0; i--) {
@@ -167,13 +178,7 @@ export default class GameScreen extends Screen{
 			this.currentBalls[i].killBall();
 		}
 	}
-	debugBall(ballPosition, entity){
-		if(this.testeBall && this.testeBall.parent){
-			this.testeBall.parent.removeChild(this.testeBall)
-		}
-		this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x,ballPosition.y, entity.getRadius());
-		this.addChild(this.testeBall);
-	}
+	
 
 	finishedBall(timer = 0){
 // console.log('FINIZED');
@@ -239,6 +244,8 @@ export default class GameScreen extends Screen{
 		if(this.tapping){
 			this.mousePosition = renderer.plugins.interaction.pointer.global;
 		}
+
+		// this.debugGoalkeeper(this.goalkeeper)
 		// if(this.currentTrail)
 
 		// this.collide(delta, this.currentBalls, this.currentBalls2)
@@ -251,8 +258,19 @@ export default class GameScreen extends Screen{
 		// console.log(this.levelManager.obstacles.length);
 		if(this.gameStarted){
 			let collideObs = false	
+
+			
+
+
 			for (var i = this.currentBalls.length - 1; i >= 0; i--) {
 				if(!this.currentBalls[i].collided){
+					if(this.collisions.collideGoalkeeper(delta, this.currentBalls[i], this.goalkeeper))
+					{
+						this.missShoot();
+						this.finishedBall(500);
+						this.updateGame();
+						break
+					}
 					for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
 						if(this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])){
 							this.shake();
@@ -310,6 +328,26 @@ export default class GameScreen extends Screen{
 		this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x,rect.y, rect.w,rect.h);
 		this.addChild(this.testeRect)
 		this.testeRect.alpha = 0.2
+	}
+
+	debugBall(ballPosition, entity){
+		// if(this.testeBall && this.testeBall.parent){
+		// 	this.testeBall.parent.removeChild(this.testeBall)
+		// }
+		this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x,ballPosition.y, entity.getRadius());
+		this.addChild(this.testeBall);
+	}
+
+	debugGoalkeeper(rect){
+		return
+		if(this.testeRect){
+			this.testeRect.parent.removeChild(this.testeRect)
+		}
+		this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x,rect.y, rect.width,rect.height);
+		this.testeRect.rotation = rect.rotation
+		// alert(rect.rotation)
+		this.addChild(this.testeRect)
+		this.testeRect.alpha = 0.3
 	}
 
 	debugStick(target){

@@ -54,6 +54,8 @@ export default class Goal extends PIXI.Container {
     	}
     	this.targets = [];
     }
+    addGoalkeeper(){
+    }
     addTargets(){
 		let target = this.getTarget();
 		target.x = -this.goleira.width / 2 + target.radius 

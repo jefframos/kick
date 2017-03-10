@@ -46396,19 +46396,16 @@
 	        _inherits(Obstacle, _PIXI$Container);
 	
 	        function Obstacle(game) {
-	                var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
-	                var bounds = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : { height: 400 };
-	
 	                _classCallCheck(this, Obstacle);
 	
 	                var _this = _possibleConstructorReturn(this, (Obstacle.__proto__ || Object.getPrototypeOf(Obstacle)).call(this));
 	
 	                _this.game = game;
 	
-	                _this.radius = radius;
-	                _this.externalRadius = _this.radius * 1;
+	                // this.radius = radius;
+	                // this.externalRadius = this.radius*1;
 	
-	                _this.bounds = bounds;
+	                // this.bounds = bounds
 	
 	                _this.container = new PIXI.Container();
 	                _this.addChild(_this.container);
@@ -47005,6 +47002,53 @@
 				return realCollide;
 			}
 		}, {
+			key: 'collideGoalkeeper',
+			value: function collideGoalkeeper(delta, entity, goalkeeper) {
+				if (entity.goalkeeperTesting) {
+					return;
+				}
+				var ball = {
+					x: entity.x,
+					y: entity.y + entity.spriteContainer.y * entity.scale.y,
+					getRadius: function getRadius() {
+						return 1;
+					}
+				};
+	
+				if (entity.y - entity.getRadius() <= goalkeeper.y) {
+					console.log(ball, goalkeeper.y);
+					entity.goalkeeperTest();
+					// this.game.debugBall(ball, entity);
+					var parts = goalkeeper.returnBodyParts();
+					// for (var i = parts.length - 1; i >= 0; i--) {				
+					// 	this.game.debugBall(parts[i], parts[i]);
+					// }
+	
+					var collided = null;
+					for (var i = parts.length - 1; i >= 0; i--) {
+						var partRadius = parts[i].getRadius();
+						var distance = _utils2.default.distance(parts[i].x, parts[i].y, ball.x, ball.y);
+	
+						if (distance < partRadius + entity.getRadius()) {
+	
+							if (!collided || collided && collided.distance > distance) {
+								collided = { distance: distance, entity: parts[i] };
+							}
+						}
+					}
+					if (collided) {
+						var angle = -Math.atan2(collided.entity.y - ball.y, collided.entity.x - ball.x);
+						angle += Math.PI * 90 / 180;
+						entity.velocity.x = entity.velocity.y * Math.sin(angle);
+	
+						entity.velocity.y = Math.abs(entity.velocity.y) / 3;
+	
+						return true;
+					}
+				}
+				return false;
+			}
+		}, {
 			key: 'collideSticks',
 			value: function collideSticks(delta, entity, toCollide, ballPosition) {
 				var distance = _utils2.default.distance(toCollide.x, toCollide.y, ballPosition.x, ballPosition.y) < toCollide.getRadius() + entity.getRadius();
@@ -47153,6 +47197,56 @@
 					ret[ret.length] = retP2;
 				}
 				return ret;
+			}
+		}, {
+			key: 'collideCircleWithRotatedRectangle',
+			value: function collideCircleWithRotatedRectangle(circle, rect) {
+	
+				var rectCenterX = rect.x;
+				var rectCenterY = rect.y;
+	
+				var rectX = rectCenterX - rect.width / 2;
+				var rectY = rectCenterY - rect.height / 2;
+	
+				var rectReferenceX = rectX;
+				var rectReferenceY = rectY;
+	
+				// Rotate circle's center point back
+				var unrotatedCircleX = Math.cos(rect.rotation) * (circle.x - rectCenterX) - Math.sin(rect.rotation) * (circle.y - rectCenterY) + rectCenterX;
+				var unrotatedCircleY = Math.sin(rect.rotation) * (circle.x - rectCenterX) + Math.cos(rect.rotation) * (circle.y - rectCenterY) + rectCenterY;
+	
+				// Closest point in the rectangle to the center of circle rotated backwards(unrotated)
+				var closestX, closestY;
+	
+				// Find the unrotated closest x point from center of unrotated circle
+				if (unrotatedCircleX < rectReferenceX) {
+					closestX = rectReferenceX;
+				} else if (unrotatedCircleX > rectReferenceX + rect.width) {
+					closestX = rectReferenceX + rect.width;
+				} else {
+					closestX = unrotatedCircleX;
+				}
+	
+				// Find the unrotated closest y point from center of unrotated circle
+				if (unrotatedCircleY < rectReferenceY) {
+					closestY = rectReferenceY;
+				} else if (unrotatedCircleY > rectReferenceY + rect.height) {
+					closestY = rectReferenceY + rect.height;
+				} else {
+					closestY = unrotatedCircleY;
+				}
+	
+				// Determine collision
+				var collision = false;
+				var distance = _utils2.default.distance(unrotatedCircleX, unrotatedCircleY, closestX, closestY);
+	
+				if (distance < circle.getRadius()) {
+					collision = true;
+				} else {
+					collision = false;
+				}
+	
+				return collision;
 			}
 		}]);
 	
@@ -47624,7 +47718,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-			value: true
+		value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -47637,6 +47731,10 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
+	var _Goalkeeper = __webpack_require__(213);
+	
+	var _Goalkeeper2 = _interopRequireDefault(_Goalkeeper);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -47644,104 +47742,105 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var LevelManager = function () {
-			function LevelManager(game) {
-					_classCallCheck(this, LevelManager);
+		function LevelManager(game) {
+			_classCallCheck(this, LevelManager);
 	
-					this.obstacles = [];
-					this.game = game;
+			this.obstacles = [];
+			this.game = game;
 	
-					this.levels = [];
+			//this.game.add(this.goalkeeper)
+			this.levels = [];
 	
-					var lvl = [];
-					this.levels.push(lvl);
+			var lvl = [];
+			this.levels.push(lvl);
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 250, w: 50, h: 380 });
-					lvl.push({ x: _config2.default.width / 2 - 60, y: 260, w: 50, h: 370 });
-					lvl.push({ x: _config2.default.width / 2 - 20, y: 250, w: 50, h: 400 });
-					lvl.push({ x: _config2.default.width / 2 + 80, y: 160, w: 60, h: 410 });
-					this.levels.push(lvl);
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 - 100, y: 250, w: 50, h: 380 });
+			lvl.push({ x: _config2.default.width / 2 - 60, y: 260, w: 50, h: 370 });
+			lvl.push({ x: _config2.default.width / 2 - 20, y: 250, w: 50, h: 400 });
+			lvl.push({ x: _config2.default.width / 2 + 80, y: 160, w: 60, h: 410 });
+			this.levels.push(lvl);
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2, y: 160, w: 50, h: 410 });
-					this.levels.push(lvl);
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2, y: 160, w: 50, h: 410 });
+			this.levels.push(lvl);
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
-					this.levels.push(lvl);
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
+			this.levels.push(lvl);
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 + 30, y: 280, w: 50, h: 410 });
-					lvl.push({ x: _config2.default.width / 2 - 110, y: 230, w: 50, h: 410 });
-					this.levels.push(lvl);
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 + 30, y: 280, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2 - 110, y: 230, w: 50, h: 410 });
+			this.levels.push(lvl);
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
-					lvl.push({ x: _config2.default.width / 2, y: 230, w: 60, h: 360 });
-					this.levels.push(lvl);
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2, y: 230, w: 60, h: 360 });
+			this.levels.push(lvl);
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 + 100, y: 330, w: 50, h: 410 });
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 160, w: 50, h: 410 });
-					lvl.push({ x: _config2.default.width / 2, y: 170, w: 60, h: 360 });
-					this.levels.push(lvl);
+			lvl = [];
+			lvl.push({ x: _config2.default.width / 2 + 100, y: 330, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2 - 100, y: 160, w: 50, h: 410 });
+			lvl.push({ x: _config2.default.width / 2, y: 170, w: 60, h: 360 });
+			this.levels.push(lvl);
+		}
+	
+		// addTargets(){
+	
+		// 	this.game.goleira.addTargets();
+	
+		// }
+	
+		_createClass(LevelManager, [{
+			key: 'createObstacle',
+			value: function createObstacle() {
+				var bounds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { x: 0, y: 0, w: 50, h: 400 };
+	
+				var obstacle = POOL.getObstacle().build(bounds.w, { height: bounds.h });
+				obstacle.x = bounds.x;
+				obstacle.y = bounds.y;
+				// this.game.add.(obstacle);
+				this.game.add(obstacle);
+				this.obstacles.push(obstacle);
 			}
+		}, {
+			key: 'createObstacles',
+			value: function createObstacles() {
+				// return
+				// for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
+				// 	// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
+				// 	// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){
+				// 	// 		this.game.add.updateList.splice(j,1);
+				// 	// 	}
+				// 	// }
+				// 	if(this.obstaclePool[i].parent)
+				// 		this.obstaclePool[i].kill();
+				// 		// this.obstaclePool[i].parent.removeChild(this.obstaclePool[i])
+				// }
+				for (var i = this.obstacles.length - 1; i >= 0; i--) {
+					this.obstacles[i].kill();
+				}
+				this.obstacles = [];
+				var obstacle = null;
+				var rnd = Math.floor(Math.random() * this.levels.length);
 	
-			// addTargets(){
+				for (var i = this.levels[rnd].length - 1; i >= 0; i--) {
+					this.createObstacle(this.levels[rnd][i]);
+				}
 	
-			// 	this.game.goleira.addTargets();
+				for (var i = this.obstacles.length - 1; i >= 0; i--) {
+					var obs = this.obstacles[i];
+					obs.x = Math.floor(obs.x / 4) * 4;
+					obs.y = Math.floor(obs.y / 4) * 4;
+					// 	this.viewManager.updateObjectScale(this.game.obstacles[i]);
+				}
+			}
+		}]);
 	
-			// }
-	
-			_createClass(LevelManager, [{
-					key: 'createObstacle',
-					value: function createObstacle() {
-							var bounds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { x: 0, y: 0, w: 50, h: 400 };
-	
-							var obstacle = POOL.getObstacle().build(bounds.w, { height: bounds.h });
-							obstacle.x = bounds.x;
-							obstacle.y = bounds.y;
-							// this.game.add.(obstacle);
-							this.game.add(obstacle);
-							this.obstacles.push(obstacle);
-					}
-			}, {
-					key: 'createObstacles',
-					value: function createObstacles() {
-	
-							// for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
-							// 	// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
-							// 	// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){
-							// 	// 		this.game.add.updateList.splice(j,1);
-							// 	// 	}
-							// 	// }
-							// 	if(this.obstaclePool[i].parent)
-							// 		this.obstaclePool[i].kill();
-							// 		// this.obstaclePool[i].parent.removeChild(this.obstaclePool[i])
-							// }
-							for (var i = this.obstacles.length - 1; i >= 0; i--) {
-									this.obstacles[i].kill();
-							}
-							this.obstacles = [];
-							var obstacle = null;
-							var rnd = Math.floor(Math.random() * this.levels.length);
-	
-							for (var i = this.levels[rnd].length - 1; i >= 0; i--) {
-									this.createObstacle(this.levels[rnd][i]);
-							}
-	
-							for (var i = this.obstacles.length - 1; i >= 0; i--) {
-									var obs = this.obstacles[i];
-									obs.x = Math.floor(obs.x / 4) * 4;
-									obs.y = Math.floor(obs.y / 4) * 4;
-									// 	this.viewManager.updateObjectScale(this.game.obstacles[i]);
-							}
-					}
-			}]);
-	
-			return LevelManager;
+		return LevelManager;
 	}();
 	
 	exports.default = LevelManager;
@@ -47909,10 +48008,10 @@
 	
 	            var force2 = force * 0.35;
 	
-	            console.log('FORCE', force);
-	            if (force < 5) {
-	                force2 += 5 / force - 0.1;
-	            }
+	            // console.log('FORCE', force);
+	            // if(force < 5){
+	            //     force2 += 5 / force - 0.1
+	            // }
 	
 	            this.verticalVelocity.y += this.shootYSpeed * force2;
 	            this.spriteDirection = 1;
@@ -47947,6 +48046,7 @@
 	            this.collideObstacle = false;
 	
 	            this.collided = false;
+	            this.goalkeeperTesting = false;
 	
 	            this.virtualVelocity = { x: 0, y: 0 };
 	            this.velocity = { x: 0, y: 0 };
@@ -48007,6 +48107,11 @@
 	        key: 'stickCollide',
 	        value: function stickCollide() {
 	            this.collided = true;
+	        }
+	    }, {
+	        key: 'goalkeeperTest',
+	        value: function goalkeeperTest() {
+	            this.goalkeeperTesting = true;
 	        }
 	    }, {
 	        key: 'getRadius',
@@ -48319,6 +48424,9 @@
 							this.targets = [];
 					}
 			}, {
+					key: 'addGoalkeeper',
+					value: function addGoalkeeper() {}
+			}, {
 					key: 'addTargets',
 					value: function addTargets() {
 							var target = this.getTarget();
@@ -48616,7 +48724,7 @@
 			key: 'toGame',
 			value: function toGame() {
 				this.screenLabel = new PIXI.Text(this.label, { font: '46px mario', fill: 0xFFFFFF, align: 'right' });
-				this.screenManager.change('StartScreen');
+				this.screenManager.change('GameScreen');
 			}
 		}, {
 			key: 'startLoad',
@@ -49528,6 +49636,10 @@
 	
 	var _Goal2 = _interopRequireDefault(_Goal);
 	
+	var _Goalkeeper = __webpack_require__(213);
+	
+	var _Goalkeeper2 = _interopRequireDefault(_Goalkeeper);
+	
 	var _UIManager = __webpack_require__(202);
 	
 	var _UIManager2 = _interopRequireDefault(_UIManager);
@@ -49606,6 +49718,14 @@
 				this.goleira.show();
 				this.addEvents();
 				this.startGame();
+	
+				this.goalkeeper = new _Goalkeeper2.default(this, 50);
+				// this.goalkeeper.build();
+				this.add(this.goalkeeper);
+				this.goalkeeper.build(50, { height: 400 });
+				this.goalkeeper.x = 200;
+				this.goalkeeper.y = 155;
+				this.viewManager.updateObjectScale(this.goalkeeper);
 			}
 		}, {
 			key: 'remove',
@@ -49710,15 +49830,6 @@
 				}
 			}
 		}, {
-			key: 'debugBall',
-			value: function debugBall(ballPosition, entity) {
-				if (this.testeBall && this.testeBall.parent) {
-					this.testeBall.parent.removeChild(this.testeBall);
-				}
-				this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x, ballPosition.y, entity.getRadius());
-				this.addChild(this.testeBall);
-			}
-		}, {
 			key: 'finishedBall',
 			value: function finishedBall() {
 				var timer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
@@ -49789,6 +49900,8 @@
 				if (this.tapping) {
 					this.mousePosition = renderer.plugins.interaction.pointer.global;
 				}
+	
+				// this.debugGoalkeeper(this.goalkeeper)
 				// if(this.currentTrail)
 	
 				// this.collide(delta, this.currentBalls, this.currentBalls2)
@@ -49801,8 +49914,15 @@
 				// console.log(this.levelManager.obstacles.length);
 				if (this.gameStarted) {
 					var collideObs = false;
+	
 					for (var i = this.currentBalls.length - 1; i >= 0; i--) {
 						if (!this.currentBalls[i].collided) {
+							if (this.collisions.collideGoalkeeper(delta, this.currentBalls[i], this.goalkeeper)) {
+								this.missShoot();
+								this.finishedBall(500);
+								this.updateGame();
+								break;
+							}
 							for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
 								if (this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])) {
 									this.shake();
@@ -49859,6 +49979,28 @@
 				this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x, rect.y, rect.w, rect.h);
 				this.addChild(this.testeRect);
 				this.testeRect.alpha = 0.2;
+			}
+		}, {
+			key: 'debugBall',
+			value: function debugBall(ballPosition, entity) {
+				// if(this.testeBall && this.testeBall.parent){
+				// 	this.testeBall.parent.removeChild(this.testeBall)
+				// }
+				this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x, ballPosition.y, entity.getRadius());
+				this.addChild(this.testeBall);
+			}
+		}, {
+			key: 'debugGoalkeeper',
+			value: function debugGoalkeeper(rect) {
+				return;
+				if (this.testeRect) {
+					this.testeRect.parent.removeChild(this.testeRect);
+				}
+				this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x, rect.y, rect.width, rect.height);
+				this.testeRect.rotation = rect.rotation;
+				// alert(rect.rotation)
+				this.addChild(this.testeRect);
+				this.testeRect.alpha = 0.3;
 			}
 		}, {
 			key: 'debugStick',
@@ -50206,6 +50348,259 @@
 	}();
 	
 	exports.default = Collisions;
+
+/***/ },
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	        value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Goalkeeper = function (_PIXI$Container) {
+	        _inherits(Goalkeeper, _PIXI$Container);
+	
+	        function Goalkeeper(game) {
+	                var radius = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
+	
+	                _classCallCheck(this, Goalkeeper);
+	
+	                var _this = _possibleConstructorReturn(this, (Goalkeeper.__proto__ || Object.getPrototypeOf(Goalkeeper)).call(this));
+	
+	                _this.game = game;
+	                _this.radius = radius;
+	
+	                _this.container = new PIXI.Container();
+	                _this.addChild(_this.container);
+	
+	                return _this;
+	        }
+	
+	        _createClass(Goalkeeper, [{
+	                key: 'build',
+	                value: function build() {
+	                        var radius = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 20;
+	                        var bounds = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : { height: 400 };
+	
+	                        radius = Math.floor(radius / 4) * 4;
+	                        this.radius = radius;
+	                        this.externalRadius = this.radius * 1;
+	                        bounds.height = Math.floor(bounds.height / 4) * 4;
+	                        this.bounds = bounds;
+	
+	                        // for (var i = this.container.children.length - 1; i >= 0; i--) {
+	                        //     this.container.removeChild(this.container.getChildAt(i));
+	                        // }
+	
+	                        // this.container = new PIXI.Container();
+	                        // this.addChild(this.container);
+	
+	                        if (this.shadow && this.shadow.parent) {
+	                                this.shadow.parent.removeChild(this.shadow);
+	                        }
+	                        this.shadow = new PIXI.Graphics();
+	                        this.shadow.beginFill(0x0000);
+	                        this.shadow.drawCircle(0, this.radius, this.radius);
+	                        this.container.addChild(this.shadow);
+	                        this.shadow.alpha = 0.5;
+	                        this.shadow.scale.y = 0.5;
+	
+	                        this.spriteContainer = new PIXI.Container();
+	                        this.container.addChild(this.spriteContainer);
+	
+	                        // if(this.radius > 20){
+	
+	
+	                        this.shape = new PIXI.Graphics();
+	                        this.shape.beginFill(Math.random() * 0xFFFFFF);
+	                        this.shape.drawRect(0, 0, this.radius * 2, this.bounds.height);
+	                        // this.shape.drawRect(-this.radius,-this.bounds.height / 2,this.radius*2, this.bounds.height);
+	                        // this.shape.y = this.radius/2 -this.bounds.height / 2;
+	                        // this.container.addChild(this.shape);
+	
+	                        //this.shape.rotation = 45;
+	
+	                        // let obs = ['grizz-bear-win.png', 'darwin-win.png','finn-win.png','marceline-win.png','rigby-win.png','jake-win.png','moredecai-win.png']
+	
+	                        // this.shape = PIXI.Sprite.fromFrame(obs[Math.floor(Math.random() * obs.length)]);
+	                        // this.shape.anchor.set(0.5, 0.9);
+	                        // this.container.addChild(this.shape);
+	                        // this.shape.height = this.bounds.height
+	                        // this.shape.scale.x = this.shape.scale.y
+	                        // // this.shape.alpha = 0.5
+	
+	                        // this.shape.scale.set(1.5, 0);
+	                        // TweenLite.killTweensOf(this.shape.scale)
+	                        // TweenLite.to(this.shape.scale, 0.8, {delay:0.2, x:1, y:1, ease:'easeOutElastic'});
+	
+	                        //this.reset();
+	
+	                        console.log('BUILD', bounds, radius);
+	
+	                        var ballsSize = this.bounds.height / 4;
+	
+	                        this.legs = new PIXI.Graphics();
+	                        this.legs.beginFill(0xFFFFFF);
+	                        this.legs.drawCircle(0, 0, ballsSize);
+	                        this.legs.tint = 0x0000FF;
+	                        this.container.addChild(this.legs);
+	                        this.legs.y = -this.legs.height / 2;
+	
+	                        // this.legs.y = this.radius
+	
+	                        this.body = new PIXI.Graphics();
+	                        this.body.beginFill(0xFFFFFF);
+	                        this.body.drawCircle(0, 0, ballsSize);
+	                        this.body.y = -this.legs.width;
+	                        this.body.alpha = 0.6;
+	                        this.body.tint = 0x00FFFF;
+	                        this.container.addChild(this.body);
+	
+	                        this.handLeft = new PIXI.Graphics();
+	                        this.handLeft.beginFill(0xFFFFFF);
+	                        this.handLeft.drawCircle(0, 0, ballsSize / 2);
+	                        this.handLeft.alpha = 0.6;
+	                        this.handLeft.tint = 0xFF00FF;
+	                        this.container.addChild(this.handLeft);
+	                        this.handLeft.y = this.body.y;
+	                        this.handLeft.x = this.body.width / 2;
+	
+	                        this.handRight = new PIXI.Graphics();
+	                        this.handRight.beginFill(0xFFFFFF);
+	                        this.handRight.drawCircle(0, 0, ballsSize / 2);
+	                        this.handRight.alpha = 0.6;
+	                        this.handRight.tint = 0xFF00FF;
+	                        this.container.addChild(this.handRight);
+	                        this.handRight.y = this.body.y;
+	                        this.handRight.x = -this.body.width / 2;
+	
+	                        this.head = new PIXI.Graphics();
+	                        this.head.beginFill(0xFFFFFF);
+	                        this.head.drawCircle(0, 0, ballsSize / 2);
+	                        this.head.tint = 0xFFaaFF;
+	                        this.container.addChild(this.head);
+	                        this.head.y = this.body.y - this.head.height - ballsSize / 2;
+	
+	                        // this.rotation = 0.1
+	                        // this.game.debugGoalkeeper(this.getRect())
+	                        this.updateable = true;
+	                        this.velocity = { x: 0, y: 0 };
+	                        this.side = 1;
+	                        return this;
+	                }
+	        }, {
+	                key: 'returnBodyParts',
+	                value: function returnBodyParts() {
+	                        // console.log(this.scale);
+	                        var parts = [];
+	                        var bodyPart = {
+	                                x: this.x + this.legs.x * this.scale.x,
+	                                y: this.y + this.legs.y * this.scale.y,
+	                                radius: this.legs.height / 2 * this.scale.y,
+	                                getRadius: function () {
+	                                        return this.legs.height / 2 * this.scale.y;
+	                                }.bind(this)
+	                        };
+	                        parts.push(bodyPart);
+	
+	                        bodyPart = {
+	                                x: this.x + this.body.x * this.scale.x,
+	                                y: this.y + this.body.y * this.scale.y,
+	                                radius: this.body.height / 2 * this.scale.y,
+	                                getRadius: function () {
+	                                        return this.body.height / 2 * this.scale.y;
+	                                }.bind(this)
+	                        };
+	                        parts.push(bodyPart);
+	
+	                        bodyPart = {
+	                                x: this.x + this.handLeft.x * this.scale.x,
+	                                y: this.y + this.handLeft.y * this.scale.y,
+	                                radius: this.handLeft.height / 2 * this.scale.y,
+	                                getRadius: function () {
+	                                        return this.handLeft.height / 2 * this.scale.y;
+	                                }.bind(this)
+	                        };
+	                        parts.push(bodyPart);
+	
+	                        bodyPart = {
+	                                x: this.x + this.handRight.x * this.scale.x,
+	                                y: this.y + this.handRight.y * this.scale.y,
+	                                radius: this.handRight.height / 2 * this.scale.y,
+	                                getRadius: function () {
+	                                        return this.handRight.height / 2 * this.scale.y;
+	                                }.bind(this)
+	                        };
+	                        parts.push(bodyPart);
+	
+	                        bodyPart = {
+	                                x: this.x + this.head.x * this.scale.x,
+	                                y: this.y + this.head.y * this.scale.y,
+	                                radius: this.head.height / 2 * this.scale.y,
+	                                getRadius: function () {
+	                                        return this.head.height / 2 * this.scale.y;
+	                                }.bind(this)
+	                        };
+	                        parts.push(bodyPart);
+	
+	                        return parts;
+	                }
+	        }, {
+	                key: 'getRadius',
+	                value: function getRadius() {
+	                        // this.standardScale
+	                        return this.scale.x * this.radius;
+	                }
+	        }, {
+	                key: 'getExternalRadius',
+	                value: function getExternalRadius() {
+	                        return this.scale.x * this.externalRadius;
+	                }
+	        }, {
+	                key: 'update',
+	                value: function update(delta) {
+	                        if (!this.updateable) {
+	                                return;
+	                        }
+	
+	                        // if(
+	                        //     (this.side > 0 && this.x > this.moveBounds.x2) ||
+	                        //     (this.side < 0 && this.x < this.moveBounds.x1)
+	                        //     )
+	                        // {
+	                        //     this.side *= -1
+	                        // }
+	                        this.x += this.velocity.x * delta * this.side;
+	                        this.y += this.velocity.y * delta * this.side;
+	                }
+	        }]);
+	
+	        return Goalkeeper;
+	}(PIXI.Container);
+	
+	exports.default = Goalkeeper;
 
 /***/ }
 /******/ ]);
