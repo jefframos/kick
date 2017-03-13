@@ -46538,6 +46538,7 @@
 		}, {
 			key: 'debugGoalkeeper',
 			value: function debugGoalkeeper(goalkeeper) {
+				return;
 				var parts = goalkeeper.returnBodyParts();
 				console.log(parts);
 				for (var i = parts.length - 1; i >= 0; i--) {
@@ -47808,9 +47809,9 @@
 					entity.goalkeeperTest();
 					// this.game.debugBall(ball, entity);
 					var parts = goalkeeper.returnBodyParts();
-					for (var i = parts.length - 1; i >= 0; i--) {
-						this.game.debugBall(parts[i], parts[i]);
-					}
+					// for (var i = parts.length - 1; i >= 0; i--) {				
+					// 	this.game.debugBall(parts[i], parts[i]);
+					// }
 	
 					var collided = null;
 					for (var i = parts.length - 1; i >= 0; i--) {
@@ -49102,13 +49103,35 @@
 	    }, {
 	        key: 'updateFrame',
 	        value: function updateFrame(frame) {
+	            var smooth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+	
+	            var currentFrame = [];
+	            var nextFrame = [];
+	            var next = frame + 1;
+	
 	            for (var i = this.track.length - 1; i >= 0; i--) {
 	                if (this.track[i].frame == frame) {
-	                    for (var j = this.bodyParts.length - 1; j >= 0; j--) {
-	                        if (this.bodyParts[j].label == this.track[i].label) {
-	                            this.bodyParts[j].part.x = this.track[i].x;
-	                            this.bodyParts[j].part.y = this.track[i].y;
-	                        }
+	                    currentFrame.push(this.track[i]);
+	                }
+	
+	                if (this.track[i].frame == next) {
+	                    nextFrame.push(this.track[i]);
+	                }
+	            }
+	
+	            if (!nextFrame.length) {
+	                next = 1;
+	                for (var i = this.track.length - 1; i >= 0; i--) {
+	                    if (this.track[i].frame == next) {
+	                        nextFrame.push(this.track[i]);
+	                    }
+	                }
+	            }
+	            for (var i = currentFrame.length - 1; i >= 0; i--) {
+	                for (var j = this.bodyParts.length - 1; j >= 0; j--) {
+	                    if (this.bodyParts[j].label == currentFrame[i].label) {
+	                        this.bodyParts[j].part.x = currentFrame[i].x + (nextFrame[i].x - currentFrame[i].x) * smooth;
+	                        this.bodyParts[j].part.y = currentFrame[i].y + (nextFrame[i].y - currentFrame[i].y) * smooth;
 	                    }
 	                }
 	            }
@@ -49121,22 +49144,10 @@
 	            }
 	
 	            this.frame += delta * 3;
-	            if (this.frame > this.maxFrame) {
+	            if (this.frame > this.maxFrame + 1) {
 	                this.frame = 1;
 	            }
-	            this.updateFrame(Math.floor(this.frame));
-	            // this.drawCounter --
-	            // if(this.drawCounter > 0){
-	            //     this.rotation -= 0.01
-	            //     this.game.debugGoalkeeper(this)
-	            // }
-	            // if(
-	            //     (this.side > 0 && this.x > this.moveBounds.x2) ||
-	            //     (this.side < 0 && this.x < this.moveBounds.x1)
-	            //     )
-	            // {
-	            //     this.side *= -1
-	            // }
+	            this.updateFrame(Math.floor(this.frame), this.frame - Math.floor(this.frame));
 	            this.x += this.velocity.x * delta * this.side;
 	            this.y += this.velocity.y * delta * this.side;
 	        }

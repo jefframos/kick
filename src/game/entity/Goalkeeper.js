@@ -415,17 +415,38 @@ this.track.push({frame:7,label:'head',x:-4.15, y:-351.55})
         return this.scale.x * this.externalRadius;
     }
 
-    updateFrame(frame){
+    updateFrame(frame, smooth = 1){
+        let currentFrame = [];
+        let nextFrame = [];
+        let next = frame + 1;
+
         for (var i = this.track.length - 1; i >= 0; i--) {
             if(this.track[i].frame == frame){
-                for (var j = this.bodyParts.length - 1; j >= 0; j--) {
-                    if(this.bodyParts[j].label == this.track[i].label){
-                        this.bodyParts[j].part.x = this.track[i].x
-                        this.bodyParts[j].part.y = this.track[i].y
-                    }
+                currentFrame.push(this.track[i]);
+            }
+
+            if(this.track[i].frame == next){
+                nextFrame.push(this.track[i]);
+            }
+        }
+
+        if(!nextFrame.length){
+            next = 1;
+            for (var i = this.track.length - 1; i >= 0; i--) {
+                if(this.track[i].frame == next){
+                    nextFrame.push(this.track[i]);
                 }
             }
         }
+        for (var i = currentFrame.length - 1; i >= 0; i--) {
+            for (var j = this.bodyParts.length - 1; j >= 0; j--) {
+                if(this.bodyParts[j].label == currentFrame[i].label){
+                    this.bodyParts[j].part.x = currentFrame[i].x + (nextFrame[i].x - currentFrame[i].x)* smooth
+                    this.bodyParts[j].part.y = currentFrame[i].y + (nextFrame[i].y - currentFrame[i].y)* smooth
+                }
+            }
+        }
+    
     }
     update(delta){
         if(!this.updateable){
@@ -433,22 +454,10 @@ this.track.push({frame:7,label:'head',x:-4.15, y:-351.55})
         }
 
         this.frame += delta * 3;
-        if(this.frame > this.maxFrame){
-            this.frame = 1;            
+        if(this.frame > this.maxFrame+1){
+            this.frame = 1;
         }
-        this.updateFrame(Math.floor(this.frame));
-        // this.drawCounter --
-        // if(this.drawCounter > 0){
-        //     this.rotation -= 0.01
-        //     this.game.debugGoalkeeper(this)
-        // }
-        // if(
-        //     (this.side > 0 && this.x > this.moveBounds.x2) ||
-        //     (this.side < 0 && this.x < this.moveBounds.x1)
-        //     )
-        // {
-        //     this.side *= -1
-        // }
+        this.updateFrame(Math.floor(this.frame), this.frame - Math.floor(this.frame));
         this.x += this.velocity.x * delta * this.side;
         this.y += this.velocity.y * delta * this.side;
     }

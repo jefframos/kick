@@ -253,9 +253,9 @@ export default class Collisions{
 			entity.goalkeeperTest()
 			// this.game.debugBall(ball, entity);
 			let parts = goalkeeper.returnBodyParts();
-			for (var i = parts.length - 1; i >= 0; i--) {				
-				this.game.debugBall(parts[i], parts[i]);
-			}
+			// for (var i = parts.length - 1; i >= 0; i--) {				
+			// 	this.game.debugBall(parts[i], parts[i]);
+			// }
 
 			let collided = null;
 			for (var i = parts.length - 1; i >= 0; i--) {

@@ -344,6 +344,7 @@ export default class GameScreen extends Screen{
 	}
 
 	debugGoalkeeper(goalkeeper){
+		return
 		let parts = goalkeeper.returnBodyParts();
 		console.log(parts);
 		for (var i = parts.length - 1; i >= 0; i--) {				
