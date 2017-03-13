@@ -64,7 +64,7 @@ export default class LevelManager{
 		this.obstacles.push(obstacle)
 	}
 	createObstacles(){
-		// return
+		return
 		// for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
 		// 	// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
 		// 	// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){

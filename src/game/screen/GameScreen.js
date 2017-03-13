@@ -82,8 +82,12 @@ export default class GameScreen extends Screen{
 		this.add(this.goalkeeper)
 		this.goalkeeper.build(50, {height:400})
 		this.goalkeeper.x = 200
-		this.goalkeeper.y = 155
+		this.goalkeeper.y = 255
 		this.viewManager.updateObjectScale(this.goalkeeper)
+
+		setTimeout(function() {
+			this.debugGoalkeeper(this.goalkeeper);			
+		}.bind(this), 10);
 		
 
 	}
@@ -334,20 +338,17 @@ export default class GameScreen extends Screen{
 		// if(this.testeBall && this.testeBall.parent){
 		// 	this.testeBall.parent.removeChild(this.testeBall)
 		// }
+		console.log(entity.getRadius());
 		this.testeBall = new PIXI.Graphics().lineStyle(1, 0xff0000).drawCircle(ballPosition.x,ballPosition.y, entity.getRadius());
 		this.addChild(this.testeBall);
 	}
 
-	debugGoalkeeper(rect){
-		return
-		if(this.testeRect){
-			this.testeRect.parent.removeChild(this.testeRect)
+	debugGoalkeeper(goalkeeper){
+		let parts = goalkeeper.returnBodyParts();
+		console.log(parts);
+		for (var i = parts.length - 1; i >= 0; i--) {				
+			this.debugBall(parts[i], parts[i]);
 		}
-		this.testeRect = new PIXI.Graphics().beginFill(0x00FFFF).drawRect(rect.x,rect.y, rect.width,rect.height);
-		this.testeRect.rotation = rect.rotation
-		// alert(rect.rotation)
-		this.addChild(this.testeRect)
-		this.testeRect.alpha = 0.3
 	}
 
 	debugStick(target){
