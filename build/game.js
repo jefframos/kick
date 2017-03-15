@@ -51330,6 +51330,10 @@
 	        setTimeout(function () {
 	            this.play('static2');
 	        }.bind(this), 5000);
+	
+	        setTimeout(function () {
+	            this.play('static1');
+	        }.bind(this), 7500);
 	    }
 	
 	    _createClass(GoalkeeperAnimations, [{

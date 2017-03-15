@@ -437,6 +437,11 @@ this.addAnimation(track, 'static2', 10, 1, false)
         this.play('static2')
     }.bind(this), 5000);
 
+    setTimeout(function() {
+        this.play('static1')
+    }.bind(this), 7500);
+
+
 	}
 	addAnimation(frames, label, totFrames, speed, loop = true){
         let tempFrames = new Array(totFrames-1);
