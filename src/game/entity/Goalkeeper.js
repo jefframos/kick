@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import config  from '../../config';
 import utils  from '../../utils';
+import GoalkeeperAnimations  from './utils/GoalkeeperAnimations';
 export default class Goalkeeper extends PIXI.Container {
 
     constructor(game, radius = 20) {
@@ -11,6 +12,7 @@ export default class Goalkeeper extends PIXI.Container {
         this.container = new PIXI.Container();
         this.addChild(this.container);
 
+        this.animations = new GoalkeeperAnimations(this);
 
     }
     build(radius = 20, bounds = {height:400}){
@@ -46,163 +48,9 @@ export default class Goalkeeper extends PIXI.Container {
 
         // if(this.radius > 20){
 
-            this.bodyParts = [];
+        this.bodyParts = [];
 
-        this.testParts = [];
-        let tempPart = {}
-        tempPart = {
-        label:"head",
-        x:-4.9,
-        y:-353.65,
-        width:84.4,
-        height:84.4,
-        radius:42.2
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"body",
-        x:-8.6,
-        y:-273.15,
-        width:105.1,
-        height:105.1,
-        radius:52.55
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"shoulderLeft",
-        x:51.3,
-        y:-303.8,
-        width:52.7,
-        height:52.7,
-        radius:26.35
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"armLeft",
-        x:97.35,
-        y:-324.25,
-        width:52.7,
-        height:52.7,
-        radius:26.35
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"handLeft",
-        x:130.6,
-        y:-364,
-        width:52.8,
-        height:52.8,
-        radius:26.4
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"waist",
-        x:-8.85,
-        y:-195.1,
-        width:103.1,
-        height:103.1,
-        radius:51.55
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"thighLeft",
-        x:55.15,
-        y:-155.75,
-        width:81.9,
-        height:81.9,
-        radius:40.95
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"kneeLeft",
-        x:97.5,
-        y:-118.55,
-        width:68.5,
-        height:68.5,
-        radius:34.25
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"feetLeft",
-        x:139.65,
-        y:-21.45,
-        width:55.4,
-        height:55.4,
-        radius:27.7
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"legLeft",
-        x:116.55,
-        y:-66.15,
-        width:39.5,
-        height:39.5,
-        radius:19.75
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"handRight",
-        x:-154.5,
-        y:-210.45,
-        width:52.7,
-        height:52.7,
-        radius:26.35
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"armRight",
-        x:-108.55,
-        y:-230.9,
-        width:52.7,
-        height:52.7,
-        radius:26.35
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"shoulderRight",
-        x:-75.3,
-        y:-270.6,
-        width:52.8,
-        height:52.8,
-        radius:26.4
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"thighRight",
-        x:-62.55,
-        y:-157.05,
-        width:81.9,
-        height:81.9,
-        radius:40.95
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"kneeRight",
-        x:-98.45,
-        y:-119.85,
-        width:68.5,
-        height:68.5,
-        radius:34.25
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"feetRight",
-        x:-126.5,
-        y:-22.7,
-        width:55.4,
-        height:55.4,
-        radius:27.7
-        }
-        this.testParts.push(tempPart);
-        tempPart = {
-        label:"legRight",
-        x:-108.55,
-        y:-67.45,
-        width:39.5,
-        height:39.5,
-        radius:19.75
-        }
-        this.testParts.push(tempPart);
+        
 
 
 this.track = [];
@@ -500,8 +348,9 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
 
         this.frame = 1;
         this.maxFrame = 17;
-        for (var i = this.testParts.length - 1; i >= 0; i--) {
-            this.addBodyPart(this.testParts[i]);
+        let tempBodyParts = this.animations.buildParts();
+        for (var i = tempBodyParts.length - 1; i >= 0; i--) {
+            this.addBodyPart(tempBodyParts[i]);
         }
 
         this.shape = new PIXI.Graphics();
@@ -532,7 +381,7 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         return this
     }
     addBodyPart(partStructure){
-        console.log(partStructure);
+        // console.log(partStructure);
         let part = new PIXI.Graphics();
         part.beginFill(0xFFFFFF);
         part.drawCircle(0,0,partStructure.radius);
@@ -548,7 +397,7 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         let bodyPart = {};
         for (var i = this.bodyParts.length - 1; i >= 0; i--) {
             // this.bodyPart[i]
-            console.log(this.bodyParts[i].label, this.bodyParts[i].part);
+            // console.log(this.bodyParts[i].label, this.bodyParts[i].part);
             let part = this.bodyParts[i].part
              bodyPart = {
                 type: this.bodyParts[i].label,
@@ -584,40 +433,16 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
     getExternalRadius() {
         return this.scale.x * this.externalRadius;
     }
-
-    updateFrame(frame, smooth = 1){
-        // console.log(frame);
-        let currentFrame = [];
-        let nextFrame = [];
-        let next = frame + 1;
-
-        for (var i = this.track.length - 1; i >= 0; i--) {
-            if(this.track[i].frame == frame){
-                currentFrame.push(this.track[i]);
-            }
-
-            if(this.track[i].frame == next){
-                nextFrame.push(this.track[i]);
-            }
-        }
-
-        if(!nextFrame.length){
-            next = 1;
-            for (var i = this.track.length - 1; i >= 0; i--) {
-                if(this.track[i].frame == next){
-                    nextFrame.push(this.track[i]);
-                }
-            }
-        }
-        for (var i = currentFrame.length - 1; i >= 0; i--) {
+   
+    printFrame(frame){
+        for (var i = frame.length - 1; i >= 0; i--) {
             for (var j = this.bodyParts.length - 1; j >= 0; j--) {
-                if(this.bodyParts[j].label == currentFrame[i].label){
-                    this.bodyParts[j].part.x = currentFrame[i].x + (nextFrame[i].x - currentFrame[i].x)* smooth
-                    this.bodyParts[j].part.y = currentFrame[i].y + (nextFrame[i].y - currentFrame[i].y)* smooth
+                if(this.bodyParts[j].label == frame[i].label){
+                    this.bodyParts[j].part.x = frame[i].x //+ (nextFrame[i].x - frame[i].x)* smooth
+                    this.bodyParts[j].part.y = frame[i].y //+ (nextFrame[i].y - frame[i].y)* smooth
                 }
             }
         }
-    
     }
     update(delta){
         if(!this.updateable){
@@ -628,7 +453,12 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         if(this.frame > this.maxFrame+1){
             this.frame = 1;
         }
-        this.updateFrame(Math.floor(this.frame), this.frame - Math.floor(this.frame));
+        //this.updateFrame(Math.floor(this.frame), this.frame - Math.floor(this.frame));
+        this.animations.update(delta)
+        // console.log(this.animations.currentFrame);
+        if(this.animations.currentFrame){            
+            this.printFrame(this.animations.currentFrame)
+        }
         this.x += this.velocity.x * delta * this.side;
         this.y += this.velocity.y * delta * this.side;
     }
