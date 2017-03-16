@@ -46508,7 +46508,7 @@
 							if (!this.currentBalls[i].triggerGoalkeeper) {
 								for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
 									if (this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])) {
-										this.shake();
+										// this.shake();
 										collideObs = this.currentBalls[i];
 									}
 								}
@@ -48602,7 +48602,7 @@
 					lvl.push({ x: _config2.default.width / 2 - 100, y: 250, w: 50, h: 380 });
 					lvl.push({ x: _config2.default.width / 2 - 60, y: 260, w: 50, h: 370 });
 					lvl.push({ x: _config2.default.width / 2 - 20, y: 250, w: 50, h: 400 });
-					lvl.push({ x: _config2.default.width / 2 + 80, y: 160, w: 60, h: 410 });
+					lvl.push({ x: _config2.default.width / 2 + 80, y: 190, w: 60, h: 410 });
 					this.levels.push(lvl);
 	
 					// lvl = [];
@@ -48627,7 +48627,7 @@
 	
 					lvl = [];
 					lvl.push({ x: _config2.default.width / 2 + 100, y: 330, w: 50, h: 410 });
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 160, w: 50, h: 410 });
+					lvl.push({ x: _config2.default.width / 2 - 100, y: 190, w: 50, h: 410 });
 					// lvl.push({x:config.width / 2, y: 170, w:60, h:360});
 					this.levels.push(lvl);
 			}
@@ -49143,15 +49143,15 @@
 	
 	            console.log('SPD', this.currentBall.velocity.x);
 	
-	            var dist = _utils2.default.distance(this.currentBall.x, 0, _config2.default.width / 2, 0);
-	            console.log('DIST', _utils2.default.distance(this.currentBall.x, 0, _config2.default.width / 2, 0));
+	            var dist = _utils2.default.distance(this.currentBall.x, 0, this.x, 0);
+	            console.log('DIST', _utils2.default.distance(this.currentBall.x, 0, this.x, 0));
 	            if (dist < 20) {
 	                this.inJump = true;
 	                this.animations.play('stayMiddle_1', 0.9);
 	                return;
 	            }
 	
-	            this.side = this.currentBall.x < _config2.default.width / 2 ? -1 : 1;
+	            this.side = this.currentBall.x < this.x ? -1 : 1;
 	            var id = dist > 80 ? 1 : 2;
 	
 	            if (Math.random() < 0.3) {

@@ -410,15 +410,15 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         console.log( 'SPD',  this.currentBall.velocity.x);
 
 
-        let dist = utils.distance(this.currentBall.x,0,config.width/2,0);
-        console.log('DIST',utils.distance(this.currentBall.x,0,config.width/2,0));
+        let dist = utils.distance(this.currentBall.x,0,this.x,0);
+        console.log('DIST',utils.distance(this.currentBall.x,0,this.x,0));
         if(dist < 20){
             this.inJump = true;
             this.animations.play('stayMiddle_1', 0.9)
             return
         }
 
-        this.side = this.currentBall.x < config.width/ 2?-1:1;
+        this.side = this.currentBall.x < this.x?-1:1;
         let id = dist > 80 ? 1 : 2;
 
         if(Math.random() < 0.3){

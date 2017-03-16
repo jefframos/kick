@@ -185,7 +185,9 @@ export default class GameScreen extends Screen{
 	
 
 	newRound(){
-		if(this.waitBall || (this.spotedBall && !this.spotedBall.shooting)){
+		if(this.waitBall ||
+			(this.spotedBall && !this.spotedBall.shooting)			
+			){
 			return
 		}
 		console.log(	'NEW ROUND');
@@ -313,7 +315,7 @@ export default class GameScreen extends Screen{
 					if(!this.currentBalls[i].triggerGoalkeeper){
 						for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
 							if(this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])){
-								this.shake();
+								// this.shake();
 								collideObs = this.currentBalls[i];	
 							}
 						}
