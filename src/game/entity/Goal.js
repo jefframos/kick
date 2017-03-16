@@ -24,8 +24,8 @@ export default class Goal extends PIXI.Container {
 		this.goleira = new PIXI.Container();
 		this.addChild(this.goleira);
 
-		let h = 500
-		let w = 1300
+		let h = 520
+		let w = 1600
 		let tick = 24
 		this.traveTop = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(-w/2,0,w, tick);
 		this.goleira.addChild(this.traveTop);

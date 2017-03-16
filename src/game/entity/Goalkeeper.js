@@ -375,10 +375,39 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         this.side = 1
 
 
+        this.container.scale.x = this.side
 
         // this.rotation = -0.5
 
         return this
+    }
+    setStartPosition(x,y){
+        this.x = x, 
+        this.y = y;
+        this.initPos = {x:x, y:y};
+
+        this.side = Math.random() < 0.5 ? -1 : 1
+        // this.scale.x *= -1
+    }
+    reset(){
+        this.animations.play('static1', 3)
+        this.velocity.x = 0;
+        this.x = this.initPos.x;
+        this.y = this.initPos.y;
+
+        this.side = Math.random() < 0.5 ? -1 : 1
+    }
+    endAnimation(){
+        this.velocity.x = 0;
+    }
+    jump(angle){
+        this.animations.play('jump_1', 0.8)
+
+        this.side = Math.random() < 0.5 ? -1 : 1
+
+        this.velocity.x = 160// *  this.side;
+
+
     }
     addBodyPart(partStructure){
         // console.log(partStructure);
@@ -448,18 +477,18 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         if(!this.updateable){
             return
         }
-
+       // console.log(this.velocity.x);
         this.frame += delta * 3;
         if(this.frame > this.maxFrame+1){
             this.frame = 1;
         }
-        //this.updateFrame(Math.floor(this.frame), this.frame - Math.floor(this.frame));
         this.animations.update(delta)
-        // console.log(this.animations.currentFrame);
         if(this.animations.currentFrame){            
             this.printFrame(this.animations.currentFrame)
         }
         this.x += this.velocity.x * delta * this.side;
         this.y += this.velocity.y * delta * this.side;
+
+        this.container.scale.x = this.side
     }
 }

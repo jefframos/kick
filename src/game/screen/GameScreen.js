@@ -81,8 +81,7 @@ export default class GameScreen extends Screen{
 		// this.goalkeeper.build();
 		this.add(this.goalkeeper)
 		this.goalkeeper.build(50, {height:400})
-		this.goalkeeper.x = 200
-		this.goalkeeper.y = 255
+		this.goalkeeper.setStartPosition(200, 160);
 		this.viewManager.updateObjectScale(this.goalkeeper)
 
 		setTimeout(function() {
@@ -184,13 +183,17 @@ export default class GameScreen extends Screen{
 	}
 	
 
+	newRound(){
+		this.getNewBall();
+		this.goalkeeper.reset();
+	}
 	finishedBall(timer = 0){
 // console.log('FINIZED');
 		if(GAME_DATA.lifes <= 0){
 			return
 		}
 		setTimeout(function() {
-			this.getNewBall();
+			this.newRound();			
 		}.bind(this), timer);
 	}
 
@@ -395,6 +398,8 @@ export default class GameScreen extends Screen{
         this.uiManager.debug2.text = force;
        
         entity.shoot(force, angle, angleColision);
+
+        this.goalkeeper.jump(angle);
 
         // this.reset();
 
