@@ -414,6 +414,7 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         console.log('DIST',utils.distance(this.currentBall.x,0,config.width/2,0));
         if(dist < 20){
             this.inJump = true;
+            this.animations.play('stayMiddle_1', 0.9)
             return
         }
 
