@@ -9,16 +9,16 @@
 	"sourceSize": {"w":78,"h":79},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"big-button-over.png":
+"barreira.png":
 {
-	"frame": {"x":132,"y":4,"w":107,"h":90},
+	"frame": {"x":4,"y":413,"w":228,"h":400},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":107,"h":90},
-	"sourceSize": {"w":107,"h":90},
+	"spriteSourceSize": {"x":0,"y":0,"w":228,"h":400},
+	"sourceSize": {"w":228,"h":400},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"big-button-up.png":
+"big-button-over.png":
 {
 	"frame": {"x":248,"y":4,"w":107,"h":90},
 	"rotated": false,
@@ -27,9 +27,18 @@
 	"sourceSize": {"w":107,"h":90},
 	"pivot": {"x":0.5,"y":0.5}
 },
+"big-button-up.png":
+{
+	"frame": {"x":132,"y":4,"w":107,"h":90},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":107,"h":90},
+	"sourceSize": {"w":107,"h":90},
+	"pivot": {"x":0.5,"y":0.5}
+},
 "darwin-win.png":
 {
-	"frame": {"x":413,"y":413,"w":423,"h":500},
+	"frame": {"x":650,"y":413,"w":423,"h":500},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":423,"h":500},
@@ -38,7 +47,7 @@
 },
 "finn-win.png":
 {
-	"frame": {"x":1152,"y":413,"w":314,"h":500},
+	"frame": {"x":1082,"y":413,"w":314,"h":500},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":314,"h":500},
@@ -56,7 +65,7 @@
 },
 "grass2.png":
 {
-	"frame": {"x":4,"y":413,"w":400,"h":400},
+	"frame": {"x":241,"y":413,"w":400,"h":400},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":400,"h":400},
@@ -74,7 +83,7 @@
 },
 "jake-win.png":
 {
-	"frame": {"x":264,"y":922,"w":500,"h":521},
+	"frame": {"x":571,"y":922,"w":500,"h":521},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":521},
@@ -83,7 +92,7 @@
 },
 "marceline-win.png":
 {
-	"frame": {"x":845,"y":413,"w":298,"h":500},
+	"frame": {"x":4,"y":922,"w":298,"h":500},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":298,"h":500},
@@ -92,7 +101,7 @@
 },
 "moredecai-win.png":
 {
-	"frame": {"x":1475,"y":413,"w":193,"h":500},
+	"frame": {"x":1405,"y":413,"w":193,"h":500},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":193,"h":500},
@@ -128,7 +137,7 @@
 },
 "rigby-win.png":
 {
-	"frame": {"x":4,"y":922,"w":251,"h":500},
+	"frame": {"x":311,"y":922,"w":251,"h":500},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":251,"h":500},
@@ -146,7 +155,7 @@
 },
 "torcida.jpg":
 {
-	"frame": {"x":773,"y":922,"w":660,"h":1080},
+	"frame": {"x":1080,"y":922,"w":660,"h":1080},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":660,"h":1080},
@@ -160,6 +169,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1746,"h":2006},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:29e7d45655c4c6ef14efbd4d8e982608:7b41f2feac7a71688614b5eaf1569949:fc2835210f98bae8e8c1b7f0a84c9321$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3010565eedaebfb030899e5133e92472:3c09d04ec686d3f1ab66066d72749d00:fc2835210f98bae8e8c1b7f0a84c9321$"
 }
 }

@@ -185,16 +185,30 @@ export default class GameScreen extends Screen{
 	
 
 	newRound(){
+		if(this.waitBall || (this.spotedBall && !this.spotedBall.shooting)){
+			return
+		}
+		console.log(	'NEW ROUND');
+		// this.waitBall = false;
+		let nextScale = Math.random() * 0.4 + 0.75
+		TweenLite.to(this.viewManager, 0.5, {globalScale:nextScale})
 		this.getNewBall();
-		if(this.goalkeeper)
-				this.goalkeeper.reset();
+
+		this.spotedBall.y += nextScale * 50 - 25
+
+		// this.viewManager.globalScale = Math.random() * 0.4 + 0.75
+		if(this.goalkeeper){
+			this.goalkeeper.reset();
+		}
 	}
 	finishedBall(timer = 0){
 // console.log('FINIZED');
 		if(GAME_DATA.lifes <= 0){
 			return
 		}
+		this.waitBall = true;
 		setTimeout(function() {
+			this.waitBall = false;
 			this.newRound();			
 		}.bind(this), timer);
 	}

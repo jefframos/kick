@@ -63,7 +63,7 @@ export default class Ball extends PIXI.Container {
         this.shadow.width = this.radius * 2
         this.shadow.height = this.radius
         this.shadow.y = this.radius / 2;
-        TweenLite.to(this.shadow, 0.2, {alpha:1})
+        TweenLite.to(this.shadow, 0.2, {alpha:0.5})
 
          // if(this.radius > 20){
         
@@ -117,21 +117,23 @@ export default class Ball extends PIXI.Container {
         this.velocity.x = 0;
         this.velocity.y = 0;
         this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
-        this.velocity.y = -this.speed.y * Math.cos(angleColision) * force;
+        this.velocity.y = -this.speed.y * Math.cos(angleColision) * force*1.1;
 
         this.virtualVelocity.x = 0;
         this.virtualVelocity.y = 0;
 
 
         this.rotationInfluence.x = this.rotationSpeed * 1000;
-        this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
+        this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y*0.95 / 2);
 
         let force2 = force*0.35
 
         // console.log('FORCE', force);
-        // if(force < 5){
-        //     force2 += 5 / force - 0.1
-        // }
+        if(force < 4.5){
+            force2 += 4.5 / force - 0.1
+
+            force += 3
+        }
 
         this.verticalVelocity.y += this.shootYSpeed * force2;
         this.spriteDirection = 1;
@@ -280,7 +282,8 @@ export default class Ball extends PIXI.Container {
             if(!this.shooting){
                 this.game.reset();
             }else{
-                this.game.newRound();
+                this.game.finishedBall();
+                // this.game.newRound();
             }
 
         }, onCompleteScope:this})

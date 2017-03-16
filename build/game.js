@@ -46377,8 +46377,21 @@
 		}, {
 			key: 'newRound',
 			value: function newRound() {
+				if (this.waitBall || this.spotedBall && !this.spotedBall.shooting) {
+					return;
+				}
+				console.log('NEW ROUND');
+				// this.waitBall = false;
+				var nextScale = Math.random() * 0.4 + 0.75;
+				_gsap2.default.to(this.viewManager, 0.5, { globalScale: nextScale });
 				this.getNewBall();
-				if (this.goalkeeper) this.goalkeeper.reset();
+	
+				this.spotedBall.y += nextScale * 50 - 25;
+	
+				// this.viewManager.globalScale = Math.random() * 0.4 + 0.75
+				if (this.goalkeeper) {
+					this.goalkeeper.reset();
+				}
 			}
 		}, {
 			key: 'finishedBall',
@@ -46389,7 +46402,9 @@
 				if (GAME_DATA.lifes <= 0) {
 					return;
 				}
+				this.waitBall = true;
 				setTimeout(function () {
+					this.waitBall = false;
 					this.newRound();
 				}.bind(this), timer);
 			}
@@ -47300,7 +47315,8 @@
 	                        // this.shape.y = this.radius/2;
 	                        // this.container.addChild(this.shape);
 	
-	                        var obs = ['grizz-bear-win.png', 'darwin-win.png', 'finn-win.png', 'marceline-win.png', 'rigby-win.png', 'jake-win.png', 'moredecai-win.png'];
+	                        var obs = ['barreira.png'];
+	                        // let obs = ['grizz-bear-win.png', 'darwin-win.png','finn-win.png','marceline-win.png','rigby-win.png','jake-win.png','moredecai-win.png']
 	
 	                        this.shape = PIXI.Sprite.fromFrame(obs[Math.floor(Math.random() * obs.length)]);
 	                        this.shape.anchor.set(0.5, 0.9);
@@ -48512,14 +48528,20 @@
 	var ViewManager = function () {
 		function ViewManager() {
 			_classCallCheck(this, ViewManager);
+	
+			this.globalScale = 0.75; //0.95
 		}
 	
 		_createClass(ViewManager, [{
 			key: 'updateObjectScale',
 			value: function updateObjectScale(object, height) {
+				// console.log(1);
 				var perspectiveFactor = 1 - object.y / height;
-				var test = 0.95;
-				object.scale.set(test - perspectiveFactor * test);
+				// this.globalScale+=0.0001
+				// if(this.globalScale > 0.95){
+				// 	this.globalScale = 0.95
+				// }
+				object.scale.set(this.globalScale - perspectiveFactor * this.globalScale);
 			}
 		}]);
 	
@@ -48535,7 +48557,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+			value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -48559,105 +48581,108 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var LevelManager = function () {
-		function LevelManager(game) {
-			_classCallCheck(this, LevelManager);
+			function LevelManager(game) {
+					_classCallCheck(this, LevelManager);
 	
-			this.obstacles = [];
-			this.game = game;
+					this.obstacles = [];
+					this.game = game;
 	
-			//this.game.add(this.goalkeeper)
-			this.levels = [];
+					//this.game.add(this.goalkeeper)
+					this.levels = [];
 	
-			var lvl = [];
-			this.levels.push(lvl);
+					var lvl = [];
+					this.levels.push(lvl);
 	
-			lvl = [];
-			lvl.push({ x: _config2.default.width / 2 - 100, y: 250, w: 50, h: 380 });
-			lvl.push({ x: _config2.default.width / 2 - 60, y: 260, w: 50, h: 370 });
-			lvl.push({ x: _config2.default.width / 2 - 20, y: 250, w: 50, h: 400 });
-			lvl.push({ x: _config2.default.width / 2 + 80, y: 160, w: 60, h: 410 });
-			this.levels.push(lvl);
+					lvl = [];
+					this.levels.push(lvl);
 	
-			lvl = [];
-			lvl.push({ x: _config2.default.width / 2, y: 160, w: 50, h: 410 });
-			this.levels.push(lvl);
+					lvl = [];
+					lvl.push({ x: _config2.default.width / 2 - 100, y: 250, w: 50, h: 380 });
+					lvl.push({ x: _config2.default.width / 2 - 60, y: 260, w: 50, h: 370 });
+					lvl.push({ x: _config2.default.width / 2 - 20, y: 250, w: 50, h: 400 });
+					lvl.push({ x: _config2.default.width / 2 + 80, y: 160, w: 60, h: 410 });
+					this.levels.push(lvl);
 	
-			lvl = [];
-			lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
-			lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
-			this.levels.push(lvl);
+					// lvl = [];
+					// lvl.push({x:config.width / 2, y: 160, w:50, h:410});
+					// this.levels.push(lvl)
 	
-			lvl = [];
-			lvl.push({ x: _config2.default.width / 2 + 30, y: 280, w: 50, h: 410 });
-			lvl.push({ x: _config2.default.width / 2 - 110, y: 230, w: 50, h: 410 });
-			this.levels.push(lvl);
+					lvl = [];
+					lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
+					lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
+					this.levels.push(lvl);
 	
-			lvl = [];
-			lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
-			lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
-			lvl.push({ x: _config2.default.width / 2, y: 230, w: 60, h: 360 });
-			this.levels.push(lvl);
+					lvl = [];
+					lvl.push({ x: _config2.default.width / 2 + 30, y: 280, w: 50, h: 410 });
+					lvl.push({ x: _config2.default.width / 2 - 110, y: 230, w: 50, h: 410 });
+					this.levels.push(lvl);
 	
-			lvl = [];
-			lvl.push({ x: _config2.default.width / 2 + 100, y: 330, w: 50, h: 410 });
-			lvl.push({ x: _config2.default.width / 2 - 100, y: 160, w: 50, h: 410 });
-			lvl.push({ x: _config2.default.width / 2, y: 170, w: 60, h: 360 });
-			this.levels.push(lvl);
-		}
+					lvl = [];
+					lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 50, h: 410 });
+					lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 50, h: 410 });
+					// lvl.push({x:config.width / 2, y: 230, w:60, h:360});
+					this.levels.push(lvl);
 	
-		// addTargets(){
-	
-		// 	this.game.goleira.addTargets();
-	
-		// }
-	
-		_createClass(LevelManager, [{
-			key: 'createObstacle',
-			value: function createObstacle() {
-				var bounds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { x: 0, y: 0, w: 50, h: 400 };
-	
-				var obstacle = POOL.getObstacle().build(bounds.w, { height: bounds.h });
-				obstacle.x = bounds.x;
-				obstacle.y = bounds.y;
-				// this.game.add.(obstacle);
-				this.game.add(obstacle);
-				this.obstacles.push(obstacle);
+					lvl = [];
+					lvl.push({ x: _config2.default.width / 2 + 100, y: 330, w: 50, h: 410 });
+					lvl.push({ x: _config2.default.width / 2 - 100, y: 160, w: 50, h: 410 });
+					// lvl.push({x:config.width / 2, y: 170, w:60, h:360});
+					this.levels.push(lvl);
 			}
-		}, {
-			key: 'createObstacles',
-			value: function createObstacles() {
-				return;
-				// for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
-				// 	// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
-				// 	// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){
-				// 	// 		this.game.add.updateList.splice(j,1);
-				// 	// 	}
-				// 	// }
-				// 	if(this.obstaclePool[i].parent)
-				// 		this.obstaclePool[i].kill();
-				// 		// this.obstaclePool[i].parent.removeChild(this.obstaclePool[i])
-				// }
-				for (var i = this.obstacles.length - 1; i >= 0; i--) {
-					this.obstacles[i].kill();
-				}
-				this.obstacles = [];
-				var obstacle = null;
-				var rnd = Math.floor(Math.random() * this.levels.length);
 	
-				for (var i = this.levels[rnd].length - 1; i >= 0; i--) {
-					this.createObstacle(this.levels[rnd][i]);
-				}
+			// addTargets(){
 	
-				for (var i = this.obstacles.length - 1; i >= 0; i--) {
-					var obs = this.obstacles[i];
-					obs.x = Math.floor(obs.x / 4) * 4;
-					obs.y = Math.floor(obs.y / 4) * 4;
-					// 	this.viewManager.updateObjectScale(this.game.obstacles[i]);
-				}
-			}
-		}]);
+			// 	this.game.goleira.addTargets();
 	
-		return LevelManager;
+			// }
+	
+			_createClass(LevelManager, [{
+					key: 'createObstacle',
+					value: function createObstacle() {
+							var bounds = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { x: 0, y: 0, w: 50, h: 400 };
+	
+							var obstacle = POOL.getObstacle().build(bounds.w, { height: bounds.h });
+							obstacle.x = bounds.x;
+							obstacle.y = bounds.y;
+							// this.game.add.(obstacle);
+							this.game.add(obstacle);
+							this.obstacles.push(obstacle);
+					}
+			}, {
+					key: 'createObstacles',
+					value: function createObstacles() {
+							// return
+							// for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
+							// 	// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
+							// 	// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){
+							// 	// 		this.game.add.updateList.splice(j,1);
+							// 	// 	}
+							// 	// }
+							// 	if(this.obstaclePool[i].parent)
+							// 		this.obstaclePool[i].kill();
+							// 		// this.obstaclePool[i].parent.removeChild(this.obstaclePool[i])
+							// }
+							for (var i = this.obstacles.length - 1; i >= 0; i--) {
+									this.obstacles[i].kill();
+							}
+							this.obstacles = [];
+							var obstacle = null;
+							var rnd = Math.floor(Math.random() * this.levels.length);
+	
+							for (var i = this.levels[rnd].length - 1; i >= 0; i--) {
+									this.createObstacle(this.levels[rnd][i]);
+							}
+	
+							for (var i = this.obstacles.length - 1; i >= 0; i--) {
+									var obs = this.obstacles[i];
+									obs.x = Math.floor(obs.x / 4) * 4;
+									obs.y = Math.floor(obs.y / 4) * 4;
+									// 	this.viewManager.updateObjectScale(this.game.obstacles[i]);
+							}
+					}
+			}]);
+	
+			return LevelManager;
 	}();
 	
 	exports.default = LevelManager;
@@ -50589,7 +50614,7 @@
 	            this.shadow.width = this.radius * 2;
 	            this.shadow.height = this.radius;
 	            this.shadow.y = this.radius / 2;
-	            TweenLite.to(this.shadow, 0.2, { alpha: 1 });
+	            TweenLite.to(this.shadow, 0.2, { alpha: 0.5 });
 	
 	            // if(this.radius > 20){
 	
@@ -50641,20 +50666,22 @@
 	            this.velocity.x = 0;
 	            this.velocity.y = 0;
 	            this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
-	            this.velocity.y = -this.speed.y * Math.cos(angleColision) * force;
+	            this.velocity.y = -this.speed.y * Math.cos(angleColision) * force * 1.1;
 	
 	            this.virtualVelocity.x = 0;
 	            this.virtualVelocity.y = 0;
 	
 	            this.rotationInfluence.x = this.rotationSpeed * 1000;
-	            this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y / 2);
+	            this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y * 0.95 / 2);
 	
 	            var force2 = force * 0.35;
 	
 	            // console.log('FORCE', force);
-	            // if(force < 5){
-	            //     force2 += 5 / force - 0.1
-	            // }
+	            if (force < 4.5) {
+	                force2 += 4.5 / force - 0.1;
+	
+	                force += 3;
+	            }
 	
 	            this.verticalVelocity.y += this.shootYSpeed * force2;
 	            this.spriteDirection = 1;
@@ -50824,7 +50851,8 @@
 	                    if (!this.shooting) {
 	                        this.game.reset();
 	                    } else {
-	                        this.game.newRound();
+	                        this.game.finishedBall();
+	                        // this.game.newRound();
 	                    }
 	                }, onCompleteScope: this });
 	        }

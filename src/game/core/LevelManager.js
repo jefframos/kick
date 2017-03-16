@@ -15,6 +15,9 @@ export default class LevelManager{
 		let lvl = [];
 		this.levels.push(lvl)
 
+		lvl = [];
+		this.levels.push(lvl)
+
 		lvl = []
 		lvl.push({x:config.width / 2-100, y: 250, w:50, h:380});
 		lvl.push({x:config.width / 2-60, y: 260, w:50, h:370});
@@ -22,9 +25,9 @@ export default class LevelManager{
 		lvl.push({x:config.width / 2 + 80, y: 160, w:60, h:410});
 		this.levels.push(lvl)
 
-		lvl = [];
-		lvl.push({x:config.width / 2, y: 160, w:50, h:410});
-		this.levels.push(lvl)
+		// lvl = [];
+		// lvl.push({x:config.width / 2, y: 160, w:50, h:410});
+		// this.levels.push(lvl)
 
 		lvl = [];
 		lvl.push({x:config.width / 2 + 100, y: 230, w:50, h:410});
@@ -39,13 +42,13 @@ export default class LevelManager{
 		lvl = [];
 		lvl.push({x:config.width / 2 + 100, y: 230, w:50, h:410});
 		lvl.push({x:config.width / 2 - 100, y: 230, w:50, h:410});
-		lvl.push({x:config.width / 2, y: 230, w:60, h:360});
+		// lvl.push({x:config.width / 2, y: 230, w:60, h:360});
 		this.levels.push(lvl)
 
 		lvl = [];
 		lvl.push({x:config.width / 2 + 100, y: 330, w:50, h:410});
 		lvl.push({x:config.width / 2 - 100, y: 160, w:50, h:410});
-		lvl.push({x:config.width / 2, y: 170, w:60, h:360});
+		// lvl.push({x:config.width / 2, y: 170, w:60, h:360});
 		this.levels.push(lvl)
 	}
 	
@@ -64,7 +67,7 @@ export default class LevelManager{
 		this.obstacles.push(obstacle)
 	}
 	createObstacles(){
-		return
+		// return
 		// for (var i = this.obstaclePool.length - 1; i >= 0; i--) {
 		// 	// for (var j = this.game.add.updateList.length - 1; j >= 0; j--) {
 		// 	// 	if(this.game.obstacles[i] == this.game.add.updateList[j]){

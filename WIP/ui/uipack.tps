@@ -4,9 +4,9 @@
         <key>fileFormatVersion</key>
         <int>4</int>
         <key>texturePackerVersion</key>
-        <string>4.3.3</string>
+        <string>4.3.1</string>
         <key>fileName</key>
-        <string>C:/xampp/htdocs/kick/WIP/ui/uipack.tps</string>
+        <string>C:/Projects/kick/WIP/ui/uipack.tps</string>
         <key>autoSDSettings</key>
         <array>
             <struct type="AutoSDSettings">
@@ -207,6 +207,19 @@
                 <rect>20,20,39,40</rect>
                 <key>scale9Paddings</key>
                 <rect>20,20,39,40</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">barreira.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>57,100,114,200</rect>
+                <key>scale9Paddings</key>
+                <rect>57,100,114,200</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
