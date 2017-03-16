@@ -85,7 +85,7 @@ export default class Ball extends PIXI.Container {
         }
 
         if(!this.trail){
-            this.trail = new Trail(this.game.trailContainer, 20, PIXI.Texture.from('assets/images/trail1.jpg'));
+            this.trail = new Trail(this.game.gameContainer, 20, PIXI.Texture.from('assets/images/trail1.jpg'));
             this.trail.trailTick = 10;
             this.trail.speed = 0.1;
             this.trail.frequency = 0.001
@@ -152,6 +152,8 @@ export default class Ball extends PIXI.Container {
     reset() {
 
         console.log('RESET');
+
+        this.triggerGoalkeeper = false;
         //this.updateable = true;
 
         // this.shadow.alpha = 0.5;
@@ -278,7 +280,7 @@ export default class Ball extends PIXI.Container {
             if(!this.shooting){
                 this.game.reset();
             }else{
-                this.game.getNewBall();
+                this.game.newRound();
             }
 
         }, onCompleteScope:this})

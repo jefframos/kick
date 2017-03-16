@@ -395,19 +395,45 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         this.x = this.initPos.x;
         this.y = this.initPos.y;
 
+        this.inJump = false;
+
         this.side = Math.random() < 0.5 ? -1 : 1
     }
     endAnimation(){
         this.velocity.x = 0;
     }
     jump(angle){
-        this.animations.play('jump_1', 0.8)
+        if(this.inJump){
+            return
+        }
 
-        this.side = Math.random() < 0.5 ? -1 : 1
-
-        this.velocity.x = 160// *  this.side;
+        console.log( 'SPD',  this.currentBall.velocity.x);
 
 
+        let dist = utils.distance(this.currentBall.x,0,config.width/2,0);
+        console.log('DIST',utils.distance(this.currentBall.x,0,config.width/2,0));
+        if(dist < 20){
+            this.inJump = true;
+            return
+        }
+
+        this.side = this.currentBall.x < config.width/ 2?-1:1;
+        let id = dist > 80 ? 1 : 2;
+
+        if(Math.random() < 0.3){
+            this.side = Math.random() < 0.5 ? -1 : 1;
+        }
+        if(id == 1){
+            this.animations.play('jump_' + id, 0.8)
+            this.velocity.x = 150// *  this.side;
+        }else if(id == 2){
+            this.animations.play('jump_' + id, 1)
+            this.velocity.x = 100// *  this.side;
+        }
+
+
+
+        this.inJump = true;
     }
     addBodyPart(partStructure){
         // console.log(partStructure);
@@ -420,6 +446,9 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
         part.x = partStructure.x
         this.bodyParts.push({part:part, label:partStructure.label})
     }
+    registerBall(ball){
+        this.currentBall = ball;
+    }
     returnBodyParts(){
         // console.log(this.scale);
         let parts = [];
@@ -430,8 +459,8 @@ this.track.push({frame:17,label:'head',x:-5.85, y:-344.6})
             let part = this.bodyParts[i].part
              bodyPart = {
                 type: this.bodyParts[i].label,
-                x: this.x + this.bodyParts[i].part.x*this.scale.x,
-                y: this.y + this.bodyParts[i].part.y*this.scale.y,
+                x: this.x + this.bodyParts[i].part.x*this.scale.x*this.container.scale.x,
+                y: this.y + this.bodyParts[i].part.y*this.scale.y*this.container.scale.y,
                 radius: this.bodyParts[i].part.height / 2 * this.scale.y,
                 getRadius:function(){return part.height / 2 * this.scale.y}.bind(this)
             }

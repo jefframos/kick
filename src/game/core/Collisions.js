@@ -25,7 +25,7 @@ export default class Collisions{
 					x: entity.x,
 					y: entity.y + entity.spriteContainer.y * entity.scale.y
 				}
-				this.game.debugBall(ballPosition, entity);
+				// this.game.debugBall(ballPosition, entity);
 				this.game.uiManager.textLabel.text = ''//'NOT GOAL'
 				let collisions = [];
 				let topStickPoint = this.game.goleira.getTopStick();

@@ -62,7 +62,7 @@ export default class GameScreen extends Screen{
 		this.updateList = [];
 		this.targets = [];
 		this.currentBalls = [];
-		GAME_DATA.lifes = 3;
+		GAME_DATA.lifes = 5;
 		this.currentTrail = false;
 
 		this.goleira = new Goal(this)
@@ -137,11 +137,12 @@ export default class GameScreen extends Screen{
 
 	}
 	startGame(){
-		GAME_DATA.lifes = 3;
+		GAME_DATA.lifes = 5;
 		GAME_DATA.points = 0;
 		this.spotedBall = null;
 		this.comboSystem.reset();
-        this.getNewBall();
+        this.newRound();
+
         this.uiManager.createLifes();
         this.levelManager.createObstacles();
         // this.levelManager.addTargets();
@@ -185,7 +186,8 @@ export default class GameScreen extends Screen{
 
 	newRound(){
 		this.getNewBall();
-		this.goalkeeper.reset();
+		if(this.goalkeeper)
+				this.goalkeeper.reset();
 	}
 	finishedBall(timer = 0){
 // console.log('FINIZED');
@@ -271,6 +273,22 @@ export default class GameScreen extends Screen{
 
 			for (var i = this.currentBalls.length - 1; i >= 0; i--) {
 				if(!this.currentBalls[i].collided){
+					if(!this.currentBalls[i].triggerGoalkeeper && this.currentBalls[i].velocity.y){
+						let relativeForce = 1500/-this.currentBalls[i].velocity.y
+						let relativePos = 350 - relativeForce * 50
+
+						if(relativePos < (this.goalkeeper.y + 20)){
+							relativePos = this.goalkeeper.y + 20
+						}
+						//IS WORKING
+						// console.log('posssss', relativePos);
+						if(this.currentBalls[i].y < relativePos){
+							// 900 - 1500
+							// console.log('force',1500/-this.currentBalls[i].velocity.y);
+							this.goalkeeper.jump(this.currentShootAngle);
+							this.currentBalls[i].triggerGoalkeeper = true;
+						}
+					}
 					if(this.collisions.collideGoalkeeper(delta, this.currentBalls[i], this.goalkeeper))
 					{
 						this.missShoot();
@@ -396,10 +414,17 @@ export default class GameScreen extends Screen{
         let force = utils.distance(this.firstPoint.x, this.firstPoint.y, this.secPoint.x, this.secPoint.y) * 0.032
 
         this.uiManager.debug2.text = force;
+
        
         entity.shoot(force, angle, angleColision);
 
-        this.goalkeeper.jump(angle);
+        console.log(entity.velocity.x, 'ANGLE CO');
+        // entity.update(1/60)
+        this.goalkeeper.registerBall(entity)
+
+
+        this.currentShootAngle = angle;
+        
 
         // this.reset();
 
