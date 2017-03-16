@@ -46505,10 +46505,12 @@
 								this.updateGame();
 								break;
 							}
-							for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
-								if (this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])) {
-									this.shake();
-									collideObs = this.currentBalls[i];
+							if (!this.currentBalls[i].triggerGoalkeeper) {
+								for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
+									if (this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])) {
+										this.shake();
+										collideObs = this.currentBalls[i];
+									}
 								}
 							}
 						}
