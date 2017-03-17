@@ -53,6 +53,8 @@ export default class Obstacle extends PIXI.Container {
         bounds.height = Math.floor(bounds.height/4)*4;
         this.bounds = bounds
 
+        console.log('DIST', this.radius);
+
         // for (var i = this.container.children.length - 1; i >= 0; i--) {
         //     this.container.removeChild(this.container.getChildAt(i));
         // }
@@ -78,11 +80,11 @@ export default class Obstacle extends PIXI.Container {
 
 
 
-        // this.shape = new PIXI.Graphics();
-        // this.shape.beginFill(Math.random() * 0xFFFFFF);
-        // this.shape.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
-        // this.shape.y = this.radius/2;
-        // this.container.addChild(this.shape);
+        // this.shaped = new PIXI.Graphics();
+        // this.shaped.beginFill(Math.random() * 0xFFFFFF);
+        // this.shaped.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
+        // this.shaped.y = this.radius/2;
+        // this.container.addChild(this.shaped);
 
         let obs = ['barreira.png']
         // let obs = ['grizz-bear-win.png', 'darwin-win.png','finn-win.png','marceline-win.png','rigby-win.png','jake-win.png','moredecai-win.png']
