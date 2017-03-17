@@ -141,6 +141,12 @@ export default class Ball extends PIXI.Container {
         this.killTimer = 6;
         //this.sprite.y = 0;
     }
+    getHigh() {
+        let point = this.toGlobal(new PIXI.Point())
+        let point2 = this.parent.toLocal(point)
+        // this.trail.update(delta, {x:point2.x, y:point2.y + this.spriteContainer.y * this.scale.y})
+        return this.y - this.spriteContainer.y //* this.scale.y
+    }
     stopMiddle() {
         this.virtualVelocity = {x:0,y:0};
         this.velocity = {x:0,y:0};
