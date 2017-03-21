@@ -36,9 +36,19 @@ export default class ChooseTeamScreen extends Screen{
         this.addButton();
         this.addButton();
         this.addButton();
+        this.addButton();
         this.addEvents();
 
         this.addEvents();
+
+        this.teamDataLabel = new PIXI.Text('',{font : '20px', fill : 0x000000, align : 'right'});
+		this.addChild(this.teamDataLabel)
+		this.teamDataLabel.y = 350;
+	}
+	updateTeamLabel(){
+		let teamData = GAME_DATA.getMyTeamData();
+
+		this.teamDataLabel.text = 'ATTACK: ' + teamData.attack * 100 + ' - DEFENSE: ' + teamData.defense * 100
 	}
 	build(){
 		super.build();
@@ -46,17 +56,19 @@ export default class ChooseTeamScreen extends Screen{
 		this.backButton.x = 50;
         this.backButton.y = 50;
 
+		this.updateTeamLabel();
 	}
 
 	addButton(){
 
 		let shape = PIXI.Sprite.fromFrame('big-button-up.png');
 		shape.anchor.set(0.5);
+		shape.scale.set(0.5);
 		let backButton = new PIXI.Container();
         backButton.addChild(shape)        
         backButton.interactive = true;
         backButton.y = 300;
-        backButton.x = 50 + this.buttons.length * 100;
+        backButton.x = 50 + this.buttons.length * 80;
         backButton.id = this.buttons.length;
         this.addChild(backButton)
 
@@ -67,6 +79,8 @@ export default class ChooseTeamScreen extends Screen{
 	changeTeam(e){
 		let target = e.target || e.data.target;
 		GAME_DATA.changeTeam(target.id);
+		this.updateTeamLabel();
+
 	}
 
 	destroy(){

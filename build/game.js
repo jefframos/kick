@@ -38009,30 +38009,51 @@
 	
 	        this.maxPoints = 0;
 	        this.currentPoints = 0;
-	        this.level = 1;
+	        this.stadiumID = 0;
 	        this.points = 0;
 	        this.teamID = 0;
 	        this.lifes = 0;
 	        this.fieldsTextures = [];
-	        this.fieldsTextures.push('grass1.png');
-	        this.fieldsTextures.push('grass2.png');
-	        this.fieldsTextures.push('grass1.png');
-	        this.fieldsTextures.push('grass2.png');
+	        this.fieldsTextures.push({ texture: 'grass1.png', extraBalls: 0 });
+	        this.fieldsTextures.push({ texture: 'grass1.png', extraBalls: 1 });
+	        this.fieldsTextures.push({ texture: 'grass1.png', extraBalls: 2 });
+	        this.fieldsTextures.push({ texture: 'grass2.png', extraBalls: 3 });
 	
 	        this.teamsData = [];
-	        this.teamsData.push(0xFF0000);
-	        this.teamsData.push(0x0000FF);
-	        this.teamsData.push(0x00FF00);
-	        this.teamsData.push(0xFF0FF0);
+	        this.teamsData.push({ attack: 1, defense: 1, color: 0xFF0000 });
+	        this.teamsData.push({ attack: 1.2, defense: 0.8, color: 0xFF0000 });
+	        this.teamsData.push({ attack: 1.5, defense: 0.5, color: 0x0000FF });
+	        this.teamsData.push({ attack: 0.5, defense: 1.5, color: 0x00FF00 });
+	        this.teamsData.push({ attack: 0.8, defense: 1.2, color: 0xFF0FF0 });
 	
 	        this.goodShoot = 5, this.perfectShoot = 10;
 	    }
 	
 	    _createClass(GameData, [{
+	        key: 'getStadium',
+	        value: function getStadium() {
+	            return this.fieldsTextures[this.stadiumID];
+	        }
+	    }, {
+	        key: 'getHome',
+	        value: function getHome() {
+	            return 0.6;
+	        }
+	    }, {
+	        key: 'getOpponentData',
+	        value: function getOpponentData() {
+	            return { attack: 1, defense: 1 };
+	        }
+	    }, {
+	        key: 'getMyTeamData',
+	        value: function getMyTeamData() {
+	            return this.teamsData[this.teamID];
+	        }
+	    }, {
 	        key: 'changeLevel',
 	        value: function changeLevel(level) {
-	            this.level = level;
-	            GAME_VIEW.updateField(this.fieldsTextures[this.level]);
+	            this.stadiumID = level;
+	            GAME_VIEW.updateField(this.fieldsTextures[this.stadiumID]);
 	        }
 	    }, {
 	        key: 'changeTeam',
@@ -38043,7 +38064,7 @@
 	    }, {
 	        key: 'startNewGame',
 	        value: function startNewGame() {
-	            this.lifes = 12;
+	            this.lifes = 12 + this.fieldsTextures[this.stadiumID].extraBalls;
 	            this.points = 0;
 	        }
 	    }]);
@@ -45965,12 +45986,12 @@
 			_createClass(GlobalGameView, [{
 					key: 'updateTeam',
 					value: function updateTeam(team) {
-							this.sky.tint = team;
+							this.sky.tint = team.color;
 					}
 			}, {
 					key: 'updateField',
-					value: function updateField(textureSrc) {
-							var tex = PIXI.Texture.fromFrame(textureSrc);
+					value: function updateField(stadiumData) {
+							var tex = PIXI.Texture.fromFrame(stadiumData.texture);
 	
 							_gsap2.default.killTweensOf(this.sky.scale);
 							_gsap2.default.killTweensOf(this.field.scale);
@@ -46211,7 +46232,7 @@
 	
 			_this.uiManager = new _UIManager2.default(_this);
 			_this.collisions = new _Collisions2.default(_this);
-			_this.viewManager = new _ViewManager2.default();
+			_this.viewManager = new _ViewManager2.default(_this);
 			_this.comboSystem = new _ComboSystem2.default(_this);
 			_this.levelManager = new _LevelManager2.default(_this);
 	
@@ -46272,9 +46293,43 @@
 				this.goalkeeper.setStartPosition(200, 160);
 				this.viewManager.updateObjectScale(this.goalkeeper);
 	
+				this.fakeMrkerContainer = new PIXI.Container();
+				this.fakeMarker = new PIXI.Graphics().beginFill(0x000).drawRect(0, 0, _config2.default.width, 80);
+				this.ingameUIContainer.addChild(this.fakeMrkerContainer);
+				this.fakeMrkerContainer.addChild(this.fakeMarker);
+				this.fakeMrkerContainer.x = _config2.default.width / 2 - this.fakeMrkerContainer.width / 2;
+				this.fakeMrkerContainer.y = _config2.default.height - this.fakeMrkerContainer.height - 10 - 80;
+				this.fakeMrkerContainer.alpha = 0;
+				this.fakeMrkerContainer.buttonMode = true;
+				this.fakeMrkerContainer.interactive = true;
+				this.fakeMrkerContainer.on('mousedown', this.onTouchEndMarker.bind(this)).on('touchenter', this.onTouchEndMarker.bind(this));
+	
+				this.shootMarkerContainer = new PIXI.Container();
+				this.shootMarker = new PIXI.Graphics().beginFill(0x000).drawRect(0, 0, _config2.default.width * 0.8, 80);
+				this.ingameUIContainer.addChild(this.shootMarkerContainer);
+				this.shootMarkerContainer.addChild(this.shootMarker);
+				this.shootMarkerContainer.x = _config2.default.width / 2 - this.shootMarkerContainer.width / 2;
+				this.shootMarkerContainer.y = _config2.default.height - this.shootMarkerContainer.height - 10;
+				this.shootMarkerContainer.alpha = 0.3;
+				this.shootMarkerContainer.buttonMode = true;
+				this.shootMarkerContainer.interactive = true;
+				this.shootMarkerContainer.on('mousedown', this.onTouchMarker.bind(this)).on('touchstart', this.onTouchMarker.bind(this));
+				this.shootMarkerContainer.on('mouseup', this.onTouchEndMarker.bind(this)).on('touchend', this.onTouchEndMarker.bind(this));
+				this.shootMarkerContainer.on('mouseout', this.onTouchEndMarker.bind(this)).on('touchleave', this.onTouchEndMarker.bind(this));
+	
 				setTimeout(function () {
 					this.debugGoalkeeper(this.goalkeeper);
 				}.bind(this), 10);
+			}
+		}, {
+			key: 'onTouchEndMarker',
+			value: function onTouchEndMarker() {
+				this.shootMarkerContainer.alpha = 0.3;
+			}
+		}, {
+			key: 'onTouchMarker',
+			value: function onTouchMarker() {
+				this.shootMarkerContainer.alpha = 0.5;
 			}
 		}, {
 			key: 'remove',
@@ -46300,9 +46355,8 @@
 		}, {
 			key: 'gameOver',
 			value: function gameOver() {
-				// this.button.visible = true;
-				// this.button.scale.set(0);
-				// TweenLite.to(this.button.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'})
+	
+				this.uiManager.gameOver(this.comboSystem.placar);
 	
 				for (var i = this.levelManager.obstacles.length - 1; i >= 0; i--) {
 					if (this.levelManager.obstacles[i].parent) {
@@ -46310,28 +46364,24 @@
 					}
 				}
 	
-				// for (var i = this.currentBalls.length - 1; i >= 0; i--) {
-				// 	if(this.currentBalls[i].parent){
-				// 		this.currentBalls[i].parent.removeChild(this.currentBalls[i])
-				// 	}
-				// }
-	
 				this.goleira.reset();
 				// this.currentBalls = [];
 				this.levelManager.obstacles = [];
 	
 				this.gameStarted = false;
 	
-				this.screenManager.change('GameOverScreen');
-	
-				// this.paused = true;
+				setTimeout(function () {
+					this.screenManager.change('GameOverScreen');
+				}.bind(this), 2000);
 			}
 		}, {
 			key: 'startGame',
 			value: function startGame() {
 				GAME_DATA.startNewGame();
+	
 				this.spotedBall = null;
-				this.comboSystem.reset();
+				this.comboSystem.start();
+				// this.comboSystem.reset();
 				this.newRound();
 	
 				this.uiManager.createLifes();
@@ -46348,7 +46398,6 @@
 				if (GAME_DATA.lifes <= 0) {
 					return;
 				}
-				console.log('BALLLLLLZ');
 				if (this.spotedBall && !this.spotedBall.shooting) {
 					// 	console.log('spot',this.spotedBall.shooting);
 					return;
@@ -46404,11 +46453,12 @@
 			value: function finishedBall() {
 				var timer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 	
-				if (!this.gameStarted) {
+				if (!this.gameStarted || this.waitBall) {
 					return;
 				}
-				console.log('FINIZED');
 				GAME_DATA.lifes--;
+	
+				this.updateGame();
 	
 				if (GAME_DATA.lifes <= 0) {
 					this.gameStarted = false;
@@ -46431,9 +46481,9 @@
 			key: 'updateGame',
 			value: function updateGame() {
 				this.uiManager.updateLifes();
-				if (GAME_DATA.lifes) {
-					this.levelManager.createObstacles();
-				}
+				// if(GAME_DATA.lifes){
+				// 	this.levelManager.createObstacles();
+				// }
 			}
 		}, {
 			key: 'missShoot',
@@ -46441,9 +46491,24 @@
 				if (GAME_DATA.lifes <= 0) {
 					return;
 				}
-	
+				// this.spotedBall.killBall();
 				this.comboSystem.missGoal();
+				// this.uiManager.missShoot();
 				this.uiManager.updateLifes();
+				this.finishedBall(800);
+			}
+		}, {
+			key: 'goal',
+			value: function goal() {
+				var goals = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+	
+				GAME_DATA.points += goals;
+	
+				this.shake();
+				this.comboSystem.addGoal(goals);
+				// this.uiManager.goodShoot();
+				this.uiManager.updateLifes();
+				this.finishedBall(800);
 			}
 		}, {
 			key: 'update',
@@ -46489,16 +46554,16 @@
 				// console.log(this.levelManager.obstacles.length);
 				// console.log('lalala', this.gameStarted);
 	
-				console.log('REVER TODO O SISTEMA DE COLISAO COM A BARREIRA');
+				// console.log('REVER TODO O SISTEMA DE COLISAO COM A BARREIRA');
 				if (this.gameStarted) {
 					var collideObs = false;
 					for (var i = this.currentBalls.length - 1; i >= 0; i--) {
 	
-						console.log('lalala whatf1', this.gameStarted);
+						// console.log('lalala whatf1', this.gameStarted);
 	
 						if (!this.currentBalls[i].collided) {
 	
-							console.log('lalala whatf2', this.gameStarted);
+							// console.log('lalala whatf2', this.gameStarted);
 							if (!this.currentBalls[i].triggerGoalkeeper && this.currentBalls[i].velocity.y) {
 								var relativeForce = 1500 / -this.currentBalls[i].velocity.y;
 								var relativePos = 350 - relativeForce * 50;
@@ -46517,14 +46582,14 @@
 							}
 							if (this.collisions.collideGoalkeeper(delta, this.currentBalls[i], this.goalkeeper)) {
 								this.missShoot();
-								this.finishedBall(500);
+								// this.finishedBall(500);
 								this.updateGame();
 	
 								// console.log('lalala collideGoalkeeper', this.levelManager.obstacles.length);
 								break;
 							}
 	
-							console.log('lalala whatf3', this.gameStarted);
+							// console.log('lalala whatf3', this.gameStarted);
 	
 							// console.log('lalala', this.levelManager.obstacles.length);
 							if (!this.currentBalls[i].triggerGoalkeeper) {
@@ -46534,7 +46599,7 @@
 										// this.shake();
 	
 										this.missShoot();
-										this.finishedBall(500);
+										// this.finishedBall(500);
 										this.updateGame();
 										this.currentBalls[i].stickCollide();
 										break;
@@ -46546,8 +46611,15 @@
 						if (this.mousePosition && this.mousePosition.x > 0 && this.mousePosition.x < _config2.default.width && this.mousePosition.y > 0 && this.mousePosition.y < _config2.default.height) {
 							this.verifyInterception(this.currentBalls[i]);
 						}
-						this.collisions.collideBounds(delta, this.currentBalls[i]);
+						var outBounds = this.collisions.collideBounds(delta, this.spotedBall);
 	
+						if (outBounds) {
+							console.log('OUT OF');
+							this.missShoot();
+							this.updateGame();
+							this.currentBalls[i].stickCollide();
+							break;
+						}
 						if (this.currentBalls[i].killed) {
 							this.currentBalls.splice(i, 1);
 						}
@@ -46572,15 +46644,6 @@
 					// 	collideObs.inObstacle();
 					// }
 				}
-			}
-		}, {
-			key: 'goal',
-			value: function goal() {
-				var goals = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
-	
-				GAME_DATA.points += goals;
-				this.comboSystem.addGoal(goals);
-				this.uiManager.updateLifes();
 			}
 		}, {
 			key: 'noGoal',
@@ -47659,6 +47722,10 @@
 					return;
 				}
 	
+				if (entity.x < -50 || entity.x > _config2.default.width + 50) {
+					return true;
+				}
+	
 				if (entity.velocity.y < 0) {
 					if (entity.y < this.game.goleira.y - 10) {
 						var ballPosition = {
@@ -47780,17 +47847,18 @@
 	
 							entity.spriteGravity *= 5;
 							entity.rotationInfluence.x *= 0.25;
+							console.log('finished on coll');
 						}
 	
 						if (travessao || traveLeft || traveRight) {
-							this.game.shake();
+							//this.game.shake()
 						}
 						this.game.colliding = true;
 						entity.resetCollisions();
 	
 						console.log('finished on coll');
-						this.game.finishedBall(750);
-						this.game.updateGame();
+						//this.game.finishedBall(750);
+						//this.game.updateGame();
 					}
 				}
 			}
@@ -49628,18 +49696,22 @@
 	
 			this.game = game;
 			this.chain = 0;
-			this.goalMarker = 0.5;
-			this.placar = { me: 0, opponent: 0 };
-	
-			this.opponentData = { attack: 1, defense: 1 };
-			this.myTeamData = { attack: 1, defense: 1 };
 		}
 	
 		_createClass(ComboSystem, [{
+			key: 'start',
+			value: function start() {
+				this.goalMarker = 0.5;
+				this.placar = { me: 0, opponent: 0 };
+				this.opponentData = GAME_DATA.getOpponentData();
+				this.myTeamData = GAME_DATA.getMyTeamData();
+				this.updateBars();
+			}
+		}, {
 			key: 'reset',
 			value: function reset() {
 				this.chain = 0;
-				this.goalMarker = 0.5;
+				this.goalMarker = GAME_DATA.getHome();
 				this.placar = { me: 0, opponent: 0 };
 				this.updateBars();
 			}
@@ -49651,8 +49723,9 @@
 				} else if (goals == GAME_DATA.perfectShoot) {
 					this.addPerfectShoot();
 				} else {
+					this.game.uiManager.showCenterFeedback('good');
 					this.chain++;
-					this.addGoalPoints(0.33);
+					this.addGoalPoints(0.2);
 				}
 			}
 		}, {
@@ -49670,38 +49743,47 @@
 		}, {
 			key: 'addGoodShoot',
 			value: function addGoodShoot() {
+				this.game.uiManager.showCenterFeedback('very good');
 				this.chain += 3;
-	
 				this.addGoalPoints(0.75);
 			}
 		}, {
 			key: 'addPerfectShoot',
 			value: function addPerfectShoot() {
+				this.game.uiManager.showCenterFeedback('perfect');
 				this.chain += 10;
 				this.addGoalPoints(1);
 			}
 		}, {
 			key: 'missGoal',
 			value: function missGoal() {
+				this.game.uiManager.showCenterFeedback('miss');
 				this.chain = 0;
-				this.removeGoalPoints(0.33);
+				this.removeGoalPoints(0.2);
 			}
 		}, {
 			key: 'updateBars',
 			value: function updateBars() {
+	
+				this.goalMarker = Math.max(this.goalMarker, 0);
+				this.goalMarker = Math.min(this.goalMarker, 1);
+				this.goalMarker = parseFloat(parseFloat(this.goalMarker).toFixed(2));
 				this.game.uiManager.updateGoalBar(this.placar, this.goalMarker);
-				if (this.goalMarker > 1) {
+				if (this.goalMarker >= 1) {
 					console.log('REAL GOAL');
-					this.goalMarker = this.goalMarker - 1 + 0.5;
+					this.goalMarker = 0.4; //this.goalMarker - 1 + 0.5
 					this.placar.me++;
-				} else if (this.goalMarker < 0) {
+					this.game.uiManager.showCenterFeedback('ta dentro', 1);
+					this.game.shake(2, 4, 0.8);
+				} else if (this.goalMarker <= 0) {
 					console.log('TOMOU GOAL');
-					this.goalMarker = 0.5;
+					this.goalMarker = 0.6;
 					this.placar.opponent++;
+					this.game.uiManager.showCenterFeedback('se fudeu', 1);
 				}
 				this.game.uiManager.updateGoalBar(this.placar, this.goalMarker, 0.8);
 	
-				console.log(this.placar, 'PLACAR');
+				console.log(this.placar, 'PLACAR GOAL', this.goalMarker);
 			}
 		}]);
 	
@@ -49938,7 +50020,7 @@
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+			value: true
 	});
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -49966,97 +50048,158 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
 	var UIManager = function (_PIXI$Container) {
-		_inherits(UIManager, _PIXI$Container);
+			_inherits(UIManager, _PIXI$Container);
 	
-		function UIManager(game) {
-			_classCallCheck(this, UIManager);
+			function UIManager(game) {
+					_classCallCheck(this, UIManager);
 	
-			var _this = _possibleConstructorReturn(this, (UIManager.__proto__ || Object.getPrototypeOf(UIManager)).call(this));
+					var _this = _possibleConstructorReturn(this, (UIManager.__proto__ || Object.getPrototypeOf(UIManager)).call(this));
 	
-			_this.game = game;
-			_this.lifesUI = [];
-			return _this;
-		}
+					_this.game = game;
+					_this.lifesUI = [];
 	
-		_createClass(UIManager, [{
-			key: 'build',
-			value: function build() {
-				var backgroundIngameUI = new PIXI.Graphics().beginFill(0x023548).drawRect(0, 0, _config2.default.width, _config2.default.height);
-				backgroundIngameUI.alpha = 0;
-				this.game.ingameUIContainer.addChild(backgroundIngameUI);
-	
-				this.textLabel = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
-				this.game.addChild(this.textLabel);
-	
-				this.textScore = new PIXI.Text('0', { font: '50px', fill: 0x000000, align: 'right' });
-				// this.game.addChild(this.textScore)
-				this.textScore.x = _config2.default.width / 2 - this.textScore.width / 2;
-				this.textScore.y = _config2.default.height - this.textScore.height - 20;
-	
-				this.debug2 = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
-				this.game.addChild(this.debug2);
-				this.debug2.y = _config2.default.height - 20;
-	
-				this.textPlacar = new PIXI.Text('0 - 0', { font: '50px', fill: 0x000000, align: 'right' });
-				this.game.addChild(this.textPlacar);
-				this.textPlacar.x = _config2.default.width / 2 - this.textPlacar.width / 2;
-				this.textPlacar.y = _config2.default.height - this.textPlacar.height - 20;
-	
-				this.goalBar = new PIXI.Graphics().beginFill(0x023548).drawRect(0, 0, _config2.default.width, 30);
-				//backgroundIngameUI.alpha = 0;
-				this.game.ingameUIContainer.addChild(this.goalBar);
-				this.goalBar.y = _config2.default.height - 30;
+					return _this;
 			}
-		}, {
-			key: 'updateLifes',
-			value: function updateLifes() {
-				this.textScore.text = GAME_DATA.points;
-				for (var i = this.lifesUI.length - 1; i >= 0; i--) {
-					if (i + 1 > GAME_DATA.lifes) {
-						this.lifesUI[i].tint = 0x000000;
+	
+			_createClass(UIManager, [{
+					key: 'build',
+					value: function build() {
+	
+							var backgroundIngameUI = new PIXI.Graphics().beginFill(0x023548).drawRect(0, 0, _config2.default.width, _config2.default.height);
+							backgroundIngameUI.alpha = 0;
+							this.game.ingameUIContainer.addChild(backgroundIngameUI);
+	
+							this.textLabel = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
+							this.game.addChild(this.textLabel);
+	
+							this.textScore = new PIXI.Text('0', { font: '50px', fill: 0x000000, align: 'right' });
+							// this.game.addChild(this.textScore)
+							this.textScore.x = _config2.default.width / 2 - this.textScore.width / 2;
+							this.textScore.y = _config2.default.height - this.textScore.height - 20;
+	
+							this.debug2 = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
+							this.debug2.y = _config2.default.height - 20;
+							this.game.addChild(this.debug2);
+	
+							this.textPlacar = new PIXI.Text('0 x 0', { font: '50px', fill: 0x000000, align: 'right' });
+							this.game.addChild(this.textPlacar);
+	
+							this.textPlacar.x = _config2.default.width / 2 - this.textPlacar.width / 2;
+							this.textPlacar.y = _config2.default.height - this.textPlacar.height - 20;
+	
+							this.scoreBarContainer = new PIXI.Container();
+							this.goalBarBack = new PIXI.Graphics().beginFill(0x000).drawRect(0, 0, 15, 300);
+							//backgroundIngameUI.alpha = 0;
+							this.scoreBarContainer.addChild(this.goalBarBack);
+							this.goalBarBack.alpha = 0.3;
+	
+							this.goalBar = new PIXI.Graphics().beginFill(0x023548).drawRect(0, -300, 15, 300);
+							//backgroundIngameUI.alpha = 0;
+							this.scoreBarContainer.addChild(this.goalBar);
+							this.goalBar.y = 300;
+	
+							this.scoreBarContainer.y = 180;
+							this.scoreBarContainer.x = 20;
+							this.game.ingameUIContainer.addChild(this.scoreBarContainer);
+	
+							var yourGoal = new PIXI.Text('+1', { font: '20px', fill: 0x000000, align: 'right' });
+							yourGoal.y = -20;
+							this.scoreBarContainer.addChild(yourGoal);
+	
+							var opponentGoal = new PIXI.Text('-1', { font: '20px', fill: 0x000000, align: 'right' });
+							opponentGoal.y = 300;
+							this.scoreBarContainer.addChild(opponentGoal);
+	
+							this.shootFeedback = new PIXI.Text('', { font: '80px', fill: 0x000000, align: 'left' });
+							this.shootFeedback.y = 300;
+							this.game.ingameUIContainer.addChild(this.shootFeedback);
+							this.shootFeedback.visible = false;
 					}
-				}
-			}
-		}, {
-			key: 'updateGoalBar',
-			value: function updateGoalBar(placar, barScale) {
-				var delay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-	
-				console.log(barScale, 'GOAL');
-	
-				TweenLite.to(this.goalBar.scale, 0.3, { delay: delay, x: barScale, ease: 'easeOutBack', onComplete: function onComplete() {
-						this.textPlacar.text = placar.me + ' X ' + placar.opponent;
-					}, onCompleteScope: this });
-			}
-		}, {
-			key: 'createLifes',
-			value: function createLifes() {
-				console.log('LIFES');
-				this.textScore.text = 0;
-				if (this.lifesUI) {
-					for (var i = this.lifesUI.length - 1; i >= 0; i--) {
-						if (this.lifesUI[i].parent) {
-							this.lifesUI[i].parent.removeChild(this.lifesUI[i]);
-						}
+			}, {
+					key: 'gameOver',
+					value: function gameOver(placar) {
+							var result = 'win';
+							if (placar.opponent > placar.me) {
+									result = 'loose';
+							} else if (placar.opponent == placar.me) {
+									result = 'draw';
+							}
+							this.textPlacar.text += '\n' + result;
+							TweenLite.to(this.textPlacar, 1, { y: _config2.default.height / 2 });
 					}
-				}
-				this.lifesUI = [];
-				for (var i = 0; i < GAME_DATA.lifes; i++) {
-					var hearthUI = PIXI.Sprite.fromFrame('ball.png');
+			}, {
+					key: 'tweenFeedback',
+					value: function tweenFeedback(force) {
+							if (force) {}
+							this.shootFeedback.visible = true;
+							this.shootFeedback.alpha = 1;
+							this.shootFeedback.x = -this.shootFeedback.width;
+							this.shootFeedback.scale.x = 1.5;
+							this.shootFeedback.scale.y = .5;
+							TweenLite.to(this.shootFeedback, 0.3, { x: _config2.default.width / 2 - this.shootFeedback.width / 2 });
+							TweenLite.to(this.shootFeedback.scale, 0.3, { x: 1, y: 1 });
+							TweenLite.to(this.shootFeedback, 0.3, { alpha: 0, delay: 0.5 });
+					}
+			}, {
+					key: 'showCenterFeedback',
+					value: function showCenterFeedback() {
+							var label = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'gol';
+							var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
 	
-					this.lifesUI.push(hearthUI);
-					hearthUI.x = _config2.default.width - 25 * i - 20;
-					hearthUI.y = 25;
-					hearthUI.anchor.set(0.5);
-					hearthUI.width = 20;
-					hearthUI.height = 20;
+							console.log(label, 'feedback');
+							this.shootFeedback.text = label;
+							this.tweenFeedback(true);
+					}
+			}, {
+					key: 'updateLifes',
+					value: function updateLifes() {
+							this.textScore.text = GAME_DATA.points;
+							for (var i = this.lifesUI.length - 1; i >= 0; i--) {
+									if (i + 1 > GAME_DATA.lifes) {
+											this.lifesUI[i].tint = 0x000000;
+									}
+							}
+					}
+			}, {
+					key: 'updateGoalBar',
+					value: function updateGoalBar(placar, barScale) {
+							var delay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
 	
-					this.game.ingameUIContainer.addChild(hearthUI);
-				}
-			}
-		}]);
+							console.log(barScale, 'GOAL');
 	
-		return UIManager;
+							TweenLite.to(this.goalBar.scale, 0.3, { delay: delay, y: barScale, ease: 'easeOutBack', onComplete: function onComplete() {
+											this.textPlacar.text = placar.me + ' X ' + placar.opponent;
+									}, onCompleteScope: this });
+					}
+			}, {
+					key: 'createLifes',
+					value: function createLifes() {
+							console.log('LIFES');
+							this.textScore.text = 0;
+							if (this.lifesUI) {
+									for (var i = this.lifesUI.length - 1; i >= 0; i--) {
+											if (this.lifesUI[i].parent) {
+													this.lifesUI[i].parent.removeChild(this.lifesUI[i]);
+											}
+									}
+							}
+							this.lifesUI = [];
+							for (var i = 0; i < GAME_DATA.lifes; i++) {
+									var hearthUI = PIXI.Sprite.fromFrame('ball.png');
+	
+									this.lifesUI.push(hearthUI);
+									hearthUI.x = _config2.default.width - 25 * i - 20;
+									hearthUI.y = 25;
+									hearthUI.anchor.set(0.5);
+									hearthUI.width = 20;
+									hearthUI.height = 20;
+	
+									this.game.ingameUIContainer.addChild(hearthUI);
+							}
+					}
+			}]);
+	
+			return UIManager;
 	}(PIXI.Container);
 	
 	exports.default = UIManager;
@@ -50129,7 +50272,7 @@
 			key: 'toGame',
 			value: function toGame() {
 				this.screenLabel = new PIXI.Text(this.label, { font: '46px mario', fill: 0xFFFFFF, align: 'right' });
-				this.screenManager.change('GameScreen');
+				this.screenManager.change('StartScreen');
 			}
 		}, {
 			key: 'startLoad',
@@ -50409,19 +50552,33 @@
 			_this.addButton();
 			_this.addButton();
 			_this.addButton();
+			_this.addButton();
 			_this.addEvents();
 	
 			_this.addEvents();
+	
+			_this.teamDataLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
+			_this.addChild(_this.teamDataLabel);
+			_this.teamDataLabel.y = 350;
 			return _this;
 		}
 	
 		_createClass(ChooseTeamScreen, [{
+			key: 'updateTeamLabel',
+			value: function updateTeamLabel() {
+				var teamData = GAME_DATA.getMyTeamData();
+	
+				this.teamDataLabel.text = 'ATTACK: ' + teamData.attack * 100 + ' - DEFENSE: ' + teamData.defense * 100;
+			}
+		}, {
 			key: 'build',
 			value: function build() {
 				_get(ChooseTeamScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseTeamScreen.prototype), 'build', this).call(this);
 	
 				this.backButton.x = 50;
 				this.backButton.y = 50;
+	
+				this.updateTeamLabel();
 			}
 		}, {
 			key: 'addButton',
@@ -50429,11 +50586,12 @@
 	
 				var shape = PIXI.Sprite.fromFrame('big-button-up.png');
 				shape.anchor.set(0.5);
+				shape.scale.set(0.5);
 				var backButton = new PIXI.Container();
 				backButton.addChild(shape);
 				backButton.interactive = true;
 				backButton.y = 300;
-				backButton.x = 50 + this.buttons.length * 100;
+				backButton.x = 50 + this.buttons.length * 80;
 				backButton.id = this.buttons.length;
 				this.addChild(backButton);
 	
@@ -50444,6 +50602,7 @@
 			value: function changeTeam(e) {
 				var target = e.target || e.data.target;
 				GAME_DATA.changeTeam(target.id);
+				this.updateTeamLabel();
 			}
 		}, {
 			key: 'destroy',
@@ -50573,6 +50732,10 @@
 			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
 			_this.addChild(_this.screenLabel);
 	
+			_this.stadiumDataLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
+			_this.addChild(_this.stadiumDataLabel);
+			_this.stadiumDataLabel.y = 350;
+	
 			_this.buttons = [];
 			_this.addButton();
 			_this.addButton();
@@ -50583,6 +50746,13 @@
 		}
 	
 		_createClass(ChooseFieldScreen, [{
+			key: 'updateStadiumLabel',
+			value: function updateStadiumLabel() {
+				var teamData = GAME_DATA.getStadium();
+	
+				this.stadiumDataLabel.text = 'EXTRA BALLS: ' + teamData.extraBalls;
+			}
+		}, {
 			key: 'addButton',
 			value: function addButton() {
 	
@@ -50604,6 +50774,7 @@
 				_get(ChooseFieldScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseFieldScreen.prototype), 'build', this).call(this);
 				this.backButton.x = 50;
 				this.backButton.y = 50;
+				this.updateStadiumLabel();
 			}
 		}, {
 			key: 'destroy',
@@ -50636,8 +50807,8 @@
 			key: 'changeField',
 			value: function changeField(e) {
 				var target = e.target || e.data.target;
-				console.log(target);
 				GAME_DATA.changeLevel(target.id);
+				this.updateStadiumLabel();
 			}
 		}, {
 			key: 'removeEvents',
@@ -51024,8 +51195,8 @@
 	
 	            var angSpeed = -angle;
 	
-	            if (force > 9) {
-	                force = 9;
+	            if (force > 8.5) {
+	                force = 8.5;
 	            }
 	
 	            this.friction.x = this.standardFriction.x * force * 0.1;
@@ -51043,7 +51214,6 @@
 	            this.velocity.x = 0;
 	            this.velocity.y = 0;
 	            this.velocity.x = -this.speed.x * Math.sin(angleColision) * force;
-	            this.velocity.y = -this.speed.y * Math.cos(angleColision) * force * 1.1;
 	
 	            this.virtualVelocity.x = 0;
 	            this.virtualVelocity.y = 0;
@@ -51057,10 +51227,14 @@
 	            if (force < 4.5) {
 	                force2 += 4.5 / force - 0.1;
 	
-	                force += 3;
+	                force += 1.5;
 	            }
+	            this.velocity.y = -this.speed.y * Math.cos(angleColision) * force * 1.1;
 	
 	            this.verticalVelocity.y += this.shootYSpeed * force2;
+	
+	            console.log(force, 'shootForce1', this.verticalVelocity.y, this.velocity.y, angle, angleColision, this.rotationInfluence);
+	
 	            this.spriteDirection = 1;
 	            this.shooting = true;
 	            this.killTimer = 6;
@@ -51119,18 +51293,17 @@
 	
 	            this.y = _config2.default.height - 200;
 	
-	            if (Math.random() < 10.5) {
+	            if (Math.random() < 0.00010) {
 	                this.verticalVelocity = { x: 0, y: 0 };
+	                //this.velocity.y = -1000
 	                // this.spriteContainer.y = - Math.random() * 80;
-	                this.spriteContainer.y = -Math.random() * 250;
+	                this.spriteContainer.y = 0; //- Math.random() * 250;
 	                this.x = _config2.default.width / 2;
 	                // this.verticalVelocity.y = Math.random() * this.shootYSpeed;
-	                this.verticalVelocity.y = this.shootYSpeed;
+	                // this.verticalVelocity.y = this.shootYSpeed;
 	            } else {
 	                this.spriteContainer.y = -Math.random() * 250;
-	
 	                this.verticalVelocity.y = this.shootYSpeed;
-	                // this.verticalVelocity.y = Math.abs(this.verticalVelocity.y);
 	
 	                var side = Math.random() < 0.5 ? 1 : -1;
 	                if (side == 1) {
@@ -51138,22 +51311,14 @@
 	                } else {
 	                    this.x = -_config2.default.width * 0.1;
 	                }
-	
-	                this.virtualVelocity.x = -this.speed.x * side;
 	                this.velocity.x = -this.speed.x * side;
+	                this.friction.x = this.standardFriction.x * 0.2;
 	            }
 	            this.spriteContainer.scale.set(2, 0);
-	
-	            console.log(this.x, this.velocity);
-	            //TweenLite.to(this.spriteContainer.scale, 0.8, {delay:0.75, x:1, y:1, ease:'easeOutElastic', onComplete:this.startUpdate, onCompleteScope:this})
-	            //TweenLite.to(this.shadow, 0.5, {alpha:0.1})
-	            // this.sprite.scale.set(1)
+	            console.log(this.x, this.velocity, this.virtualVelocity, this.friction);
 	            this.startUpdate();
 	
 	            this.killTimer = 99999;
-	
-	            // console.log(this.verticalVelocity);
-	            // this.updateable = true;
 	        }
 	    }, {
 	        key: 'startUpdate',
@@ -51229,16 +51394,16 @@
 	            TweenLite.to(this.spriteContainer.scale, 0.2, { x: 0, y: 0, onComplete: function onComplete() {
 	                    this.killed = true;
 	
-	                    if (this.collideObstacle) {
-	                        this.game.missShoot();
-	                    }
+	                    // if(this.collideObstacle){
+	                    //     this.game.missShoot();
+	                    // }
 	
-	                    if (!this.shooting) {
-	                        this.game.reset();
-	                    } else {
-	                        this.game.finishedBall();
-	                        // this.game.newRound();
-	                    }
+	                    // if(!this.shooting){
+	                    //     this.game.reset();
+	                    // }else{
+	                    //     this.game.finishedBall();
+	                    //     // this.game.newRound();
+	                    // }
 	                }, onCompleteScope: this });
 	        }
 	    }, {
@@ -51292,8 +51457,7 @@
 	            if (this.shooting && this.trail) {
 	                this.updateTrail(delta);
 	            }
-	            // console.log(this.killTimer);
-	            // if(this.shooting){
+	
 	            if (this.x < -200 || this.x > _config2.default.width + 200) {
 	                this.killTimer = 0;
 	            }
@@ -51301,44 +51465,19 @@
 	            if (this.killTimer <= 0) {
 	                this.killBall();
 	            }
-	            // }
-	            //this.spriteContainer.scale.set(Math.sin(ang)*0.2 + 1, Math.cos(ang)*0.2+1)
 	
 	            var percentage = Math.abs((Math.abs(this.velocity.x) + Math.abs(this.velocity.y)) / (Math.abs(this.speed.x) + Math.abs(this.speed.y)));
 	            // console.log(this.rotationSpeed);
 	            this.sprite.rotation += this.rotationSpeed * percentage * 0.5;
-	
 	            this.sprite.rotation += this.velocity.x / 5000;
 	
-	            // let hScale = (this.spriteContainer.y / 250)
-	            // console.log((this.spriteContainer.y / 250));
-	            // this.shadow.scale.x = 1 + hScale
-	            // this.shadow.scale.y = 0.5 + hScale
-	            // if(this.shooting && percentage == 0){
-	            //     this.game.reset();
-	            // }
-	            // if(percentage){
 	            this.velocity.x += this.rotationInfluence.x * delta * percentage;
-	            // console.log(this.velocity.x);
-	
-	
-	            // console.log(this.rotationInfluence.x);
 	            this.spriteContainer.x += this.verticalVelocity.x * delta * this.scale.x;
 	            this.spriteContainer.y += this.verticalVelocity.y * delta * this.scale.y;
 	            this.verticalVelocity.y += this.spriteGravity * delta;
 	
-	            //console.log(this.verticalVelocity.y);
-	
-	            // if(this.verticalVelocity.y < 0){
-	            // }
-	            // this.velocity.y += Math.cos(this.rotation);
-	            // }
-	
 	            if (this.spriteContainer.y > 0) {
-	
 	                this.touchGround(delta);
-	
-	                //console.log(Math.abs(this.verticalVelocity.y));
 	            }
 	
 	            if (this.rotationInfluence.x < 0) {

@@ -5,15 +5,17 @@ export default class ComboSystem{
 	constructor(game){
 		this.game = game;
 		this.chain = 0;
+	}
+	start(){
 		this.goalMarker = 0.5;
 		this.placar = {me:0, opponent:0}
-
-		this.opponentData = {attack:1, defense:1}
-		this.myTeamData = {attack:1, defense:1}
+		this.opponentData = GAME_DATA.getOpponentData();
+		this.myTeamData = GAME_DATA.getMyTeamData();
+		this.updateBars();
 	}
 	reset(){
 		this.chain = 0;
-		this.goalMarker = 0.5;
+		this.goalMarker = GAME_DATA.getHome();
 		this.placar = {me:0, opponent:0}
 		this.updateBars();
 	}
@@ -23,8 +25,9 @@ export default class ComboSystem{
 		}else if(goals == GAME_DATA.perfectShoot){
 			this.addPerfectShoot();
 		}else{
+			this.game.uiManager.showCenterFeedback('good');
 			this.chain ++;
-			this.addGoalPoints(0.33);
+			this.addGoalPoints(0.2);
 		}
 	}
 	removeGoalPoints(pts){
@@ -36,36 +39,46 @@ export default class ComboSystem{
 		this.updateBars();
 	}
 	addGoodShoot(){
+		this.game.uiManager.showCenterFeedback('very good');
 		this.chain += 3;
-
 		this.addGoalPoints(0.75);
+
 		
 	}
 	addPerfectShoot(){
+		this.game.uiManager.showCenterFeedback('perfect');
 		this.chain += 10;
 		this.addGoalPoints(1);
 	}
 	missGoal(){
+		this.game.uiManager.showCenterFeedback('miss');
 		this.chain = 0;
-		this.removeGoalPoints(0.33);
+		this.removeGoalPoints(0.2);
 
 	}
 	updateBars(){
+
+		this.goalMarker = Math.max(this.goalMarker, 0)
+		this.goalMarker = Math.min(this.goalMarker, 1)
+		this.goalMarker = parseFloat(parseFloat(this.goalMarker).toFixed(2));
 		this.game.uiManager.updateGoalBar(this.placar, this.goalMarker);
-		if(this.goalMarker > 1){
+		if(this.goalMarker >= 1){
 			console.log('REAL GOAL');
-			this.goalMarker = this.goalMarker - 1 + 0.5
+			this.goalMarker = 0.4//this.goalMarker - 1 + 0.5
 			this.placar.me ++
+			this.game.uiManager.showCenterFeedback('ta dentro', 1);
+			this.game.shake(2, 4, 0.8)
 
 		}
-		else if(this.goalMarker < 0){
+		else if(this.goalMarker <= 0){
 			console.log('TOMOU GOAL');
-			this.goalMarker = 0.5
+			this.goalMarker = 0.6
 			this.placar.opponent ++
+			this.game.uiManager.showCenterFeedback('se fudeu', 1);
 
 		}
 		this.game.uiManager.updateGoalBar(this.placar, this.goalMarker, 0.8);
 
-		console.log(this.placar, 'PLACAR');
+		console.log(this.placar, 'PLACAR GOAL', this.goalMarker);
 	}
 }

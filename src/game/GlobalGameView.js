@@ -7,10 +7,10 @@ export default class GlobalGameView{
     	this.updateGameBackground();
     }
     updateTeam(team){
-    	this.sky.tint = team;
+    	this.sky.tint = team.color;
     }
-    updateField(textureSrc){
-    	let tex = PIXI.Texture.fromFrame(textureSrc);
+    updateField(stadiumData){
+    	let tex = PIXI.Texture.fromFrame(stadiumData.texture);
 
     	TweenLite.killTweensOf(this.sky.scale);
     	TweenLite.killTweensOf(this.field.scale);

@@ -19,6 +19,10 @@ export default class Collisions{
 			return;
 		}
 
+		if(entity.x < -50 || entity.x > config.width + 50){
+			return true
+		}
+
 		if(entity.velocity.y < 0){
 			if(entity.y < this.game.goleira.y -10){
 				let ballPosition = {
@@ -140,17 +144,18 @@ export default class Collisions{
 
 					entity.spriteGravity *= 5
 					entity.rotationInfluence.x *= 0.25;
+					console.log('finished on coll');
 				}
 
 				if(travessao || traveLeft || traveRight){
-					this.game.shake()
+					//this.game.shake()
 				}
 				this.game.colliding = true;
 				entity.resetCollisions();
 
 				console.log('finished on coll');
-				this.game.finishedBall(750);
-				this.game.updateGame();
+				//this.game.finishedBall(750);
+				//this.game.updateGame();
 			}
 		}
 

@@ -25,7 +25,7 @@ export default class GameScreen extends Screen{
 
 		this.uiManager = new UIManager(this);
 		this.collisions = new Collisions(this);
-		this.viewManager = new ViewManager();
+		this.viewManager = new ViewManager(this);
 		this.comboSystem = new ComboSystem(this);
 		this.levelManager = new LevelManager(this);
 
@@ -83,11 +83,43 @@ export default class GameScreen extends Screen{
 		this.goalkeeper.setStartPosition(200, 160);
 		this.viewManager.updateObjectScale(this.goalkeeper)
 
+
+
+		this.fakeMrkerContainer = new PIXI.Container();
+		this.fakeMarker = new PIXI.Graphics().beginFill(0x000).drawRect(0,0, config.width, 80);
+		this.ingameUIContainer.addChild(this.fakeMrkerContainer)
+		this.fakeMrkerContainer.addChild(this.fakeMarker)
+		this.fakeMrkerContainer.x = config.width / 2 - this.fakeMrkerContainer.width / 2;
+		this.fakeMrkerContainer.y = config.height - this.fakeMrkerContainer.height - 10 - 80;
+		this.fakeMrkerContainer.alpha = 0
+		this.fakeMrkerContainer.buttonMode = true;
+		this.fakeMrkerContainer.interactive = true;
+		this.fakeMrkerContainer.on('mousedown', this.onTouchEndMarker.bind(this)).on('touchenter', this.onTouchEndMarker.bind(this));
+
+		this.shootMarkerContainer = new PIXI.Container();
+		this.shootMarker = new PIXI.Graphics().beginFill(0x000).drawRect(0,0, config.width * 0.8, 80);
+		this.ingameUIContainer.addChild(this.shootMarkerContainer)
+		this.shootMarkerContainer.addChild(this.shootMarker)
+		this.shootMarkerContainer.x = config.width / 2 - this.shootMarkerContainer.width / 2;
+		this.shootMarkerContainer.y = config.height - this.shootMarkerContainer.height - 10;
+		this.shootMarkerContainer.alpha = 0.3
+		this.shootMarkerContainer.buttonMode = true;
+		this.shootMarkerContainer.interactive = true;
+		this.shootMarkerContainer.on('mousedown', this.onTouchMarker.bind(this)).on('touchstart', this.onTouchMarker.bind(this));
+		this.shootMarkerContainer.on('mouseup', this.onTouchEndMarker.bind(this)).on('touchend', this.onTouchEndMarker.bind(this));
+		this.shootMarkerContainer.on('mouseout', this.onTouchEndMarker.bind(this)).on('touchleave', this.onTouchEndMarker.bind(this));
+
 		setTimeout(function() {
 			this.debugGoalkeeper(this.goalkeeper);			
 		}.bind(this), 10);
 		
 
+	}
+	onTouchEndMarker(){
+		this.shootMarkerContainer.alpha = 0.3
+	}
+	onTouchMarker(){
+		this.shootMarkerContainer.alpha = 0.5
 	}
 	remove(entity){
 		for (var i = this.updateList.length - 1; i >= 0; i--) {
@@ -108,9 +140,8 @@ export default class GameScreen extends Screen{
 	}
 	
 	gameOver(){
-        // this.button.visible = true;
-        // this.button.scale.set(0);
-        // TweenLite.to(this.button.scale, 0.8, {x:1, y:1, ease:'easeOutElastic'})
+
+		this.uiManager.gameOver(this.comboSystem.placar)
 
 		for (var i = this.levelManager.obstacles.length - 1; i >= 0; i--) {
 			if(this.levelManager.obstacles[i].parent){
@@ -118,27 +149,23 @@ export default class GameScreen extends Screen{
 			}
 		}
 
-		// for (var i = this.currentBalls.length - 1; i >= 0; i--) {
-		// 	if(this.currentBalls[i].parent){
-		// 		this.currentBalls[i].parent.removeChild(this.currentBalls[i])
-		// 	}
-		// }
-		
 		this.goleira.reset();
 		// this.currentBalls = [];
 		this.levelManager.obstacles = [];
 
 		this.gameStarted = false;
 
-		this.screenManager.change('GameOverScreen')
-
-		// this.paused = true;
+		setTimeout(function() {
+			this.screenManager.change('GameOverScreen')
+		}.bind(this), 2000);
 
 	}
 	startGame(){
 		GAME_DATA.startNewGame();
+
 		this.spotedBall = null;
-		this.comboSystem.reset();
+		this.comboSystem.start();
+		// this.comboSystem.reset();
         this.newRound();
 
         this.uiManager.createLifes();
@@ -153,7 +180,6 @@ export default class GameScreen extends Screen{
 		if(GAME_DATA.lifes <= 0){
 			return
 		}
-		console.log('BALLLLLLZ');
 		if(this.spotedBall && !this.spotedBall.shooting){
 		// 	console.log('spot',this.spotedBall.shooting);
 			return
@@ -188,7 +214,7 @@ export default class GameScreen extends Screen{
 			){
 			return
 		}
-		console.log(	'NEW ROUND');
+		console.log('NEW ROUND');
 
 		this.gameStarted = true;
 		// this.waitBall = false;
@@ -204,12 +230,12 @@ export default class GameScreen extends Screen{
 		}
 	}
 	finishedBall(timer = 0){
-		if(!this.gameStarted){
+		if(!this.gameStarted || this.waitBall){
 			return
 		}
-console.log('FINIZED');
 		GAME_DATA.lifes -- ;
 
+		this.updateGame();
 
 		if(GAME_DATA.lifes <= 0){
 			this.gameStarted = false;
@@ -231,20 +257,31 @@ console.log('FINIZED');
 
 	updateGame(){
 		this.uiManager.updateLifes();
-		if(GAME_DATA.lifes){
-			this.levelManager.createObstacles();
-		}
+		// if(GAME_DATA.lifes){
+		// 	this.levelManager.createObstacles();
+		// }
 	}
 	missShoot(){
 		if(GAME_DATA.lifes <= 0){
 			return
 		}
-		
+		// this.spotedBall.killBall();
 		this.comboSystem.missGoal();
+		// this.uiManager.missShoot();
 		this.uiManager.updateLifes();
+		this.finishedBall(800);	
 
+	}
+
+	goal(goals = 1){
+		GAME_DATA.points += goals;
+
+		this.shake()
+		this.comboSystem.addGoal(goals);
+		// this.uiManager.goodShoot();
+		this.uiManager.updateLifes();
+		this.finishedBall(800);
 		
-
 	}
 	update(delta){
 		this.trailManager.update(delta, this.mousePosition);
@@ -288,17 +325,17 @@ console.log('FINIZED');
 		// console.log(this.levelManager.obstacles.length);
 		// console.log('lalala', this.gameStarted);
 
-		console.log('REVER TODO O SISTEMA DE COLISAO COM A BARREIRA');
+		// console.log('REVER TODO O SISTEMA DE COLISAO COM A BARREIRA');
 		if(this.gameStarted){
 			let collideObs = false
 			for (var i = this.currentBalls.length - 1; i >= 0; i--) {
 
-				console.log('lalala whatf1', this.gameStarted);
+				// console.log('lalala whatf1', this.gameStarted);
 
 				if(!this.currentBalls[i].collided){
 
 
-				console.log('lalala whatf2', this.gameStarted);
+				// console.log('lalala whatf2', this.gameStarted);
 					if(!this.currentBalls[i].triggerGoalkeeper && this.currentBalls[i].velocity.y){
 						let relativeForce = 1500/-this.currentBalls[i].velocity.y
 						let relativePos = 350 - relativeForce * 50
@@ -318,7 +355,7 @@ console.log('FINIZED');
 					if(this.collisions.collideGoalkeeper(delta, this.currentBalls[i], this.goalkeeper))
 					{
 						this.missShoot();
-						this.finishedBall(500);
+						// this.finishedBall(500);
 						this.updateGame();
 
 						// console.log('lalala collideGoalkeeper', this.levelManager.obstacles.length);
@@ -327,7 +364,7 @@ console.log('FINIZED');
 
 
 
-					console.log('lalala whatf3', this.gameStarted);
+					// console.log('lalala whatf3', this.gameStarted);
 
 					// console.log('lalala', this.levelManager.obstacles.length);
 					if(!this.currentBalls[i].triggerGoalkeeper){
@@ -337,7 +374,7 @@ console.log('FINIZED');
 								// this.shake();
 
 								this.missShoot();
-								this.finishedBall(500);
+								// this.finishedBall(500);
 								this.updateGame();
 								this.currentBalls[i].stickCollide();
 								break
@@ -354,8 +391,15 @@ console.log('FINIZED');
 				){
 					this.verifyInterception(this.currentBalls[i]);
 				}
-				this.collisions.collideBounds(delta, this.currentBalls[i])
+				let outBounds = this.collisions.collideBounds(delta, this.spotedBall)
 
+				if(outBounds){
+					console.log('OUT OF');
+					this.missShoot();
+					this.updateGame();
+					this.currentBalls[i].stickCollide();
+					break
+				}
 				if(this.currentBalls[i].killed){
 					this.currentBalls.splice(i, 1);
 				}
@@ -384,11 +428,7 @@ console.log('FINIZED');
 
 
 	}
-	goal(goals = 1){
-		GAME_DATA.points += goals;
-		this.comboSystem.addGoal(goals);
-		this.uiManager.updateLifes();
-	}
+
 	noGoal(){
 		// GAME_DATA.lifes --;
 		

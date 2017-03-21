@@ -31,12 +31,22 @@ export default class ChooseFieldScreen extends Screen{
         this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
         this.addChild(this.screenLabel)
 
+
+        this.stadiumDataLabel = new PIXI.Text('',{font : '20px', fill : 0x000000, align : 'right'});
+		this.addChild(this.stadiumDataLabel)
+		this.stadiumDataLabel.y = 350;
+
         this.buttons = [];
         this.addButton();
         this.addButton();
         this.addButton();
         this.addButton();
         this.addEvents();
+	}
+	updateStadiumLabel(){
+		let teamData = GAME_DATA.getStadium();
+
+		this.stadiumDataLabel.text = 'EXTRA BALLS: ' + teamData.extraBalls;
 	}
 	addButton(){
 
@@ -57,6 +67,7 @@ export default class ChooseFieldScreen extends Screen{
 		super.build();
 		this.backButton.x = 50;
         this.backButton.y = 50;
+		this.updateStadiumLabel();
 	}
 
 	destroy(){
@@ -85,8 +96,8 @@ export default class ChooseFieldScreen extends Screen{
 	}
 	changeField(e){
 		let target = e.target || e.data.target;
-		console.log(target);
 		GAME_DATA.changeLevel(target.id);
+		this.updateStadiumLabel();
 	}
 	removeEvents(){
 		this.button.off('touchstart').off('mousedown');
