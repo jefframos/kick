@@ -18,38 +18,38 @@ export default class LevelManager{
 		lvl = [];
 		this.levels.push(lvl)
 
-		lvl = []
-		lvl.push({x:config.width / 2-100, y: 250, w:70, h:380});
-		lvl.push({x:config.width / 2-60, y: 260, w:70, h:370});
-		lvl.push({x:config.width / 2-20, y: 250, w:70, h:400});
-		lvl.push({x:config.width / 2 + 80, y: 190, w:70, h:410});
-		this.levels.push(lvl)
-
-		// lvl = [];
-		// lvl.push({x:config.width / 2, y: 160, w:70, h:410});
+		// lvl = []
+		// lvl.push({x:config.width / 2-100, y: 250, w:70, h:380});
+		// lvl.push({x:config.width / 2-60, y: 260, w:70, h:370});
+		// lvl.push({x:config.width / 2-20, y: 250, w:70, h:400});
+		// lvl.push({x:config.width / 2 + 80, y: 190, w:70, h:410});
 		// this.levels.push(lvl)
 
-		lvl = [];
-		lvl.push({x:config.width / 2 + 100, y: 230, w:70, h:410});
-		lvl.push({x:config.width / 2 - 100, y: 230, w:70, h:410});
-		this.levels.push(lvl)
+		// // lvl = [];
+		// // lvl.push({x:config.width / 2, y: 160, w:70, h:410});
+		// // this.levels.push(lvl)
 
-		lvl = [];
-		lvl.push({x:config.width / 2 + 30, y: 280, w:70, h:410});
-		lvl.push({x:config.width / 2 - 110, y: 230, w:70, h:410});
-		this.levels.push(lvl)
+		// lvl = [];
+		// lvl.push({x:config.width / 2 + 100, y: 230, w:70, h:410});
+		// lvl.push({x:config.width / 2 - 100, y: 230, w:70, h:410});
+		// this.levels.push(lvl)
 
-		lvl = [];
-		lvl.push({x:config.width / 2 + 100, y: 230, w:70, h:410});
-		lvl.push({x:config.width / 2 - 100, y: 230, w:70, h:410});
-		// lvl.push({x:config.width / 2, y: 230, w:60, h:360});
-		this.levels.push(lvl)
+		// lvl = [];
+		// lvl.push({x:config.width / 2 + 30, y: 280, w:70, h:410});
+		// lvl.push({x:config.width / 2 - 110, y: 230, w:70, h:410});
+		// this.levels.push(lvl)
 
-		lvl = [];
-		// lvl.push({x:config.width / 2 + 100, y: 330, w:70, h:410});
-		lvl.push({x:config.width / 2 - 100, y: 190, w:70, h:410});
-		// lvl.push({x:config.width / 2, y: 170, w:60, h:360});
-		this.levels.push(lvl)
+		// lvl = [];
+		// lvl.push({x:config.width / 2 + 100, y: 230, w:70, h:410});
+		// lvl.push({x:config.width / 2 - 100, y: 230, w:70, h:410});
+		// // lvl.push({x:config.width / 2, y: 230, w:60, h:360});
+		// this.levels.push(lvl)
+
+		// lvl = [];
+		// // lvl.push({x:config.width / 2 + 100, y: 330, w:70, h:410});
+		// lvl.push({x:config.width / 2 - 100, y: 190, w:70, h:410});
+		// // lvl.push({x:config.width / 2, y: 170, w:60, h:360});
+		// this.levels.push(lvl)
 	}
 	
 	// addTargets(){

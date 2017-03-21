@@ -80,11 +80,11 @@ export default class Obstacle extends PIXI.Container {
 
 
 
-        // this.shaped = new PIXI.Graphics();
-        // this.shaped.beginFill(Math.random() * 0xFFFFFF);
-        // this.shaped.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
-        // this.shaped.y = this.radius/2;
-        // this.container.addChild(this.shaped);
+        this.shaped = new PIXI.Graphics();
+        this.shaped.beginFill(Math.random() * 0xFFFFFF);
+        this.shaped.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
+        this.shaped.y = this.radius/2;
+        this.container.addChild(this.shaped);
 
         let obs = ['barreira.png']
         // let obs = ['grizz-bear-win.png', 'darwin-win.png','finn-win.png','marceline-win.png','rigby-win.png','jake-win.png','moredecai-win.png']

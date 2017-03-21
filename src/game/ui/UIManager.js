@@ -17,13 +17,25 @@ export default class UIManager extends PIXI.Container {
 		this.game.addChild(this.textLabel)
 
 		this.textScore = new PIXI.Text('0',{font : '50px', fill : 0x000000, align : 'right'});
-		this.game.addChild(this.textScore)
+		// this.game.addChild(this.textScore)
 		this.textScore.x = config.width / 2 - this.textScore.width / 2;
 		this.textScore.y = config.height - this.textScore.height - 20
 
 		this.debug2 = new PIXI.Text('---',{font : '20px', fill : 0x000000, align : 'right'});
 		this.game.addChild(this.debug2)
 		this.debug2.y = config.height - 20;
+
+
+		this.textPlacar = new PIXI.Text('0 - 0',{font : '50px', fill : 0x000000, align : 'right'});
+		this.game.addChild(this.textPlacar)
+		this.textPlacar.x = config.width / 2 - this.textPlacar.width / 2;
+		this.textPlacar.y = config.height - this.textPlacar.height - 20
+
+
+		this.goalBar = new PIXI.Graphics().beginFill(0x023548).drawRect(0,0,config.width, 30);
+		//backgroundIngameUI.alpha = 0;
+		this.game.ingameUIContainer.addChild(this.goalBar)
+		this.goalBar.y = config.height - 30;
 
     }
     updateLifes(){
@@ -34,6 +46,17 @@ export default class UIManager extends PIXI.Container {
 			}
 		}
 	}
+    updateGoalBar(placar, barScale, delay = 0){
+    	console.log(barScale, 'GOAL');
+
+
+
+
+    	TweenLite.to(this.goalBar.scale, 0.3, {delay:delay, x:barScale, ease:'easeOutBack', onComplete:function(){
+    		this.textPlacar.text = placar.me + ' X ' + placar.opponent;
+
+    	}, onCompleteScope:this});
+    }
     createLifes(){
     	console.log('LIFES');
 		this.textScore.text = 0;

@@ -33,4 +33,8 @@ export default class GameData{
     	this.teamID = team;
     	GAME_VIEW.updateTeam(this.teamsData[this.teamID])
     }
+    startNewGame(){
+        this.lifes = 12;
+        this.points = 0;
+    }
 }

@@ -26,7 +26,7 @@ export default class GameScreen extends Screen{
 		this.uiManager = new UIManager(this);
 		this.collisions = new Collisions(this);
 		this.viewManager = new ViewManager();
-		this.comboSystem = new ComboSystem();
+		this.comboSystem = new ComboSystem(this);
 		this.levelManager = new LevelManager(this);
 
 		
@@ -62,7 +62,6 @@ export default class GameScreen extends Screen{
 		this.updateList = [];
 		this.targets = [];
 		this.currentBalls = [];
-		GAME_DATA.lifes = 5;
 		this.currentTrail = false;
 
 		this.goleira = new Goal(this)
@@ -137,8 +136,7 @@ export default class GameScreen extends Screen{
 
 	}
 	startGame(){
-		GAME_DATA.lifes = 5;
-		GAME_DATA.points = 0;
+		GAME_DATA.startNewGame();
 		this.spotedBall = null;
 		this.comboSystem.reset();
         this.newRound();
@@ -191,6 +189,8 @@ export default class GameScreen extends Screen{
 			return
 		}
 		console.log(	'NEW ROUND');
+
+		this.gameStarted = true;
 		// this.waitBall = false;
 		let nextScale = Math.random() * 0.4 + 0.75
 		TweenLite.to(this.viewManager, 0.5, {globalScale:nextScale})
@@ -204,10 +204,24 @@ export default class GameScreen extends Screen{
 		}
 	}
 	finishedBall(timer = 0){
-// console.log('FINIZED');
-		if(GAME_DATA.lifes <= 0){
+		if(!this.gameStarted){
 			return
 		}
+console.log('FINIZED');
+		GAME_DATA.lifes -- ;
+
+
+		if(GAME_DATA.lifes <= 0){
+			this.gameStarted = false;
+			setTimeout(function() {
+				this.removeBalls();
+			}.bind(this), 500);
+			setTimeout(function() {
+				this.gameOver();
+			}.bind(this), 1200);
+			return
+		}
+
 		this.waitBall = true;
 		setTimeout(function() {
 			this.waitBall = false;
@@ -225,20 +239,11 @@ export default class GameScreen extends Screen{
 		if(GAME_DATA.lifes <= 0){
 			return
 		}
-		GAME_DATA.lifes -- ;
+		
 		this.comboSystem.missGoal();
 		this.uiManager.updateLifes();
 
-		if(GAME_DATA.lifes <= 0){
-			this.gameStarted = false;
-			setTimeout(function() {
-				this.removeBalls();
-			}.bind(this), 500);
-			setTimeout(function() {
-				this.gameOver();
-			}.bind(this), 1200);
-			
-		}
+		
 
 	}
 	update(delta){
@@ -281,14 +286,19 @@ export default class GameScreen extends Screen{
 		this.goleira.update(delta);
 
 		// console.log(this.levelManager.obstacles.length);
+		// console.log('lalala', this.gameStarted);
+
+		console.log('REVER TODO O SISTEMA DE COLISAO COM A BARREIRA');
 		if(this.gameStarted){
-			let collideObs = false	
-
-			
-
-
+			let collideObs = false
 			for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+
+				console.log('lalala whatf1', this.gameStarted);
+
 				if(!this.currentBalls[i].collided){
+
+
+				console.log('lalala whatf2', this.gameStarted);
 					if(!this.currentBalls[i].triggerGoalkeeper && this.currentBalls[i].velocity.y){
 						let relativeForce = 1500/-this.currentBalls[i].velocity.y
 						let relativePos = 350 - relativeForce * 50
@@ -310,13 +320,28 @@ export default class GameScreen extends Screen{
 						this.missShoot();
 						this.finishedBall(500);
 						this.updateGame();
+
+						// console.log('lalala collideGoalkeeper', this.levelManager.obstacles.length);
 						break
 					}
+
+
+
+					console.log('lalala whatf3', this.gameStarted);
+
+					// console.log('lalala', this.levelManager.obstacles.length);
 					if(!this.currentBalls[i].triggerGoalkeeper){
 						for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
-							if(this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])){
+							let collisionTest = this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])
+							if(collisionTest){
 								// this.shake();
-								collideObs = this.currentBalls[i];	
+
+								this.missShoot();
+								this.finishedBall(500);
+								this.updateGame();
+								this.currentBalls[i].stickCollide();
+								break
+
 							}
 						}
 					}
@@ -336,18 +361,24 @@ export default class GameScreen extends Screen{
 				}
 			}
 
-			if(collideObs && collideObs.velocity.y > 10){
-				collideObs.stickCollide();
-				// collideObs.inObstacle();
-				this.missShoot();
+			// if(collideObs && collideObs.velocity.y > 10){
 
-				this.finishedBall(500);
-				this.updateGame();
-				collideObs = false;
+			// 	this.missShoot();
+			// 	this.finishedBall(500);
+			// 	this.updateGame();
+			// 			// break
 
-			}else if(collideObs){
-				collideObs.inObstacle();
-			}
+			// 	// collideObs.stickCollide();
+			// 	// // collideObs.inObstacle();
+			// 	// this.missShoot();
+
+			// 	// this.finishedBall(500);
+			// 	// this.updateGame();
+			// 	collideObs = false;
+
+			// }else if(collideObs){
+			// 	collideObs.inObstacle();
+			// }
 		}
 
 
@@ -359,7 +390,7 @@ export default class GameScreen extends Screen{
 		this.uiManager.updateLifes();
 	}
 	noGoal(){
-		GAME_DATA.lifes --;
+		// GAME_DATA.lifes --;
 		
 		this.uiManager.updateLifes();
 	}

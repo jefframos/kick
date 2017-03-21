@@ -38040,6 +38040,12 @@
 	            this.teamID = team;
 	            GAME_VIEW.updateTeam(this.teamsData[this.teamID]);
 	        }
+	    }, {
+	        key: 'startNewGame',
+	        value: function startNewGame() {
+	            this.lifes = 12;
+	            this.points = 0;
+	        }
 	    }]);
 	
 	    return GameData;
@@ -46206,7 +46212,7 @@
 			_this.uiManager = new _UIManager2.default(_this);
 			_this.collisions = new _Collisions2.default(_this);
 			_this.viewManager = new _ViewManager2.default();
-			_this.comboSystem = new _ComboSystem2.default();
+			_this.comboSystem = new _ComboSystem2.default(_this);
 			_this.levelManager = new _LevelManager2.default(_this);
 	
 			return _this;
@@ -46245,7 +46251,6 @@
 				this.updateList = [];
 				this.targets = [];
 				this.currentBalls = [];
-				GAME_DATA.lifes = 5;
 				this.currentTrail = false;
 	
 				this.goleira = new _Goal2.default(this);
@@ -46324,8 +46329,7 @@
 		}, {
 			key: 'startGame',
 			value: function startGame() {
-				GAME_DATA.lifes = 5;
-				GAME_DATA.points = 0;
+				GAME_DATA.startNewGame();
 				this.spotedBall = null;
 				this.comboSystem.reset();
 				this.newRound();
@@ -46381,6 +46385,8 @@
 					return;
 				}
 				console.log('NEW ROUND');
+	
+				this.gameStarted = true;
 				// this.waitBall = false;
 				var nextScale = Math.random() * 0.4 + 0.75;
 				_gsap2.default.to(this.viewManager, 0.5, { globalScale: nextScale });
@@ -46398,10 +46404,23 @@
 			value: function finishedBall() {
 				var timer = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
 	
-				// console.log('FINIZED');
-				if (GAME_DATA.lifes <= 0) {
+				if (!this.gameStarted) {
 					return;
 				}
+				console.log('FINIZED');
+				GAME_DATA.lifes--;
+	
+				if (GAME_DATA.lifes <= 0) {
+					this.gameStarted = false;
+					setTimeout(function () {
+						this.removeBalls();
+					}.bind(this), 500);
+					setTimeout(function () {
+						this.gameOver();
+					}.bind(this), 1200);
+					return;
+				}
+	
 				this.waitBall = true;
 				setTimeout(function () {
 					this.waitBall = false;
@@ -46422,19 +46441,9 @@
 				if (GAME_DATA.lifes <= 0) {
 					return;
 				}
-				GAME_DATA.lifes--;
+	
 				this.comboSystem.missGoal();
 				this.uiManager.updateLifes();
-	
-				if (GAME_DATA.lifes <= 0) {
-					this.gameStarted = false;
-					setTimeout(function () {
-						this.removeBalls();
-					}.bind(this), 500);
-					setTimeout(function () {
-						this.gameOver();
-					}.bind(this), 1200);
-				}
 			}
 		}, {
 			key: 'update',
@@ -46478,11 +46487,18 @@
 				this.goleira.update(delta);
 	
 				// console.log(this.levelManager.obstacles.length);
+				// console.log('lalala', this.gameStarted);
+	
+				console.log('REVER TODO O SISTEMA DE COLISAO COM A BARREIRA');
 				if (this.gameStarted) {
 					var collideObs = false;
-	
 					for (var i = this.currentBalls.length - 1; i >= 0; i--) {
+	
+						console.log('lalala whatf1', this.gameStarted);
+	
 						if (!this.currentBalls[i].collided) {
+	
+							console.log('lalala whatf2', this.gameStarted);
 							if (!this.currentBalls[i].triggerGoalkeeper && this.currentBalls[i].velocity.y) {
 								var relativeForce = 1500 / -this.currentBalls[i].velocity.y;
 								var relativePos = 350 - relativeForce * 50;
@@ -46503,13 +46519,25 @@
 								this.missShoot();
 								this.finishedBall(500);
 								this.updateGame();
+	
+								// console.log('lalala collideGoalkeeper', this.levelManager.obstacles.length);
 								break;
 							}
+	
+							console.log('lalala whatf3', this.gameStarted);
+	
+							// console.log('lalala', this.levelManager.obstacles.length);
 							if (!this.currentBalls[i].triggerGoalkeeper) {
 								for (var j = this.levelManager.obstacles.length - 1; j >= 0; j--) {
-									if (this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j])) {
+									var collisionTest = this.collisions.collideEntities(delta, this.currentBalls[i], this.levelManager.obstacles[j]);
+									if (collisionTest) {
 										// this.shake();
-										collideObs = this.currentBalls[i];
+	
+										this.missShoot();
+										this.finishedBall(500);
+										this.updateGame();
+										this.currentBalls[i].stickCollide();
+										break;
 									}
 								}
 							}
@@ -46525,17 +46553,24 @@
 						}
 					}
 	
-					if (collideObs && collideObs.velocity.y > 10) {
-						collideObs.stickCollide();
-						// collideObs.inObstacle();
-						this.missShoot();
+					// if(collideObs && collideObs.velocity.y > 10){
 	
-						this.finishedBall(500);
-						this.updateGame();
-						collideObs = false;
-					} else if (collideObs) {
-						collideObs.inObstacle();
-					}
+					// 	this.missShoot();
+					// 	this.finishedBall(500);
+					// 	this.updateGame();
+					// 			// break
+	
+					// 	// collideObs.stickCollide();
+					// 	// // collideObs.inObstacle();
+					// 	// this.missShoot();
+	
+					// 	// this.finishedBall(500);
+					// 	// this.updateGame();
+					// 	collideObs = false;
+	
+					// }else if(collideObs){
+					// 	collideObs.inObstacle();
+					// }
 				}
 			}
 		}, {
@@ -46550,7 +46585,7 @@
 		}, {
 			key: 'noGoal',
 			value: function noGoal() {
-				GAME_DATA.lifes--;
+				// GAME_DATA.lifes --;
 	
 				this.uiManager.updateLifes();
 			}
@@ -47313,11 +47348,11 @@
 	                        // if(this.radius > 20){
 	
 	
-	                        // this.shaped = new PIXI.Graphics();
-	                        // this.shaped.beginFill(Math.random() * 0xFFFFFF);
-	                        // this.shaped.drawRect(-this.radius,-this.bounds.height,this.radius*2, this.bounds.height);
-	                        // this.shaped.y = this.radius/2;
-	                        // this.container.addChild(this.shaped);
+	                        this.shaped = new PIXI.Graphics();
+	                        this.shaped.beginFill(Math.random() * 0xFFFFFF);
+	                        this.shaped.drawRect(-this.radius, -this.bounds.height, this.radius * 2, this.bounds.height);
+	                        this.shaped.y = this.radius / 2;
+	                        this.container.addChild(this.shaped);
 	
 	                        var obs = ['barreira.png'];
 	                        // let obs = ['grizz-bear-win.png', 'darwin-win.png','finn-win.png','marceline-win.png','rigby-win.png','jake-win.png','moredecai-win.png']
@@ -47760,8 +47795,8 @@
 				}
 			}
 		}, {
-			key: 'collideEntities',
-			value: function collideEntities(delta, entity, toCollide) {
+			key: 'collideEntities2',
+			value: function collideEntities2(delta, entity, toCollide) {
 				if (entity.obstacleCollided) {
 					for (var i = entity.obstacleCollided.length - 1; i >= 0; i--) {
 						if (entity.obstacleCollided[i] == toCollide) {
@@ -47834,6 +47869,59 @@
 					// entity.velocity.x = Math.sin(angle) * - Math.abs(entity.speed.x);
 					// entity.velocity.y = Math.cos(angle) * - Math.abs(entity.speed.y);
 					// entity.update(1/60)
+				}
+	
+				return realCollide;
+			}
+		}, {
+			key: 'collideEntities',
+			value: function collideEntities(delta, entity, toCollide) {
+				// console.log('TESTING COLLISION lalala');
+				// if(entity.obstacleCollided){
+				// 	for (var i = entity.obstacleCollided.length - 1; i >= 0; i--) {
+				// 		if(entity.obstacleCollided[i] == toCollide){
+				// 			return
+				// 		}
+				// 	}
+				// }
+				var distance = _utils2.default.distance(toCollide.x, toCollide.y, entity.x, entity.y);
+				var circleCollide = distance < toCollide.getRadius() + entity.getRadius();
+				var realCollide = false;
+				var headCollide = false;
+				var headDistance = 0;
+				// console.log('LALALA',entity.y, toCollide.y)
+				if (entity.y - entity.getRadius() <= toCollide.y) {
+					// console.log('LALALA',entity.y, entity.getRadius() ,toCollide.y)
+					var ballPosition = {
+						x: entity.x,
+						y: entity.y + entity.spriteContainer.y * entity.scale.y
+					};
+					this.game.debugBall(ballPosition, entity);
+					var hDistance = _utils2.default.distance(0, toCollide.y, 0, ballPosition.y);
+					// if(utils.distance(toCollide.x, toCollide.y - toCollide.bounds.height, entity.x, entity.y) < toCollide.bounds.height){
+					var toCompare = toCollide.getBounds().height - entity.getRadius() / 2;
+					realCollide = hDistance < toCompare;
+	
+					if (!realCollide) {
+						headDistance = _utils2.default.distance(0, toCollide.y - toCollide.getBounds().height, 0, ballPosition.y);
+						if (headDistance < entity.getRadius()) {
+							console.log('NA CABECA');
+							realCollide = true;
+							headCollide = true;
+						}
+					}
+	
+					// console.log(realCollide, 'REAL COLLIDE', hDistance, toCompare, headDistance);
+					// }
+				}
+				// console.log(toCollide, toCollide.getRadius());
+				if (realCollide) {
+					var distPercent = distance / (toCollide.getRadius() + entity.getRadius());
+					var angle = -Math.atan2(toCollide.y - entity.y, toCollide.x - entity.x);
+					angle += 90 / 180 * 3.14;
+					entity.velocity.x = Math.sin(angle) * -Math.abs(entity.speed.x);
+					entity.velocity.y = Math.cos(angle) * entity.velocity.y + entity.velocity.y * distPercent;
+					entity.obstacleCollided.push(toCollide);
 				}
 	
 				return realCollide;
@@ -48600,38 +48688,38 @@
 					lvl = [];
 					this.levels.push(lvl);
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 250, w: 70, h: 380 });
-					lvl.push({ x: _config2.default.width / 2 - 60, y: 260, w: 70, h: 370 });
-					lvl.push({ x: _config2.default.width / 2 - 20, y: 250, w: 70, h: 400 });
-					lvl.push({ x: _config2.default.width / 2 + 80, y: 190, w: 70, h: 410 });
-					this.levels.push(lvl);
-	
-					// lvl = [];
-					// lvl.push({x:config.width / 2, y: 160, w:70, h:410});
+					// lvl = []
+					// lvl.push({x:config.width / 2-100, y: 250, w:70, h:380});
+					// lvl.push({x:config.width / 2-60, y: 260, w:70, h:370});
+					// lvl.push({x:config.width / 2-20, y: 250, w:70, h:400});
+					// lvl.push({x:config.width / 2 + 80, y: 190, w:70, h:410});
 					// this.levels.push(lvl)
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 70, h: 410 });
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 70, h: 410 });
-					this.levels.push(lvl);
+					// // lvl = [];
+					// // lvl.push({x:config.width / 2, y: 160, w:70, h:410});
+					// // this.levels.push(lvl)
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 + 30, y: 280, w: 70, h: 410 });
-					lvl.push({ x: _config2.default.width / 2 - 110, y: 230, w: 70, h: 410 });
-					this.levels.push(lvl);
+					// lvl = [];
+					// lvl.push({x:config.width / 2 + 100, y: 230, w:70, h:410});
+					// lvl.push({x:config.width / 2 - 100, y: 230, w:70, h:410});
+					// this.levels.push(lvl)
 	
-					lvl = [];
-					lvl.push({ x: _config2.default.width / 2 + 100, y: 230, w: 70, h: 410 });
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 230, w: 70, h: 410 });
-					// lvl.push({x:config.width / 2, y: 230, w:60, h:360});
-					this.levels.push(lvl);
+					// lvl = [];
+					// lvl.push({x:config.width / 2 + 30, y: 280, w:70, h:410});
+					// lvl.push({x:config.width / 2 - 110, y: 230, w:70, h:410});
+					// this.levels.push(lvl)
 	
-					lvl = [];
-					// lvl.push({x:config.width / 2 + 100, y: 330, w:70, h:410});
-					lvl.push({ x: _config2.default.width / 2 - 100, y: 190, w: 70, h: 410 });
-					// lvl.push({x:config.width / 2, y: 170, w:60, h:360});
-					this.levels.push(lvl);
+					// lvl = [];
+					// lvl.push({x:config.width / 2 + 100, y: 230, w:70, h:410});
+					// lvl.push({x:config.width / 2 - 100, y: 230, w:70, h:410});
+					// // lvl.push({x:config.width / 2, y: 230, w:60, h:360});
+					// this.levels.push(lvl)
+	
+					// lvl = [];
+					// // lvl.push({x:config.width / 2 + 100, y: 330, w:70, h:410});
+					// lvl.push({x:config.width / 2 - 100, y: 190, w:70, h:410});
+					// // lvl.push({x:config.width / 2, y: 170, w:60, h:360});
+					// this.levels.push(lvl)
 			}
 	
 			// addTargets(){
@@ -49534,18 +49622,26 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Collisions = function () {
-		function Collisions(game) {
-			_classCallCheck(this, Collisions);
+	var ComboSystem = function () {
+		function ComboSystem(game) {
+			_classCallCheck(this, ComboSystem);
 	
 			this.game = game;
 			this.chain = 0;
+			this.goalMarker = 0.5;
+			this.placar = { me: 0, opponent: 0 };
+	
+			this.opponentData = { attack: 1, defense: 1 };
+			this.myTeamData = { attack: 1, defense: 1 };
 		}
 	
-		_createClass(Collisions, [{
+		_createClass(ComboSystem, [{
 			key: 'reset',
 			value: function reset() {
 				this.chain = 0;
+				this.goalMarker = 0.5;
+				this.placar = { me: 0, opponent: 0 };
+				this.updateBars();
 			}
 		}, {
 			key: 'addGoal',
@@ -49556,29 +49652,63 @@
 					this.addPerfectShoot();
 				} else {
 					this.chain++;
+					this.addGoalPoints(0.33);
 				}
+			}
+		}, {
+			key: 'removeGoalPoints',
+			value: function removeGoalPoints(pts) {
+				this.goalMarker -= pts * this.opponentData.attack / this.myTeamData.defense;
+				this.updateBars();
+			}
+		}, {
+			key: 'addGoalPoints',
+			value: function addGoalPoints(pts) {
+				this.goalMarker += pts * this.myTeamData.attack / this.opponentData.defense;
+				this.updateBars();
 			}
 		}, {
 			key: 'addGoodShoot',
 			value: function addGoodShoot() {
 				this.chain += 3;
+	
+				this.addGoalPoints(0.75);
 			}
 		}, {
 			key: 'addPerfectShoot',
 			value: function addPerfectShoot() {
 				this.chain += 10;
+				this.addGoalPoints(1);
 			}
 		}, {
 			key: 'missGoal',
 			value: function missGoal() {
 				this.chain = 0;
+				this.removeGoalPoints(0.33);
+			}
+		}, {
+			key: 'updateBars',
+			value: function updateBars() {
+				this.game.uiManager.updateGoalBar(this.placar, this.goalMarker);
+				if (this.goalMarker > 1) {
+					console.log('REAL GOAL');
+					this.goalMarker = this.goalMarker - 1 + 0.5;
+					this.placar.me++;
+				} else if (this.goalMarker < 0) {
+					console.log('TOMOU GOAL');
+					this.goalMarker = 0.5;
+					this.placar.opponent++;
+				}
+				this.game.uiManager.updateGoalBar(this.placar, this.goalMarker, 0.8);
+	
+				console.log(this.placar, 'PLACAR');
 			}
 		}]);
 	
-		return Collisions;
+		return ComboSystem;
 	}();
 	
-	exports.default = Collisions;
+	exports.default = ComboSystem;
 
 /***/ },
 /* 205 */
@@ -49859,13 +49989,23 @@
 				this.game.addChild(this.textLabel);
 	
 				this.textScore = new PIXI.Text('0', { font: '50px', fill: 0x000000, align: 'right' });
-				this.game.addChild(this.textScore);
+				// this.game.addChild(this.textScore)
 				this.textScore.x = _config2.default.width / 2 - this.textScore.width / 2;
 				this.textScore.y = _config2.default.height - this.textScore.height - 20;
 	
 				this.debug2 = new PIXI.Text('---', { font: '20px', fill: 0x000000, align: 'right' });
 				this.game.addChild(this.debug2);
 				this.debug2.y = _config2.default.height - 20;
+	
+				this.textPlacar = new PIXI.Text('0 - 0', { font: '50px', fill: 0x000000, align: 'right' });
+				this.game.addChild(this.textPlacar);
+				this.textPlacar.x = _config2.default.width / 2 - this.textPlacar.width / 2;
+				this.textPlacar.y = _config2.default.height - this.textPlacar.height - 20;
+	
+				this.goalBar = new PIXI.Graphics().beginFill(0x023548).drawRect(0, 0, _config2.default.width, 30);
+				//backgroundIngameUI.alpha = 0;
+				this.game.ingameUIContainer.addChild(this.goalBar);
+				this.goalBar.y = _config2.default.height - 30;
 			}
 		}, {
 			key: 'updateLifes',
@@ -49876,6 +50016,17 @@
 						this.lifesUI[i].tint = 0x000000;
 					}
 				}
+			}
+		}, {
+			key: 'updateGoalBar',
+			value: function updateGoalBar(placar, barScale) {
+				var delay = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+	
+				console.log(barScale, 'GOAL');
+	
+				TweenLite.to(this.goalBar.scale, 0.3, { delay: delay, x: barScale, ease: 'easeOutBack', onComplete: function onComplete() {
+						this.textPlacar.text = placar.me + ' X ' + placar.opponent;
+					}, onCompleteScope: this });
 			}
 		}, {
 			key: 'createLifes',
