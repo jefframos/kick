@@ -121,7 +121,8 @@ export default class Goalkeeper extends PIXI.Container {
         if(dist < 30){
             this.inJump = true;
             if(distH < 500){
-                this.animations.play('jump_3', 0.9)
+                this.animations.play('jump_med1', 0.9)
+                // this.animations.play('jump_low2', 0.9)
             }else{
                 this.side = this.currentBall.x < this.x?-1:1;
                 this.animations.play('stayMiddle_1', 0.9)
@@ -130,20 +131,20 @@ export default class Goalkeeper extends PIXI.Container {
         }
 
         this.side = this.currentBall.x < this.x?-1:1;
-        let id = dist > 80 ? Math.random() < 0.5?1:4 : 2;
+        let id = dist > 80 ? 1 : 2;
 
 
         if(Math.random() < 0.3){
             //this.side = Math.random() < 0.5 ? -1 : 1;
         }
-        if(id == 1 || id == 4){
-            this.animations.play('jump_' + id, 0.8)
+        if(id == 1){
+            this.animations.play('jump_high2', 0.8)
             this.velocity.x = 160// *  this.side;
             if(id == 4){
-                this.velocity.x += 20
+                this.velocity.x += 20            
             }
         }else if(id == 2){
-            this.animations.play('jump_' + id, 1)
+            this.animations.play('jump_med2', 1)
             this.velocity.x = 100// *  this.side;
         }
 

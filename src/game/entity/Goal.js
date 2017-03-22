@@ -24,8 +24,8 @@ export default class Goal extends PIXI.Container {
 		this.goleira = new PIXI.Container();
 		this.addChild(this.goleira);
 
-		let h = 520
-		let w = 1600
+		let h = 560
+		let w = 1700
 		let tick = 24
 		this.traveTop = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(-w/2,0,w, tick);
 		this.goleira.addChild(this.traveTop);
@@ -69,10 +69,10 @@ export default class Goal extends PIXI.Container {
 		this.goleira.addChild(target);
 		this.targets.push(target);
 
-		target = this.getTarget();
+		target = this.getTarget(100);
 		target.x = 0//this.goleira.width / 2
-		target.y = -this.goleira.height /2
-		target.moveBounds = {x1:-350, x2:350}
+		target.y = -this.goleira.height /1.5
+		target.moveBounds = {x1:-400, x2:400}
 		target.updateable = true;
 		this.goleira.addChild(target);
 		this.targets.push(target);
@@ -80,13 +80,13 @@ export default class Goal extends PIXI.Container {
 		// target.y = 0//-this.height
 
     }
-    getTarget(){
+    getTarget(radius = 80){
 		for (var i = this.targetPool.length - 1; i >= 0; i--) {
 			if(this.targetPool[i].killed){
 				return this.targetPool[i]
 			}
 		}
-		let target = new Target(this, 80);
+		let target = new Target(this, radius);
 		this.targetPool.push(target);
 		return target;
 	}

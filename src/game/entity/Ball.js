@@ -126,11 +126,11 @@ export default class Ball extends PIXI.Container {
         this.rotationInfluence.x = this.rotationSpeed * 1000;
         this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y*0.95 / 2);
 
-        let force2 = force*0.35
+        let force2 = force*0.32
 
         // console.log('FORCE', force);
         if(force < 4.5){
-            force2 += 4.5 / force - 0.1
+            force2 += 4.5 / force - 0.2
 
             force += 1.5
         }
