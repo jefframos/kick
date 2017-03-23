@@ -95,7 +95,7 @@ export default class Goalkeeper extends PIXI.Container {
         // this.scale.x *= -1
     }
     reset(){
-        this.animations.play('static1', 3)
+        this.animations.play('STATIC_LOOP', 3)
         this.velocity.x = 0;
         this.x = this.initPos.x;
         this.y = this.initPos.y;
@@ -117,39 +117,37 @@ export default class Goalkeeper extends PIXI.Container {
 
         let dist = utils.distance(this.currentBall.x,0,this.x,0);
         let distH = utils.distance(this.currentBall.getHigh(),0,this.y,0);
-        console.log('DIST',distH,this.currentBall.getHigh(), this.y);
+        let jumpType = "STAY"
+        let highType = "LOW"
+        
+        this.side = this.currentBall.x < this.x?-1:1;
+
+
+        console.log('moves', distH/700);
+        let hNormal = distH/700
+        if(hNormal < 0.65){
+            highType = "LOW"
+        }else if(hNormal < 0.75){
+            highType = "MED"            
+        }else{
+            highType = "HIGH"
+        }
         if(dist < 30){
-            this.inJump = true;
-            if(distH < 500){
-                this.animations.play('jump_med1', 0.9)
-                // this.animations.play('jump_low2', 0.9)
+            if(distH < 500){                
+                jumpType = "CENTER_"
             }else{
-                this.side = this.currentBall.x < this.x?-1:1;
-                this.animations.play('stayMiddle_1', 0.9)
+                jumpType = "CENTER_"
             }
-            return
+        }else{
+            jumpType = dist > 80 ? "HIGH_" : "MED_";
         }
 
         this.side = this.currentBall.x < this.x?-1:1;
-        let id = dist > 80 ? 1 : 2;
-
-
-        if(Math.random() < 0.3){
-            //this.side = Math.random() < 0.5 ? -1 : 1;
-        }
-        if(id == 1){
-            this.animations.play('jump_high2', 0.8)
-            this.velocity.x = 160// *  this.side;
-            if(id == 4){
-                this.velocity.x += 20            
-            }
-        }else if(id == 2){
-            this.animations.play('jump_med2', 1)
-            this.velocity.x = 100// *  this.side;
-        }
 
 
 
+        let labelJump = 'JUMP_'+jumpType+highType+'_1';
+        this.animations.play(labelJump, 1)
         this.inJump = true;
     }
     addBodyPart(partStructure){
@@ -216,6 +214,9 @@ export default class Goalkeeper extends PIXI.Container {
                     this.bodyParts[j].part.x = frame[i].x //+ (nextFrame[i].x - frame[i].x)* smooth
                     this.bodyParts[j].part.y = frame[i].y //+ (nextFrame[i].y - frame[i].y)* smooth
                 }
+                // if(this.bodyParts[j].label == 'head'){
+                //     console.log(this.bodyParts[j].part.x, 'head');
+                // }
             }
         }
     }

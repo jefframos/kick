@@ -69,9 +69,9 @@ export default class Goal extends PIXI.Container {
 		this.goleira.addChild(target);
 		this.targets.push(target);
 
-		target = this.getTarget(100);
+		target = this.getTarget(90);
 		target.x = 0//this.goleira.width / 2
-		target.y = -this.goleira.height /1.5
+		target.y = -this.goleira.height * 0.25
 		target.moveBounds = {x1:-400, x2:400}
 		target.updateable = true;
 		this.goleira.addChild(target);
