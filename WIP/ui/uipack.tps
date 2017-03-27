@@ -394,6 +394,38 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">seriea/104776.png</key>
+            <key type="filename">seriea/107206.png</key>
+            <key type="filename">seriea/107208.png</key>
+            <key type="filename">seriea/301151.png</key>
+            <key type="filename">seriea/301304.png</key>
+            <key type="filename">seriea/335.png</key>
+            <key type="filename">seriea/337.png</key>
+            <key type="filename">seriea/338.png</key>
+            <key type="filename">seriea/339.png</key>
+            <key type="filename">seriea/340.png</key>
+            <key type="filename">seriea/atletico_mineiro.png</key>
+            <key type="filename">seriea/bahia.png</key>
+            <key type="filename">seriea/botafogo.png</key>
+            <key type="filename">seriea/corinthians.png</key>
+            <key type="filename">seriea/cruzeiro.png</key>
+            <key type="filename">seriea/flamengo.png</key>
+            <key type="filename">seriea/fluminense.png</key>
+            <key type="filename">seriea/gremio.png</key>
+            <key type="filename">seriea/palmeiras.png</key>
+            <key type="filename">seriea/ponte_preta.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>45,45,90,90</rect>
+                <key>scale9Paddings</key>
+                <rect>45,45,90,90</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">torcida.jpg</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>

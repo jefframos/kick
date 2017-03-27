@@ -1,0 +1,21 @@
+{"frames": {
+
+"torcida.jpg":
+{
+	"frame": {"x":4,"y":4,"w":660,"h":1080},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":660,"h":1080},
+	"sourceSize": {"w":660,"h":1080},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "game-1.png",
+	"format": "RGBA8888",
+	"size": {"w":668,"h":1088},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:f3b102cd62cbefe0c2982a613a3cb8e8:597155e8bd4a1cb674d8ab1065778682:f7031ad0edba38445f3f7cafed277efa$"
+}
+}
