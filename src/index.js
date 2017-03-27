@@ -10,13 +10,15 @@ import StartScreen from './game/screen/StartScreen';
 import ChooseTeamScreen from './game/screen/ChooseTeamScreen';
 import ChooseFieldScreen from './game/screen/ChooseFieldScreen';
 import GameOverScreen from './game/screen/GameOverScreen';
+import ChooseMatchScreen from './game/screen/ChooseMatchScreen';
 import Pool from './game/core/Pool';
 
 window.POOL = new Pool();
 
 PIXI.loader
 	// .add('./assets/map.json')
-	.add('./assets/images/game.json')
+	.add('./assets/images/game-0.json')
+	.add('./assets/images/game-1.json')
 	.add('./assets/images/trail1.jpg')
 	// .add('./assets/images/ball.png')
 	// .add('./assets/images/grass1.png')
@@ -48,6 +50,7 @@ function configGame(){
 	let chooseTeamScreen = new ChooseTeamScreen('ChooseTeamScreen');
 	let chooseFieldScreen = new ChooseFieldScreen('ChooseFieldScreen');
 	let gameOverScreen = new GameOverScreen('GameOverScreen');
+	let chooseMatchScreen = new ChooseMatchScreen('ChooseMatchScreen');
 
 	game.stage.addChild(screenManager);
 
@@ -57,6 +60,7 @@ function configGame(){
 	screenManager.addScreen(chooseTeamScreen);
 	screenManager.addScreen(chooseFieldScreen);
 	screenManager.addScreen(gameOverScreen);
+	screenManager.addScreen(chooseMatchScreen);
 	//change to init screen
 	screenManager.forceChange('LoadScreen');
 

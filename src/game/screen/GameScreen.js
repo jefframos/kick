@@ -73,28 +73,27 @@ export default class GameScreen extends Screen{
         this.add(this.goleira);
         this.goleira.addTargets();
         this.goleira.show();
-		this.addEvents();
-		this.startGame();
 
 		this.goalkeeper = new Goalkeeper(this, 50);
 		// this.goalkeeper.build();
 		this.add(this.goalkeeper)
 		this.goalkeeper.build(50, {height:400})
-		this.goalkeeper.setStartPosition(200, 160);
+		this.goalkeeper.setStartPosition(config.width/2, 175);
+		// this.goalkeeper.reset();
 		this.viewManager.updateObjectScale(this.goalkeeper)
 
 
 
-		this.fakeMrkerContainer = new PIXI.Container();
-		this.fakeMarker = new PIXI.Graphics().beginFill(0x000).drawRect(0,0, config.width, 80);
-		this.ingameUIContainer.addChild(this.fakeMrkerContainer)
-		this.fakeMrkerContainer.addChild(this.fakeMarker)
-		this.fakeMrkerContainer.x = config.width / 2 - this.fakeMrkerContainer.width / 2;
-		this.fakeMrkerContainer.y = config.height - this.fakeMrkerContainer.height - 10 - 80;
-		this.fakeMrkerContainer.alpha = 0
-		this.fakeMrkerContainer.buttonMode = true;
-		this.fakeMrkerContainer.interactive = true;
-		this.fakeMrkerContainer.on('mousedown', this.onTouchEndMarker.bind(this)).on('touchenter', this.onTouchEndMarker.bind(this));
+		// this.fakeMrkerContainer = new PIXI.Container();
+		// this.fakeMarker = new PIXI.Graphics().beginFill(0x000).drawRect(0,0, config.width, 80);
+		// this.ingameUIContainer.addChild(this.fakeMrkerContainer)
+		// this.fakeMrkerContainer.addChild(this.fakeMarker)
+		// this.fakeMrkerContainer.x = config.width / 2 - this.fakeMrkerContainer.width / 2;
+		// this.fakeMrkerContainer.y = config.height - this.fakeMrkerContainer.height - 10 - 80;
+		// this.fakeMrkerContainer.alpha = 0
+		// this.fakeMrkerContainer.buttonMode = true;
+		// this.fakeMrkerContainer.interactive = true;
+		// this.fakeMrkerContainer.on('mousedown', this.onTouchEndMarker.bind(this)).on('touchenter', this.onTouchEndMarker.bind(this));
 
 		this.shootMarkerContainer = new PIXI.Container();
 		this.shootMarker = new PIXI.Graphics().beginFill(0x000).drawRect(0,0, config.width * 0.8, 80);
@@ -105,14 +104,30 @@ export default class GameScreen extends Screen{
 		this.shootMarkerContainer.alpha = 0.3
 		this.shootMarkerContainer.buttonMode = true;
 		this.shootMarkerContainer.interactive = true;
-		this.shootMarkerContainer.on('mousedown', this.onTouchMarker.bind(this)).on('touchstart', this.onTouchMarker.bind(this));
-		this.shootMarkerContainer.on('mouseup', this.onTouchEndMarker.bind(this)).on('touchend', this.onTouchEndMarker.bind(this));
-		this.shootMarkerContainer.on('mouseout', this.onTouchEndMarker.bind(this)).on('touchleave', this.onTouchEndMarker.bind(this));
+		// this.shootMarkerContainer.on('mousedown', this.onTouchMarker.bind(this)).on('touchstart', this.onTouchMarker.bind(this));
+		// this.shootMarkerContainer.on('mouseup', this.onTouchEndMarker.bind(this)).on('touchend', this.onTouchEndMarker.bind(this));
+		// this.shootMarkerContainer.on('mouseout', this.onTouchEndMarker.bind(this)).on('touchleave', this.onTouchEndMarker.bind(this));
 
 		setTimeout(function() {
 			this.debugGoalkeeper(this.goalkeeper);			
 		}.bind(this), 10);
 		
+		this.startGame();
+
+
+		let shape = PIXI.Sprite.fromFrame('big-button-up.png');
+		shape.anchor.set(0.5);
+		shape.scale.set(0.5);
+		this.backButton = new PIXI.Container();
+        //this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+        this.backButton.addChild(shape)
+        this.backButton.x = 30;
+        this.backButton.y = 30;
+        this.backButton.interactive = true;
+        this.outgameUIContainer.addChild(this.backButton)
+
+		this.addEvents();
+
 
 	}
 	onTouchEndMarker(){
@@ -174,6 +189,8 @@ export default class GameScreen extends Screen{
         // TweenLite.to(this.button.scale, 0.2, {x:0, y:0, ease:'easeInBack'})
         // this.button.visible = false;
         this.gameStarted = true;
+
+        this.goalkeeper.reset();
         // this.paused = false;
 	}
 	getNewBall(){
@@ -568,6 +585,9 @@ export default class GameScreen extends Screen{
 		tempBall.shoot(5 + Math.random() * 0.5, Math.random() * 0.4 - 0.2,   Math.random() * 0.1 - 0.05);
 	}
 
+	onBackClick(){
+		this.screenManager.change('StartScreen')
+	}
 	onTapDown(){
 		// this.currentBalls.shoot(6.5 , 0,  0);
 		// for (var i = 51; i >= 0; i--) {
@@ -595,12 +615,14 @@ export default class GameScreen extends Screen{
 		this.ingameUIContainer.interactive = false;
 		this.ingameUIContainer.off('touchstart').off('mousedown');
 		this.ingameUIContainer.off('touchend').off('mouseup');
+		this.backButton.off('touchend').off('mouseup');
 		// this.button.off('touchstart').off('mousedown');
 	}
 	addEvents(){
 		this.removeEvents();
 		this.ingameUIContainer.interactive = true;
 		this.ingameUIContainer.on('mousedown', this.onTapDown.bind(this)).on('touchstart', this.onTapDown.bind(this));
+		this.backButton.on('mousedown', this.onBackClick.bind(this)).on('touchstart', this.onBackClick.bind(this));
 		this.ingameUIContainer.on('mouseup', this.onTapUp.bind(this)).on('touchend', this.onTapUp.bind(this));
 		// this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 	}

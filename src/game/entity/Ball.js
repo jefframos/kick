@@ -84,6 +84,8 @@ export default class Ball extends PIXI.Container {
             return;
         }
 
+        let playerData = GAME_DATA.getKickerData(); //{force:1.5, curve:1}
+
         if(!this.trail){
             this.trail = new Trail(this.game.gameContainer, 20, PIXI.Texture.from('assets/images/trail1.jpg'));
             this.trail.trailTick = 10;
@@ -123,7 +125,7 @@ export default class Ball extends PIXI.Container {
         this.virtualVelocity.y = 0;
 
 
-        this.rotationInfluence.x = this.rotationSpeed * 1000;
+        this.rotationInfluence.x = this.rotationSpeed * 1000 * playerData.curve;
         this.verticalVelocity.y = -Math.abs(this.verticalVelocity.y*0.95 / 2);
 
         let force2 = force*0.32
@@ -134,7 +136,7 @@ export default class Ball extends PIXI.Container {
 
             force += 1.5
         }
-        this.velocity.y = -this.speed.y * Math.cos(angleColision) * force*1.1;
+        this.velocity.y = -this.speed.y * Math.cos(angleColision) * force*1.1 * playerData.force;
 
         this.verticalVelocity.y += this.shootYSpeed * force2;
 
@@ -267,7 +269,6 @@ export default class Ball extends PIXI.Container {
         this.collideObstacle = true;
     }
     killBall ( ) {
-        // this.killTimer = 99999;
         console.log('kill ball');
         if(this.trail){
             this.trail.reset();
@@ -277,18 +278,6 @@ export default class Ball extends PIXI.Container {
 
         TweenLite.to(this.spriteContainer.scale, 0.2, {x:0,y:0, onComplete:function(){
             this.killed = true;
-
-            // if(this.collideObstacle){
-            //     this.game.missShoot();
-            // }
-
-            // if(!this.shooting){
-            //     this.game.reset();
-            // }else{
-            //     this.game.finishedBall();
-            //     // this.game.newRound();
-            // }
-
         }, onCompleteScope:this})
     }
     updateScale ( ) {
@@ -313,6 +302,12 @@ export default class Ball extends PIXI.Container {
         let point = this.toGlobal(new PIXI.Point())
         let point2 = this.parent.toLocal(point)
         this.trail.update(delta, {x:point2.x, y:point2.y + this.spriteContainer.y * this.scale.y})
+    }
+    simulate ( delta ) {
+        let tempPosition = {x:this.x, y:this.y}
+        tempPosition.x += this.velocity.x * delta * this.scale.x;
+        tempPosition.y += this.velocity.y * delta * this.scale.y;
+        return tempPosition;
     }
     update ( delta ) {
         // delta*= 0.2

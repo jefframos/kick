@@ -14,6 +14,9 @@ export default class Goalkeeper extends PIXI.Container {
 
         this.animations = new GoalkeeperAnimations(this);
 
+        
+        
+
     }
     build(radius = 20, bounds = {height:400}){
         radius = Math.floor(radius/4)*4;
@@ -21,16 +24,7 @@ export default class Goalkeeper extends PIXI.Container {
         this.externalRadius = this.radius*1;
         bounds.height = Math.floor(bounds.height/4)*4;
         this.bounds = bounds
-
-
         this.drawCounter = 20
-
-        // for (var i = this.container.children.length - 1; i >= 0; i--) {
-        //     this.container.removeChild(this.container.getChildAt(i));
-        // }
-
-        // this.container = new PIXI.Container();
-        // this.addChild(this.container);
 
         if(this.shadow && this.shadow.parent){
             this.shadow.parent.removeChild(this.shadow)
@@ -82,7 +76,8 @@ export default class Goalkeeper extends PIXI.Container {
 
         this.container.scale.x = this.side
 
-        // this.rotation = -0.5
+        this.keeperLevel = GAME_DATA.getOpponentData().goalkeeperLevel;
+
 
         return this
     }
@@ -91,12 +86,14 @@ export default class Goalkeeper extends PIXI.Container {
         this.y = y;
         this.initPos = {x:x, y:y};
 
+        this.moveBounds = {x1:x-50, x2:x+50}
+
         this.side = Math.random() < 0.5 ? -1 : 1
         // this.scale.x *= -1
     }
     reset(){
-        this.animations.play('STATIC_LOOP', 3)
-        this.velocity.x = 0;
+        this.animations.play('STATIC_LOOP', 1)
+        this.velocity.x = 50;
         this.x = this.initPos.x;
         this.y = this.initPos.y;
 
@@ -112,26 +109,45 @@ export default class Goalkeeper extends PIXI.Container {
             return
         }
 
-        console.log( 'SPD',  this.currentBall.velocity.x);
+        let precision = 1
+        if(Math.random() > this.keeperLevel){
+            precision = (Math.random() * this.keeperLevel) + 0.35;
 
-
-        let dist = utils.distance(this.currentBall.x,0,this.x,0);
-        let distH = utils.distance(this.currentBall.getHigh(),0,this.y,0);
+            if(precision > 1){
+                precision = 1;
+            }
+        }
+        let simulatedPosition = this.currentBall.simulate(5/60)
+        let dist = utils.distance(simulatedPosition.x,0,this.x,0) * (precision * precision);
+        let distH = utils.distance(this.currentBall.getHigh(),0,this.y,0) * (precision);
         let jumpType = "STAY"
         let highType = "LOW"
+        // console.log(precision, 'precision', dist, utils.distance(simulatedPosition.x,0,this.x,0));
         
-        this.side = this.currentBall.x < this.x?-1:1;
+        this.side = simulatedPosition.x < this.x?-1:1;
 
+        if(Math.random() > precision){
+            this.side = Math.random() < 0.5?-1:1;
+        }
 
-        console.log('moves', distH/700);
+        // console.log('moves', distH/700);
         let hNormal = distH/700
-        if(hNormal < 0.65){
+        if(hNormal < 0.55){
             highType = "LOW"
         }else if(hNormal < 0.75){
             highType = "MED"            
         }else{
             highType = "HIGH"
         }
+
+        if(Math.random() > precision * this.keeperLevel){
+            if(highType == "HIGH"){
+               highType = "MED" ;   
+            }else{
+                highType = "HIGH";
+            }
+        }
+
         if(dist < 30){
             if(distH < 500){                
                 jumpType = "CENTER_"
@@ -139,16 +155,23 @@ export default class Goalkeeper extends PIXI.Container {
                 jumpType = "CENTER_"
             }
         }else{
-            jumpType = dist > 80 ? "HIGH_" : "MED_";
+            if(Math.random() > precision * this.keeperLevel){
+                jumpType = dist < 80 ? "HIGH_" : "MED_";
+            }else{
+                jumpType = dist > 80 ? "HIGH_" : "MED_";
+            }
         }
 
-        this.side = this.currentBall.x < this.x?-1:1;
+        // this.side = this.currentBall.x < this.x?-1:1;
 
 
 
         let labelJump = 'JUMP_'+jumpType+highType+'_1';
-        this.animations.play(labelJump, 1)
+        this.animations.play(labelJump, 1 + (1-this.keeperLevel * this.keeperLevel));
         this.inJump = true;
+        this.velocity = {x:0, y:0}
+
+       
     }
     addBodyPart(partStructure){
         // console.log(partStructure);
@@ -224,6 +247,8 @@ export default class Goalkeeper extends PIXI.Container {
         if(!this.updateable){
             return
         }
+
+        // console.log(this.velocity);
        // console.log(this.velocity.x);
         this.frame += delta * 3;
         if(this.frame > this.maxFrame+1){
@@ -233,9 +258,23 @@ export default class Goalkeeper extends PIXI.Container {
         if(this.animations.currentFrame){            
             this.printFrame(this.animations.currentFrame)
         }
+
+
+
+        if(this.inJump){
+            this.container.scale.x = this.side
+            return
+        }
+        if(
+            (this.side > 0 && this.x > this.moveBounds.x2) ||
+            (this.side < 0 && this.x < this.moveBounds.x1)
+            )
+        {
+            this.side *= -1
+        }
+
+
         this.x += this.velocity.x * delta * this.side;
         this.y += this.velocity.y * delta * this.side;
-
-        this.container.scale.x = this.side
     }
 }
