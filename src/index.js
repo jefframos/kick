@@ -2,6 +2,7 @@ import plugins from './plugins';
 import config  from './config';
 import Game from './Game';
 import GameData from './game/GameData';
+import CookieManager from './game/CookieManager';
 import GlobalGameView from './game/GlobalGameView';
 import ScreenManager from './screenManager/ScreenManager';
 import GameScreen from './game/screen/GameScreen';
@@ -12,6 +13,9 @@ import ChooseFieldScreen from './game/screen/ChooseFieldScreen';
 import GameOverScreen from './game/screen/GameOverScreen';
 import ChooseMatchScreen from './game/screen/ChooseMatchScreen';
 import Pool from './game/core/Pool';
+
+window.COOKIE_MANAGER = new CookieManager();
+window.GAME_DATA = new GameData();
 
 window.POOL = new Pool();
 
@@ -41,7 +45,6 @@ function configGame(){
 	
 	//create screen manager
 	let screenManager = new ScreenManager();
-	window.GAME_DATA = new GameData();
 	window.GAME_VIEW = new GlobalGameView(screenManager);
 	//add screens
 	let gameScreen = new GameScreen('GameScreen');

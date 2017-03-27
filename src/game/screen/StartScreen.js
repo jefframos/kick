@@ -30,6 +30,12 @@ export default class StartScreen extends Screen{
         this.addChild(this.teamButton)
 
 
+        this.currentTeamData = GAME_DATA.getMyTeamData();
+        this.brandTeamSprite = PIXI.Sprite.fromFrame('seriea/'+this.currentTeamData.brand);
+		this.brandTeamSprite.anchor.set(0.5);
+		this.brandTeamSprite.scale.set(0.5);
+		this.teamButton.addChild(this.brandTeamSprite)
+
         shape = PIXI.Sprite.fromFrame('big-button-up.png');
 		shape.anchor.set(0.5);
 		this.fieldButton = new PIXI.Container();
@@ -47,13 +53,17 @@ export default class StartScreen extends Screen{
 
 
 	}
+	updateTeamButton(){
+		this.currentTeamData = GAME_DATA.getMyTeamData();
+		this.brandTeamSprite.texture = PIXI.Texture.fromFrame('seriea/'+this.currentTeamData.brand);
+	}
 	build(){
 		super.build();
 
 		this.startButton.x = config.width / 2;
 		this.startButton.y = config.height / 2;
-		this.teamButton.x = config.width / 2 + 120;
-		this.teamButton.y = config.height / 2 - 50;
+		this.teamButton.x = config.width - 50;
+		this.teamButton.y = 50;
 		this.fieldButton.x = config.width / 2 - 120;
 		this.fieldButton.y = config.height / 2 - 50;
 	}
@@ -102,6 +112,7 @@ export default class StartScreen extends Screen{
 	transitionIn(){
 
 		super.transitionIn();
+		this.updateTeamButton();
 
 		console.log('TRANSITION IN');
 

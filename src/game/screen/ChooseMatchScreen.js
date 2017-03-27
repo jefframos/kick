@@ -41,19 +41,17 @@ export default class ChooseMatchScreen extends Screen{
         this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
         this.addChild(this.screenLabel)
 
-        this.buttons = [];
-        this.addButton();
-        this.addButton();
-        this.addButton();
-        this.addButton();
-        this.addButton();
-        this.addEvents();
-
-        this.addEvents();
+        this.teamButtons = [];
+        this.addButton(0);
+        this.addButton(1);
+        this.addButton(2);
+        this.addButton(3);
+        this.addButton(4);
 
         this.teamDataLabel = new PIXI.Text('',{font : '20px', fill : 0x000000, align : 'right'});
 		this.addChild(this.teamDataLabel)
 		this.teamDataLabel.y = 350;
+        this.addEvents();
 	}
 	updateTeamLabel(){
 		let teamData = GAME_DATA.getOpponentData();
@@ -73,8 +71,9 @@ export default class ChooseMatchScreen extends Screen{
 		this.updateTeamLabel();
 	}
 
-	addButton(){
+	addButton(id){
 
+		let teamData = GAME_DATA.getTeamById(id);
 		let shape = PIXI.Sprite.fromFrame('big-button-up.png');
 		shape.anchor.set(0.5);
 		shape.scale.set(0.5);
@@ -82,11 +81,14 @@ export default class ChooseMatchScreen extends Screen{
         button.addChild(shape)        
         button.interactive = true;
         button.y = 300;
-        button.x = 50 + this.buttons.length * 80;
-        button.id = this.buttons.length;
+        button.x = 50 + this.teamButtons.length * 80;
+        button.id = teamData.id;
+        let brand = PIXI.Sprite.fromFrame('seriea/'+teamData.brand);
+        brand.anchor.set(0.5);
+		brand.scale.set(0.5);
         this.addChild(button)
-
-        this.buttons.push(button)
+        button.addChild(brand)
+        this.teamButtons.push(button)
 
 	}
 
@@ -127,14 +129,14 @@ export default class ChooseMatchScreen extends Screen{
 		this.button.off('touchstart').off('mousedown');
 		this.backButton.off('touchstart').off('mousedown');
 		this.playButton.off('touchstart').off('mousedown');
-		for (var i = this.buttons.length - 1; i >= 0; i--) {
-			this.buttons[i].off('touchstart').off('mousedown');
+		for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+			this.teamButtons[i].off('touchstart').off('mousedown');
 		}
 	}
 	addEvents(){
 		this.removeEvents();
-		for (var i = this.buttons.length - 1; i >= 0; i--) {
-			this.buttons[i].on('mousedown', this.changeTeam.bind(this)).on('touchstart', this.changeTeam.bind(this));
+		for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+			this.teamButtons[i].on('mousedown', this.changeTeam.bind(this)).on('touchstart', this.changeTeam.bind(this));
 		}
 		this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 		this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));

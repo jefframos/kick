@@ -111,7 +111,6 @@ export default class UIManager extends PIXI.Container {
 
     	TweenLite.to(this.goalBar.scale, 0.3, {delay:delay, y:barScale, ease:'easeOutBack', onComplete:function(){
     		this.textPlacar.text = placar.me + ' X ' + placar.opponent;
-
     	}, onCompleteScope:this});
     }
     createLifes(){

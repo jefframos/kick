@@ -64,10 +64,11 @@ export default class ComboSystem{
 		this.game.uiManager.updateGoalBar(this.placar, this.goalMarker);
 		if(this.goalMarker >= 1){
 			console.log('REAL GOAL');
-			this.goalMarker = 0.4//this.goalMarker - 1 + 0.5
+			this.goalMarker = Math.max(this.goalMarker - 1 + 0.4, 0.4);
 			this.placar.me ++
 			this.game.uiManager.showCenterFeedback('ta dentro', 1);
 			this.game.shake(2, 4, 0.8)
+			this.game.uiManager.updateGoalBar(this.placar, this.goalMarker, 0.5);
 
 		}
 		else if(this.goalMarker <= 0){
@@ -75,9 +76,8 @@ export default class ComboSystem{
 			this.goalMarker = 0.6
 			this.placar.opponent ++
 			this.game.uiManager.showCenterFeedback('se fudeu', 1);
-
+			this.game.uiManager.updateGoalBar(this.placar, this.goalMarker, 0.5);
 		}
-		this.game.uiManager.updateGoalBar(this.placar, this.goalMarker, 0.8);
 
 		console.log(this.placar, 'PLACAR GOAL', this.goalMarker);
 	}

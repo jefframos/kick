@@ -5,6 +5,13 @@ export default class GlobalGameView{
     constructor(gameContainer) {    	
     	this.gameContainer = gameContainer;
     	this.updateGameBackground();
+    	this.updateAllViews();
+    }
+    updateAllViews(){
+    	let teamData = GAME_DATA.getMyTeamData();
+    	console.log(teamData);
+    	this.updateTeam(teamData)
+    	this.updateField(GAME_DATA.getStadium())
     }
     updateTeam(team){
     	this.sky.tint = team.color;

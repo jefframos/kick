@@ -32,11 +32,11 @@ export default class ChooseTeamScreen extends Screen{
         this.addChild(this.screenLabel)
 
         this.teamButtons = [];
-        this.addTeamButton();
-        this.addTeamButton();
-        this.addTeamButton();
-        this.addTeamButton();
-        this.addTeamButton();
+        this.addTeamButton(0);
+        this.addTeamButton(1);
+        this.addTeamButton(2);
+        this.addTeamButton(3);
+        this.addTeamButton(4);
 
         
         this.teamDataLabel = new PIXI.Text('',{font : '20px', fill : 0x000000, align : 'right'});
@@ -75,19 +75,24 @@ export default class ChooseTeamScreen extends Screen{
 		this.updatePlayerLabel();
 	}
 
-	addTeamButton(){
+	addTeamButton(id){
 
+		let teamData = GAME_DATA.getTeamById(id);
 		let shape = PIXI.Sprite.fromFrame('big-button-up.png');
 		shape.anchor.set(0.5);
 		shape.scale.set(0.5);
-		let backButton = new PIXI.Container();
-        backButton.addChild(shape)        
-        backButton.interactive = true;
-        backButton.y = 300;
-        backButton.x = 50 + this.teamButtons.length * 80;
-        backButton.id = this.teamButtons.length;
-        this.addChild(backButton)
-        this.teamButtons.push(backButton)
+		let button = new PIXI.Container();
+        button.addChild(shape)        
+        button.interactive = true;
+        button.y = 300;
+        button.x = 50 + this.teamButtons.length * 80;
+        button.id = teamData.id;
+        let brand = PIXI.Sprite.fromFrame('seriea/'+teamData.brand);
+        brand.anchor.set(0.5);
+		brand.scale.set(0.5);
+        this.addChild(button)
+        button.addChild(brand)
+        this.teamButtons.push(button)
 
 	}
 
@@ -96,14 +101,14 @@ export default class ChooseTeamScreen extends Screen{
 		let shape = PIXI.Sprite.fromFrame('big-button-up.png');
 		shape.anchor.set(0.5);
 		shape.scale.set(0.5);
-		let backButton = new PIXI.Container();
-        backButton.addChild(shape)        
-        backButton.interactive = true;
-        backButton.y = 500;
-        backButton.x = 50 + this.playerButtons.length * 80;
-        backButton.id = this.playerButtons.length;
-        this.addChild(backButton)
-        this.playerButtons.push(backButton)
+		let button = new PIXI.Container();
+        button.addChild(shape)        
+        button.interactive = true;
+        button.y = 500;
+        button.x = 50 + this.playerButtons.length * 80;
+        button.id = this.playerButtons.length;
+        this.addChild(button)
+        this.playerButtons.push(button)
 
 	}
 
