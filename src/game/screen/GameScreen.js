@@ -51,11 +51,11 @@ export default class GameScreen extends Screen{
 		
 		this.trailManager = new TrailManager(this.trailContainer);
 
-		this.pixelate = new PIXI.filters.PixelateFilter()
-		this.pixelate.size.x = 4;
-		this.pixelate.size.y = 4;
-		this.gameContainer.filters = [this.pixelate]
-		this.trailContainer.filters = [this.pixelate]
+		// this.pixelate = new PIXI.filters.PixelateFilter()
+		// this.pixelate.size.x = 4;
+		// this.pixelate.size.y = 4;
+		// this.gameContainer.filters = [this.pixelate]
+		// this.trailContainer.filters = [this.pixelate]
 		// this.outgameUIContainer.filters = [this.pixelate]
 
 

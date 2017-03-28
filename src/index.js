@@ -19,6 +19,9 @@ window.GAME_DATA = new GameData();
 
 window.POOL = new Pool();
 
+// window.console.warn= function(){}
+// window.console.groupCollapsed = function(teste){return teste}//('hided warnings')
+
 PIXI.loader
 	// .add('./assets/map.json')
 	.add('./assets/images/game-0.json')

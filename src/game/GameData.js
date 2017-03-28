@@ -27,21 +27,23 @@ export default class GameData{
 
         this.addPlayers();
 
-        let tempData = COOKIE_MANAGER.getCookie('player');
+        let tempData = COOKIE_MANAGER.getCookie('player-kickxel');
         console.log(tempData);
         if(!tempData){
             this.currentTeamData = {
                 teamID:0,
                 playerID:0,
-                stadiumID:0
+                stadiumID:0,
+                money:0,
+                goldenBalls:0,
             }
-            COOKIE_MANAGER.createCookie('player', this.currentTeamData);
+            COOKIE_MANAGER.createCookie('player-kickxel', this.currentTeamData);
         }else{
             this.currentTeamData = tempData;
         }
     }
     savePlayer(){
-        COOKIE_MANAGER.storeObject('player', this.currentTeamData);
+        COOKIE_MANAGER.storeObject('player-kickxel', this.currentTeamData);
     }
     getTeamById(id){
         console.log(id, this.teamsData);

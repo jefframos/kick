@@ -37771,6 +37771,9 @@
 	
 	window.POOL = new _Pool2.default();
 	
+	// window.console.warn= function(){}
+	// window.console.groupCollapsed = function(teste){return teste}//('hided warnings')
+	
 	PIXI.loader
 	// .add('./assets/map.json')
 	.add('./assets/images/game-0.json').add('./assets/images/game-1.json').add('./assets/images/trail1.jpg')
@@ -37865,7 +37868,7 @@
 		},
 		rendererOptions: {
 			//pixi rendererOptions
-			resolution: 1,
+			resolution: 2,
 			antialias: true,
 			backgroundColor: 0x77A162
 		},
@@ -38041,15 +38044,17 @@
 	
 	        this.addPlayers();
 	
-	        var tempData = COOKIE_MANAGER.getCookie('player');
+	        var tempData = COOKIE_MANAGER.getCookie('player-kickxel');
 	        console.log(tempData);
 	        if (!tempData) {
 	            this.currentTeamData = {
 	                teamID: 0,
 	                playerID: 0,
-	                stadiumID: 0
+	                stadiumID: 0,
+	                money: 0,
+	                goldenBalls: 0
 	            };
-	            COOKIE_MANAGER.createCookie('player', this.currentTeamData);
+	            COOKIE_MANAGER.createCookie('player-kickxel', this.currentTeamData);
 	        } else {
 	            this.currentTeamData = tempData;
 	        }
@@ -38058,7 +38063,7 @@
 	    _createClass(GameData, [{
 	        key: 'savePlayer',
 	        value: function savePlayer() {
-	            COOKIE_MANAGER.storeObject('player', this.currentTeamData);
+	            COOKIE_MANAGER.storeObject('player-kickxel', this.currentTeamData);
 	        }
 	    }, {
 	        key: 'getTeamById',
@@ -46341,11 +46346,11 @@
 	
 				this.trailManager = new _TrailManager2.default(this.trailContainer);
 	
-				this.pixelate = new PIXI.filters.PixelateFilter();
-				this.pixelate.size.x = 4;
-				this.pixelate.size.y = 4;
-				this.gameContainer.filters = [this.pixelate];
-				this.trailContainer.filters = [this.pixelate];
+				// this.pixelate = new PIXI.filters.PixelateFilter()
+				// this.pixelate.size.x = 4;
+				// this.pixelate.size.y = 4;
+				// this.gameContainer.filters = [this.pixelate]
+				// this.trailContainer.filters = [this.pixelate]
 				// this.outgameUIContainer.filters = [this.pixelate]
 	
 	
@@ -50544,6 +50549,7 @@
 			key: 'toGame',
 			value: function toGame() {
 				this.screenLabel = new PIXI.Text(this.label, { font: '46px mario', fill: 0xFFFFFF, align: 'right' });
+				// this.screenManager.change('ChooseTeamScreen')
 				this.screenManager.change('StartScreen');
 				// this.screenManager.change('GameScreen')
 			}
@@ -50824,6 +50830,8 @@
 	
 			var shape = PIXI.Sprite.fromFrame('big-button-up.png');
 			shape.anchor.set(0.5);
+			_this.buttonsContainer = new PIXI.Container();
+			_this.addChild(_this.buttonsContainer);
 			_this.backButton = new PIXI.Container();
 			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
 			_this.backButton.addChild(shape);
@@ -50842,7 +50850,7 @@
 			_this.addTeamButton(4);
 	
 			_this.teamDataLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
-			_this.addChild(_this.teamDataLabel);
+			//this.addChild(this.teamDataLabel)
 			_this.teamDataLabel.y = 350;
 	
 			_this.playerButtons = [];
@@ -50851,8 +50859,33 @@
 			_this.addPlayerButton();
 	
 			_this.tempPlayerLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
-			_this.addChild(_this.tempPlayerLabel);
+			//this.addChild(this.tempPlayerLabel)
 			_this.tempPlayerLabel.y = 550;
+	
+			_this.contentBG = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, 300, 300, 10);
+			_this.buttonsContainer.addChild(_this.contentBG);
+			//this.contentBG.pivot.set(this.contentBG.width/2, this.contentBG.height/2)
+			//this.contentBG.position.set(config.width/2, config.height/2)
+	
+			//this.contentBG.scale.set(0)
+			//TweenLite.to(this.contentBG.scale, 0.2, {x:1, delay:1})
+			//TweenLite.to(this.contentBG.scale, 0.4, {y:1, delay:1})
+	
+			_this.buttonsContainer.mask = _this.contentBG;
+	
+			_this.buttonsContainer.pivot.set(_this.contentBG.width / 2, _this.contentBG.height / 2);
+			_this.buttonsContainer.position.set(_config2.default.width / 2, _config2.default.height / 2);
+	
+			_this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 50);
+			_this.buttonsContainer.addChild(_this.topImage);
+			_this.topImage.visible = false;
+	
+			_this.closePopup = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 300);
+			_this.closePopup.alpha = 0;
+			_this.closePopup.visible = false;
+			_this.closePopup.interactive = true;
+			_this.buttonsContainer.addChild(_this.closePopup);
+			// this.contentBG.position.set(config)
 	
 			_this.addEvents();
 			return _this;
@@ -50887,20 +50920,31 @@
 			value: function addTeamButton(id) {
 	
 				var teamData = GAME_DATA.getTeamById(id);
-				var shape = PIXI.Sprite.fromFrame('big-button-up.png');
-				shape.anchor.set(0.5);
-				shape.scale.set(0.5);
+	
+				var space = 10;
+				var wdt = (300 - space * 6) / 4 / 2;
+	
+				var shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
+				// shape.anchor.set(0.5);
+				// shape.scale.set(0.5);
+	
 				var button = new PIXI.Container();
 				button.addChild(shape);
 				button.interactive = true;
-				button.y = 300;
-				button.x = 50 + this.teamButtons.length * 80;
+				var xpos = this.teamButtons.length % 4 | 0;
+				var ypos = Math.floor(this.teamButtons.length / 4) | 0;
+	
+				button.y = ypos * 100 + wdt * 2;
+				button.x = space + wdt + xpos * (wdt * 2 + space);
 				button.id = teamData.id;
 				var brand = PIXI.Sprite.fromFrame('seriea/' + teamData.brand);
 				brand.anchor.set(0.5);
 				brand.scale.set(0.5);
-				this.addChild(button);
-				button.addChild(brand);
+				shape.tint = teamData.color;
+				this.buttonsContainer.addChild(button);
+				button.shape = shape;
+	
+				// button.addChild(brand)
 				this.teamButtons.push(button);
 			}
 		}, {
@@ -50916,13 +50960,46 @@
 				button.y = 500;
 				button.x = 50 + this.playerButtons.length * 80;
 				button.id = this.playerButtons.length;
-				this.addChild(button);
-				this.playerButtons.push(button);
+				button.shape = shape;
+				// this.addChild(button)
+				//this.playerButtons.push(button)
+			}
+		}, {
+			key: 'closePop',
+			value: function closePop(target) {
+				// this.currentClone.visible = false
+				this.closePopup.visible = false;
+				// this.topImage.visible = false;
+				_gsap2.default.to(this.topImage, 0.2, { alpha: 0 });
+				_gsap2.default.to(this.buttonsContainer, 0.2, { y: _config2.default.height / 2, ease: 'easeOutCubic' });
+				_gsap2.default.to(this.currentClone.scale, 0.2, { x: 1, y: 1 });
+				_gsap2.default.to(this.currentClone, 0.2, { x: this.currentClone.initialPosition.x, y: this.currentClone.initialPosition.y });
+			}
+		}, {
+			key: 'updatePopUp',
+			value: function updatePopUp(target) {
+	
+				this.topImage.visible = true;
+				this.topImage.alpha = 0;
+				// console.log(target.shape, 'shape');
+				this.currentClone = target.shape.clone();
+				this.currentClone.x = target.x;
+				this.currentClone.y = target.y;
+				this.currentClone.initialPosition = { x: target.x, y: target.y };
+				this.closePopup.visible = true;
+				// target.parent.setChildIndex(target, target.parent.children.length - 1)
+				target.parent.addChild(this.currentClone);
+				this.topImage.parent.setChildIndex(this.topImage, this.topImage.parent.children.length - 1);
+				_gsap2.default.to(this.currentClone, 0.2, { x: this.contentBG.width / 2, y: this.contentBG.height / 2 });
+				_gsap2.default.to(this.currentClone.scale, 0.4, { x: 15, y: 15 });
+				_gsap2.default.to(this.topImage, 0.2, { alpha: 1 });
+				_gsap2.default.to(this.buttonsContainer, 0.2, { y: _config2.default.height / 2 - 50 });
 			}
 		}, {
 			key: 'changeTeam',
 			value: function changeTeam(e) {
 				var target = e.target || e.data.target;
+				this.updatePopUp(target);
 				GAME_DATA.changeTeam(target.id);
 				this.updateTeamLabel();
 			}
@@ -50953,6 +51030,7 @@
 		}, {
 			key: 'transitionOut',
 			value: function transitionOut(nextScreen) {
+				this.closePop();
 				_get(ChooseTeamScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseTeamScreen.prototype), 'transitionOut', this).call(this, nextScreen);
 			}
 		}, {
@@ -50986,6 +51064,7 @@
 				}
 	
 				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+				this.closePopup.on('mousedown', this.closePop.bind(this)).on('touchstart', this.closePop.bind(this));
 				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
 			}
 		}]);
@@ -51908,6 +51987,8 @@
 		function ChooseMatchScreen(label) {
 			_classCallCheck(this, ChooseMatchScreen);
 	
+			// alert(label)
+	
 			var _this = _possibleConstructorReturn(this, (ChooseMatchScreen.__proto__ || Object.getPrototypeOf(ChooseMatchScreen)).call(this, label));
 	
 			_this.button = new PIXI.Container();
@@ -52076,28 +52157,37 @@
 	var CookieManager = function () {
 		function CookieManager() {
 			_classCallCheck(this, CookieManager);
+	
+			this.resetCookie();
+			window.localStorage.clear();
 		}
 	
 		_createClass(CookieManager, [{
 			key: "createCookie",
 			value: function createCookie(name, value, days) {
-				localStorage.setItem(name, JSON.stringify(value));
+				var sValue = JSON.stringify(value);
+				try {
+					window.localStorage.setItem(name, sValue);
+				} catch (e) {
+					// alert(sValue)
+					//  	alert(e)
+				}
 			}
 		}, {
 			key: "getCookie",
 			value: function getCookie(name) {
-				return JSON.parse(localStorage.getItem(name)); //(result === null) ? null : result[1];
+				return JSON.parse(window.localStorage.getItem(name)); //(result === null) ? null : result[1];
 			}
 		}, {
 			key: "storeObject",
 			value: function storeObject(name, value) {
-				localStorage.setItem(name, JSON.stringify(value));
+				window.localStorage.setItem(name, JSON.stringify(value));
 			}
 		}, {
 			key: "resetCookie",
 			value: function resetCookie() {
-				for (var i in localStorage) {
-					localStorage.removeItem(i);
+				for (var i in window.localStorage) {
+					window.localStorage.removeItem(i);
 				}
 			}
 		}]);

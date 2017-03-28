@@ -8,6 +8,8 @@ export default class ChooseMatchScreen extends Screen{
 	constructor(label){
 		super(label);
 
+		// alert(label)
+
 		this.button = new PIXI.Container();
         this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
         this.button.addChild(this.shape)

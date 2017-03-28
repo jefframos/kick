@@ -21,6 +21,7 @@ export default class LoadScreen extends Screen{
 
 	toGame(){
 		this.screenLabel = new PIXI.Text(this.label,{font : '46px mario', fill : 0xFFFFFF, align : 'right'});  
+		// this.screenManager.change('ChooseTeamScreen')
 		this.screenManager.change('StartScreen')
 		// this.screenManager.change('GameScreen')
 	}

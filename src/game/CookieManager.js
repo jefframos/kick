@@ -1,20 +1,28 @@
 export default class CookieManager{
 	constructor(){
+		this.resetCookie();
+		window.localStorage.clear();
 	}
 
 	createCookie(name,value,days) {
-	  localStorage.setItem(name,JSON.stringify( value ))
+		let sValue = JSON.stringify( value );
+		try {
+	  	window.localStorage.setItem(name,sValue)
+	  }catch(e) {
+		// alert(sValue)
+	 //  	alert(e)
+	  }
 	}
 	getCookie(name) {
-	  return JSON.parse( localStorage.getItem( name ) )//(result === null) ? null : result[1];
+	  return JSON.parse( window.localStorage.getItem( name ) )//(result === null) ? null : result[1];
 	}
 	storeObject(name,value) {
-	  localStorage.setItem(name,JSON.stringify( value ))
+	  window.localStorage.setItem(name,JSON.stringify( value ))
 	}
 	resetCookie() {
-	  for(var i in localStorage)
+	  for(var i in window.localStorage)
 	    {
-	        localStorage.removeItem(i);
+	        window.localStorage.removeItem(i);
 	    }
 	}
 }

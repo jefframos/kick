@@ -17,7 +17,7 @@ export default {
 	},
 	rendererOptions: {
 		//pixi rendererOptions
-		resolution:1,
+		resolution:2,
 		antialias: true,
 		backgroundColor : 0x77A162
 	},
