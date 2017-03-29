@@ -16,11 +16,18 @@ export default class GameData{
 
 
     	this.teamsData = [];
-    	this.teamsData.push({id:0, attack:1, defense:1, color:0xFFAFFA, goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'flamengo.png', ini:'FLA'})
-        this.teamsData.push({id:1, attack:1.2, defense:0.8, color:0xFFAAAA, goalkeeperLevel:0.5, type:'EASY', players:[], brand:'chapecoense.png', ini:'CHA'})
-        this.teamsData.push({id:2, attack:1.5, defense:0.5, color:0xAAAAFF, goalkeeperLevel:0.75, type:'EASY', players:[], brand:'bahia.png', ini:'BAH'})   
-        this.teamsData.push({id:3, attack:0.5, defense:0.5, color:0xAAFFAA, goalkeeperLevel:0.5, type:'VERY EASY', players:[], brand:'avai.png', ini:'AVA'})
-    	this.teamsData.push({id:4, attack:1.2, defense:1.2, color:0xFFFFFF, goalkeeperLevel:1, type:'HARD', players:[], brand:'gremio.png', ini:'GRE'})
+        this.teamsData.push({id:1, attack:1, defense:1, color:0xDA251D, goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'flamengo.png', ini:'FLA'})
+        this.teamsData.push({id:2, attack:1, defense:1, color:0x00544C, goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'coritiba.png', ini:'CTB'})
+        this.teamsData.push({id:3, attack:1, defense:1, color:0x006338, goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'palmeiras.png', ini:'PAL'})
+        this.teamsData.push({id:4, attack:1.2, defense:1.2, color:0x0D80BF, goalkeeperLevel:1, type:'HARD', players:[], brand:'gremio.png', ini:'GRE'})
+        this.teamsData.push({id:5, attack:1, defense:1, color:0xDA1921, goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'sport.png', ini:'SPO'})
+        this.teamsData.push({id:6, attack:1, defense:1, color:0xDA251D, goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'sao_paulo.png', ini:'SPA'})
+        this.teamsData.push({id:7, attack:1, defense:1, color:0xD9D9D9, goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'santos.png', ini:'SAN'})
+        this.teamsData.push({id:8, attack:1.2, defense:0.8, color:0x356B33, goalkeeperLevel:0.5, type:'EASY', players:[], brand:'chapecoense.png', ini:'CHA'})
+        this.teamsData.push({id:9, attack:1.5, defense:0.5, color:0x007CC3, goalkeeperLevel:0.75, type:'EASY', players:[], brand:'bahia.png', ini:'BAH'})   
+        this.teamsData.push({id:10, attack:0.5, defense:0.5, color:0x005E98, goalkeeperLevel:0.5, type:'VERY EASY', players:[], brand:'avai.png', ini:'AVA'})
+        this.teamsData.push({id:11, attack:1.2, defense:1.2, color:0x004E90, goalkeeperLevel:1, type:'HARD', players:[], brand:'cruzeiro.png', ini:'CRU'})
+    	this.teamsData.push({id:0, attack:1.2, defense:1.2, color:0x0A0B0C, goalkeeperLevel:1, type:'HARD', players:[], brand:'corinthians.png', ini:'COR'})
 
         this.goodShoot = 5,
         this.perfectShoot = 10;
@@ -49,6 +56,7 @@ export default class GameData{
         console.log(id, this.teamsData);
         for (var i = this.teamsData.length - 1; i >= 0; i--) {
             if(this.teamsData[i].id == id){
+                console.log(id, i,'ID');
                 return this.teamsData[i];
             }
         }
@@ -76,7 +84,7 @@ export default class GameData{
     	return this.teamsData[this.opponentID]
     }
     getMyTeamData(){
-        return this.teamsData[this.currentTeamData.teamID]
+        return this.getTeamById(this.currentTeamData.teamID)
     }
     changeLevel(level){
     	this.currentTeamData.stadiumID = level;
@@ -92,7 +100,7 @@ export default class GameData{
     }
     changeTeam(team){
         this.currentTeamData.teamID = team;
-        GAME_VIEW.updateTeam(this.teamsData[this.currentTeamData.teamID])
+        GAME_VIEW.updateTeam(this.getTeamById(this.currentTeamData.teamID))
         this.savePlayer();
     }
     startNewGame(){

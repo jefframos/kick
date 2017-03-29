@@ -20,8 +20,7 @@ export default class ChooseTeamScreen extends Screen{
 
         let shape = PIXI.Sprite.fromFrame('big-button-up.png');
 		shape.anchor.set(0.5);
-		this.buttonsContainer = new PIXI.Container();
-		this.addChild(this.buttonsContainer)
+		
 		this.backButton = new PIXI.Container();
         //this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
         this.backButton.addChild(shape)
@@ -35,12 +34,9 @@ export default class ChooseTeamScreen extends Screen{
         this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
         this.addChild(this.screenLabel)
 
-        this.teamButtons = [];
-        this.addTeamButton(0);
-        this.addTeamButton(1);
-        this.addTeamButton(2);
-        this.addTeamButton(3);
-        this.addTeamButton(4);
+
+        this.buildTeamSelectionPanel();
+       
 
         
         this.teamDataLabel = new PIXI.Text('',{font : '20px', fill : 0x000000, align : 'right'});
@@ -57,33 +53,38 @@ export default class ChooseTeamScreen extends Screen{
 		this.tempPlayerLabel.y = 550;
 
 
-        this.contentBG = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0,0,300, 300, 10)
-        this.buttonsContainer.addChild(this.contentBG)
-        //this.contentBG.pivot.set(this.contentBG.width/2, this.contentBG.height/2)
-        //this.contentBG.position.set(config.width/2, config.height/2)
-
-        //this.contentBG.scale.set(0)
-        //TweenLite.to(this.contentBG.scale, 0.2, {x:1, delay:1})
-        //TweenLite.to(this.contentBG.scale, 0.4, {y:1, delay:1})
-
-        this.buttonsContainer.mask = this.contentBG;
 
 
-        this.buttonsContainer.pivot.set(this.contentBG.width/2, this.contentBG.height/2)
-		this.buttonsContainer.position.set(config.width/2, config.height/2)
+        this.addEvents();
+	}
+	buildTeamSelectionPanel(){
+
+		this.buttonsPanelContainer = new PIXI.Container();
+		this.addChild(this.buttonsPanelContainer)
+
+		 this.teamButtons = [];
+		 for (var i = 0; i < GAME_DATA.teamsData.length; i++) {
+		 	
+		 	this.addTeamButton(GAME_DATA.teamsData[i].id);
+		 }
+
+        this.panelBg = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0,0,300, 300, 10)
+        this.buttonsPanelContainer.addChild(this.panelBg)
+
+        this.buttonsPanelContainer.mask = this.panelBg;
+
+        this.buttonsPanelContainer.pivot.set(this.panelBg.width/2, this.panelBg.height/2)
+		this.buttonsPanelContainer.position.set(config.width/2, config.height/2)
 
 		this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0,0,300, 50)
-		this.buttonsContainer.addChild(this.topImage)
+		this.buttonsPanelContainer.addChild(this.topImage)
 		this.topImage.visible = false;
 
 		this.closePopup = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0,0,300, 300)
 		this.closePopup.alpha = 0;
 		this.closePopup.visible = false;
 		this.closePopup.interactive = true;
-		this.buttonsContainer.addChild(this.closePopup)
-        // this.contentBG.position.set(config)
-
-        this.addEvents();
+		this.buttonsPanelContainer.addChild(this.closePopup)
 	}
 	updateTeamLabel(){
 		let teamData = GAME_DATA.getMyTeamData();
@@ -108,10 +109,12 @@ export default class ChooseTeamScreen extends Screen{
 
 	addTeamButton(id){
 
+		let grid = {x:4, y:4}
 		let teamData = GAME_DATA.getTeamById(id);
 
-		let space = 10;
-		let wdt = (300 - space * 6) / 4 / 2;
+		let space = {x:10, y:10};
+		let wdt = (300 - space.x * 6) / grid.x / 2;
+		let hgt = (300 - space.y * 6) / grid.y / 2;
 
 		let shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0,0,wdt)//PIXI.Sprite.fromFrame('big-button-up.png');
 		// shape.anchor.set(0.5);
@@ -120,17 +123,18 @@ export default class ChooseTeamScreen extends Screen{
 		let button = new PIXI.Container();
         button.addChild(shape)        
         button.interactive = true;
-        let xpos = (this.teamButtons.length % 4) | 0
-        let ypos = Math.floor(this.teamButtons.length / 4) | 0
+        let xpos = (this.teamButtons.length % grid.x) | 0
+        let ypos = Math.floor(this.teamButtons.length / grid.x) | 0
 
-        button.y =ypos * 100 + wdt*2;
-        button.x = space + wdt + (xpos * (wdt * 2 + space));
+        // button.y = ypos * hgt + wdt*2;
+        button.x = space.x + wdt + (xpos * (wdt * 2 + space.x));
+        button.y = space.y + hgt + (ypos * (hgt * 2 + space.y));
         button.id = teamData.id;
         let brand = PIXI.Sprite.fromFrame('seriea/'+teamData.brand);
         brand.anchor.set(0.5);
 		brand.scale.set(0.5);
         shape.tint = teamData.color
-        this.buttonsContainer.addChild(button)
+        this.buttonsPanelContainer.addChild(button)
         button.shape = shape;
 
         // button.addChild(brand)
@@ -160,7 +164,7 @@ export default class ChooseTeamScreen extends Screen{
 		this.closePopup.visible = false
 		// this.topImage.visible = false;
 		TweenLite.to(this.topImage,0.2,{alpha:0})
-		TweenLite.to(this.buttonsContainer,0.2,{y:config.height/2, ease:'easeOutCubic'})
+		TweenLite.to(this.buttonsPanelContainer,0.2,{y:config.height/2, ease:'easeOutCubic'})
 		TweenLite.to(this.currentClone.scale,0.2,{x:1, y:1})
 		TweenLite.to(this.currentClone,0.2,{x:this.currentClone.initialPosition.x,y:this.currentClone.initialPosition.y})
 	}
@@ -177,10 +181,10 @@ export default class ChooseTeamScreen extends Screen{
 		// target.parent.setChildIndex(target, target.parent.children.length - 1)
 		target.parent.addChild(this.currentClone)
 		this.topImage.parent.setChildIndex(this.topImage, this.topImage.parent.children.length - 1)
-		TweenLite.to(this.currentClone,0.2,{x:this.contentBG.width / 2, y:this.contentBG.height / 2})
+		TweenLite.to(this.currentClone,0.2,{x:this.panelBg.width / 2, y:this.panelBg.height / 2})
 		TweenLite.to(this.currentClone.scale,0.4,{x:15, y:15})
 		TweenLite.to(this.topImage,0.2,{alpha:1})
-		TweenLite.to(this.buttonsContainer,0.2,{y:config.height/2 - 50})
+		TweenLite.to(this.buttonsPanelContainer,0.2,{y:config.height/2 - 50})
 	}
 	changeTeam(e){
 		let target = e.target || e.data.target;

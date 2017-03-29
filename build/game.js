@@ -38034,11 +38034,18 @@
 	        this.fieldsTextures.push({ texture: 'grass2.png', extraBalls: 3 });
 	
 	        this.teamsData = [];
-	        this.teamsData.push({ id: 0, attack: 1, defense: 1, color: 0xFFAFFA, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'flamengo.png', ini: 'FLA' });
-	        this.teamsData.push({ id: 1, attack: 1.2, defense: 0.8, color: 0xFFAAAA, goalkeeperLevel: 0.5, type: 'EASY', players: [], brand: 'chapecoense.png', ini: 'CHA' });
-	        this.teamsData.push({ id: 2, attack: 1.5, defense: 0.5, color: 0xAAAAFF, goalkeeperLevel: 0.75, type: 'EASY', players: [], brand: 'bahia.png', ini: 'BAH' });
-	        this.teamsData.push({ id: 3, attack: 0.5, defense: 0.5, color: 0xAAFFAA, goalkeeperLevel: 0.5, type: 'VERY EASY', players: [], brand: 'avai.png', ini: 'AVA' });
-	        this.teamsData.push({ id: 4, attack: 1.2, defense: 1.2, color: 0xFFFFFF, goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'gremio.png', ini: 'GRE' });
+	        this.teamsData.push({ id: 1, attack: 1, defense: 1, color: 0xDA251D, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'flamengo.png', ini: 'FLA' });
+	        this.teamsData.push({ id: 2, attack: 1, defense: 1, color: 0x00544C, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'coritiba.png', ini: 'CTB' });
+	        this.teamsData.push({ id: 3, attack: 1, defense: 1, color: 0x006338, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'palmeiras.png', ini: 'PAL' });
+	        this.teamsData.push({ id: 4, attack: 1.2, defense: 1.2, color: 0x0D80BF, goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'gremio.png', ini: 'GRE' });
+	        this.teamsData.push({ id: 5, attack: 1, defense: 1, color: 0xDA1921, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'sport.png', ini: 'SPO' });
+	        this.teamsData.push({ id: 6, attack: 1, defense: 1, color: 0xDA251D, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'sao_paulo.png', ini: 'SPA' });
+	        this.teamsData.push({ id: 7, attack: 1, defense: 1, color: 0xD9D9D9, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'santos.png', ini: 'SAN' });
+	        this.teamsData.push({ id: 8, attack: 1.2, defense: 0.8, color: 0x356B33, goalkeeperLevel: 0.5, type: 'EASY', players: [], brand: 'chapecoense.png', ini: 'CHA' });
+	        this.teamsData.push({ id: 9, attack: 1.5, defense: 0.5, color: 0x007CC3, goalkeeperLevel: 0.75, type: 'EASY', players: [], brand: 'bahia.png', ini: 'BAH' });
+	        this.teamsData.push({ id: 10, attack: 0.5, defense: 0.5, color: 0x005E98, goalkeeperLevel: 0.5, type: 'VERY EASY', players: [], brand: 'avai.png', ini: 'AVA' });
+	        this.teamsData.push({ id: 11, attack: 1.2, defense: 1.2, color: 0x004E90, goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'cruzeiro.png', ini: 'CRU' });
+	        this.teamsData.push({ id: 0, attack: 1.2, defense: 1.2, color: 0x0A0B0C, goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'corinthians.png', ini: 'COR' });
 	
 	        this.goodShoot = 5, this.perfectShoot = 10;
 	
@@ -38071,6 +38078,7 @@
 	            console.log(id, this.teamsData);
 	            for (var i = this.teamsData.length - 1; i >= 0; i--) {
 	                if (this.teamsData[i].id == id) {
+	                    console.log(id, i, 'ID');
 	                    return this.teamsData[i];
 	                }
 	            }
@@ -38110,7 +38118,7 @@
 	    }, {
 	        key: 'getMyTeamData',
 	        value: function getMyTeamData() {
-	            return this.teamsData[this.currentTeamData.teamID];
+	            return this.getTeamById(this.currentTeamData.teamID);
 	        }
 	    }, {
 	        key: 'changeLevel',
@@ -38134,7 +38142,7 @@
 	        key: 'changeTeam',
 	        value: function changeTeam(team) {
 	            this.currentTeamData.teamID = team;
-	            GAME_VIEW.updateTeam(this.teamsData[this.currentTeamData.teamID]);
+	            GAME_VIEW.updateTeam(this.getTeamById(this.currentTeamData.teamID));
 	            this.savePlayer();
 	        }
 	    }, {
@@ -50830,8 +50838,7 @@
 	
 			var shape = PIXI.Sprite.fromFrame('big-button-up.png');
 			shape.anchor.set(0.5);
-			_this.buttonsContainer = new PIXI.Container();
-			_this.addChild(_this.buttonsContainer);
+	
 			_this.backButton = new PIXI.Container();
 			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
 			_this.backButton.addChild(shape);
@@ -50842,12 +50849,7 @@
 			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
 			_this.addChild(_this.screenLabel);
 	
-			_this.teamButtons = [];
-			_this.addTeamButton(0);
-			_this.addTeamButton(1);
-			_this.addTeamButton(2);
-			_this.addTeamButton(3);
-			_this.addTeamButton(4);
+			_this.buildTeamSelectionPanel();
 	
 			_this.teamDataLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
 			//this.addChild(this.teamDataLabel)
@@ -50862,36 +50864,42 @@
 			//this.addChild(this.tempPlayerLabel)
 			_this.tempPlayerLabel.y = 550;
 	
-			_this.contentBG = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, 300, 300, 10);
-			_this.buttonsContainer.addChild(_this.contentBG);
-			//this.contentBG.pivot.set(this.contentBG.width/2, this.contentBG.height/2)
-			//this.contentBG.position.set(config.width/2, config.height/2)
-	
-			//this.contentBG.scale.set(0)
-			//TweenLite.to(this.contentBG.scale, 0.2, {x:1, delay:1})
-			//TweenLite.to(this.contentBG.scale, 0.4, {y:1, delay:1})
-	
-			_this.buttonsContainer.mask = _this.contentBG;
-	
-			_this.buttonsContainer.pivot.set(_this.contentBG.width / 2, _this.contentBG.height / 2);
-			_this.buttonsContainer.position.set(_config2.default.width / 2, _config2.default.height / 2);
-	
-			_this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 50);
-			_this.buttonsContainer.addChild(_this.topImage);
-			_this.topImage.visible = false;
-	
-			_this.closePopup = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 300);
-			_this.closePopup.alpha = 0;
-			_this.closePopup.visible = false;
-			_this.closePopup.interactive = true;
-			_this.buttonsContainer.addChild(_this.closePopup);
-			// this.contentBG.position.set(config)
-	
 			_this.addEvents();
 			return _this;
 		}
 	
 		_createClass(ChooseTeamScreen, [{
+			key: 'buildTeamSelectionPanel',
+			value: function buildTeamSelectionPanel() {
+	
+				this.buttonsPanelContainer = new PIXI.Container();
+				this.addChild(this.buttonsPanelContainer);
+	
+				this.teamButtons = [];
+				for (var i = 0; i < GAME_DATA.teamsData.length; i++) {
+	
+					this.addTeamButton(GAME_DATA.teamsData[i].id);
+				}
+	
+				this.panelBg = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, 300, 300, 10);
+				this.buttonsPanelContainer.addChild(this.panelBg);
+	
+				this.buttonsPanelContainer.mask = this.panelBg;
+	
+				this.buttonsPanelContainer.pivot.set(this.panelBg.width / 2, this.panelBg.height / 2);
+				this.buttonsPanelContainer.position.set(_config2.default.width / 2, _config2.default.height / 2);
+	
+				this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 50);
+				this.buttonsPanelContainer.addChild(this.topImage);
+				this.topImage.visible = false;
+	
+				this.closePopup = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 300);
+				this.closePopup.alpha = 0;
+				this.closePopup.visible = false;
+				this.closePopup.interactive = true;
+				this.buttonsPanelContainer.addChild(this.closePopup);
+			}
+		}, {
 			key: 'updateTeamLabel',
 			value: function updateTeamLabel() {
 				var teamData = GAME_DATA.getMyTeamData();
@@ -50919,10 +50927,12 @@
 			key: 'addTeamButton',
 			value: function addTeamButton(id) {
 	
+				var grid = { x: 4, y: 4 };
 				var teamData = GAME_DATA.getTeamById(id);
 	
-				var space = 10;
-				var wdt = (300 - space * 6) / 4 / 2;
+				var space = { x: 10, y: 10 };
+				var wdt = (300 - space.x * 6) / grid.x / 2;
+				var hgt = (300 - space.y * 6) / grid.y / 2;
 	
 				var shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
 				// shape.anchor.set(0.5);
@@ -50931,17 +50941,18 @@
 				var button = new PIXI.Container();
 				button.addChild(shape);
 				button.interactive = true;
-				var xpos = this.teamButtons.length % 4 | 0;
-				var ypos = Math.floor(this.teamButtons.length / 4) | 0;
+				var xpos = this.teamButtons.length % grid.x | 0;
+				var ypos = Math.floor(this.teamButtons.length / grid.x) | 0;
 	
-				button.y = ypos * 100 + wdt * 2;
-				button.x = space + wdt + xpos * (wdt * 2 + space);
+				// button.y = ypos * hgt + wdt*2;
+				button.x = space.x + wdt + xpos * (wdt * 2 + space.x);
+				button.y = space.y + hgt + ypos * (hgt * 2 + space.y);
 				button.id = teamData.id;
 				var brand = PIXI.Sprite.fromFrame('seriea/' + teamData.brand);
 				brand.anchor.set(0.5);
 				brand.scale.set(0.5);
 				shape.tint = teamData.color;
-				this.buttonsContainer.addChild(button);
+				this.buttonsPanelContainer.addChild(button);
 				button.shape = shape;
 	
 				// button.addChild(brand)
@@ -50971,7 +50982,7 @@
 				this.closePopup.visible = false;
 				// this.topImage.visible = false;
 				_gsap2.default.to(this.topImage, 0.2, { alpha: 0 });
-				_gsap2.default.to(this.buttonsContainer, 0.2, { y: _config2.default.height / 2, ease: 'easeOutCubic' });
+				_gsap2.default.to(this.buttonsPanelContainer, 0.2, { y: _config2.default.height / 2, ease: 'easeOutCubic' });
 				_gsap2.default.to(this.currentClone.scale, 0.2, { x: 1, y: 1 });
 				_gsap2.default.to(this.currentClone, 0.2, { x: this.currentClone.initialPosition.x, y: this.currentClone.initialPosition.y });
 			}
@@ -50990,10 +51001,10 @@
 				// target.parent.setChildIndex(target, target.parent.children.length - 1)
 				target.parent.addChild(this.currentClone);
 				this.topImage.parent.setChildIndex(this.topImage, this.topImage.parent.children.length - 1);
-				_gsap2.default.to(this.currentClone, 0.2, { x: this.contentBG.width / 2, y: this.contentBG.height / 2 });
+				_gsap2.default.to(this.currentClone, 0.2, { x: this.panelBg.width / 2, y: this.panelBg.height / 2 });
 				_gsap2.default.to(this.currentClone.scale, 0.4, { x: 15, y: 15 });
 				_gsap2.default.to(this.topImage, 0.2, { alpha: 1 });
-				_gsap2.default.to(this.buttonsContainer, 0.2, { y: _config2.default.height / 2 - 50 });
+				_gsap2.default.to(this.buttonsPanelContainer, 0.2, { y: _config2.default.height / 2 - 50 });
 			}
 		}, {
 			key: 'changeTeam',
