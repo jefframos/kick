@@ -3,6 +3,7 @@ import TweenLite from 'gsap';
 import config  from '../../config';
 import utils  from '../../utils';
 import Screen from '../../screenManager/Screen'
+import TeamSelectorPanel from '../../game/ui/TeamSelectorPanel'
 
 export default class ChooseMatchScreen extends Screen{
 	constructor(label){
@@ -37,24 +38,39 @@ export default class ChooseMatchScreen extends Screen{
         this.playButton.addChild(shape)
         
         this.playButton.interactive = true;
-        this.addChild(this.playButton)
+        // this.addChild(this.playButton)
 
 
         this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
         this.addChild(this.screenLabel)
 
         this.teamButtons = [];
-        this.addButton(0);
-        this.addButton(1);
-        this.addButton(2);
-        this.addButton(3);
-        this.addButton(4);
+        // this.addButton(0);
+        // this.addButton(1);
+        // this.addButton(2);
+        // this.addButton(3);
+        // this.addButton(4);
+
+
+        this.teamSelectorPanel = new TeamSelectorPanel();
+		this.teamSelectorPanel.build()
+		this.teamSelectorPanel.position.set(config.width/2, config.height/2 * 1.2)
+		this.teamSelectorPanel.confirmTeamPanelCallback = this.confirmChangeTeam.bind(this);
+
+		this.addChild(this.teamSelectorPanel)
+
 
         this.teamDataLabel = new PIXI.Text('',{font : '20px', fill : 0x000000, align : 'right'});
 		this.addChild(this.teamDataLabel)
 		this.teamDataLabel.y = 350;
         this.addEvents();
 	}
+	confirmChangeTeam(team){
+		GAME_DATA.changeOpponent(team.id);
+		this.teamSelectorPanel.closePop();
+		this.startGame();
+	}
+
 	updateTeamLabel(){
 		let teamData = GAME_DATA.getOpponentData();
 

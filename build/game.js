@@ -37720,19 +37720,19 @@
 	
 	var _GameData2 = _interopRequireDefault(_GameData);
 	
-	var _CookieManager = __webpack_require__(215);
+	var _CookieManager = __webpack_require__(187);
 	
 	var _CookieManager2 = _interopRequireDefault(_CookieManager);
 	
-	var _GlobalGameView = __webpack_require__(189);
+	var _GlobalGameView = __webpack_require__(188);
 	
 	var _GlobalGameView2 = _interopRequireDefault(_GlobalGameView);
 	
-	var _ScreenManager = __webpack_require__(190);
+	var _ScreenManager = __webpack_require__(191);
 	
 	var _ScreenManager2 = _interopRequireDefault(_ScreenManager);
 	
-	var _GameScreen = __webpack_require__(191);
+	var _GameScreen = __webpack_require__(192);
 	
 	var _GameScreen2 = _interopRequireDefault(_GameScreen);
 	
@@ -37748,19 +37748,19 @@
 	
 	var _ChooseTeamScreen2 = _interopRequireDefault(_ChooseTeamScreen);
 	
-	var _ChooseFieldScreen = __webpack_require__(210);
+	var _ChooseFieldScreen = __webpack_require__(211);
 	
 	var _ChooseFieldScreen2 = _interopRequireDefault(_ChooseFieldScreen);
 	
-	var _GameOverScreen = __webpack_require__(211);
+	var _GameOverScreen = __webpack_require__(212);
 	
 	var _GameOverScreen2 = _interopRequireDefault(_GameOverScreen);
 	
-	var _ChooseMatchScreen = __webpack_require__(214);
+	var _ChooseMatchScreen = __webpack_require__(213);
 	
 	var _ChooseMatchScreen2 = _interopRequireDefault(_ChooseMatchScreen);
 	
-	var _Pool = __webpack_require__(212);
+	var _Pool = __webpack_require__(214);
 	
 	var _Pool2 = _interopRequireDefault(_Pool);
 	
@@ -38004,7 +38004,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -38034,18 +38034,404 @@
 	        this.fieldsTextures.push({ texture: 'grass2.png', extraBalls: 3 });
 	
 	        this.teamsData = [];
-	        this.teamsData.push({ id: 1, attack: 1, defense: 1, color: 0xDA251D, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'flamengo.png', ini: 'FLA' });
-	        this.teamsData.push({ id: 2, attack: 1, defense: 1, color: 0x00544C, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'coritiba.png', ini: 'CTB' });
-	        this.teamsData.push({ id: 3, attack: 1, defense: 1, color: 0x006338, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'palmeiras.png', ini: 'PAL' });
-	        this.teamsData.push({ id: 4, attack: 1.2, defense: 1.2, color: 0x0D80BF, goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'gremio.png', ini: 'GRE' });
-	        this.teamsData.push({ id: 5, attack: 1, defense: 1, color: 0xDA1921, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'sport.png', ini: 'SPO' });
-	        this.teamsData.push({ id: 6, attack: 1, defense: 1, color: 0xDA251D, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'sao_paulo.png', ini: 'SPA' });
-	        this.teamsData.push({ id: 7, attack: 1, defense: 1, color: 0xD9D9D9, goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'santos.png', ini: 'SAN' });
-	        this.teamsData.push({ id: 8, attack: 1.2, defense: 0.8, color: 0x356B33, goalkeeperLevel: 0.5, type: 'EASY', players: [], brand: 'chapecoense.png', ini: 'CHA' });
-	        this.teamsData.push({ id: 9, attack: 1.5, defense: 0.5, color: 0x007CC3, goalkeeperLevel: 0.75, type: 'EASY', players: [], brand: 'bahia.png', ini: 'BAH' });
-	        this.teamsData.push({ id: 10, attack: 0.5, defense: 0.5, color: 0x005E98, goalkeeperLevel: 0.5, type: 'VERY EASY', players: [], brand: 'avai.png', ini: 'AVA' });
-	        this.teamsData.push({ id: 11, attack: 1.2, defense: 1.2, color: 0x004E90, goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'cruzeiro.png', ini: 'CRU' });
-	        this.teamsData.push({ id: 0, attack: 1.2, defense: 1.2, color: 0x0A0B0C, goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'corinthians.png', ini: 'COR' });
+	        this.teamsData.push({ id: 100, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0xDA251D,
+	                patternColors: [{
+	                    color: 0xDA251D,
+	                    tick: 0.45
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.1
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.45
+	                }],
+	                patternRotation: 0,
+	                buttonColor: 0x0A0B0C
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'atletico_goianiense.png', ini: 'ATG' });
+	        this.teamsData.push({ id: 50, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0x0A0B0C,
+	                patternColors: [{
+	                    color: 0xD9D9D9,
+	                    tick: 0.1
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.35
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.1
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.35
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.1
+	                }],
+	                buttonColor: 0xD9D9D9,
+	                patternRotation: 0
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'atletico_mineiro.png', ini: 'ATM' });
+	        this.teamsData.push({ id: 450, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0xDC351B,
+	                patternColors: [{
+	                    color: 0xDC351B,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xDC351B,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xDC351B,
+	                    tick: 0.2
+	                }],
+	                buttonColor: 0x0A0B0C,
+	                patternRotation: 0
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'atletico_paranaense.png', ini: 'ATP' });
+	        this.teamsData.push({ id: 10, attack: 0.5, defense: 0.5, colorData: {
+	                mainColor: 0x005E98,
+	                patternColors: [{
+	                    color: 0x005E98,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x005E98,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x005E98,
+	                    tick: 0.2
+	                }],
+	                buttonColor: 0xD9D9D9,
+	                patternRotation: 0
+	            },
+	            goalkeeperLevel: 0.5, type: 'VERY EASY', players: [], brand: 'avai.png', ini: 'AVA' });
+	        this.teamsData.push({ id: 9, attack: 1.5, defense: 0.5, colorData: {
+	                mainColor: 0x007CC3,
+	                patternColors: [{
+	                    color: 0x007CC3,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xDA251D,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x007CC3,
+	                    tick: 0.2
+	                }],
+	                buttonColor: 0xDA251D,
+	                patternRotation: 3.14 / 2
+	            },
+	            goalkeeperLevel: 0.75, type: 'EASY', players: [], brand: 'bahia.png', ini: 'BAH' });
+	        this.teamsData.push({ id: 460, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0x0A0B0C,
+	                patternColors: [{
+	                    color: 0x0A0B0C,
+	                    tick: 0.33
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.33
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.33
+	                }],
+	                buttonColor: 0xD9D9D9,
+	                patternRotation: 3.14 / 2
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'botafogo.png', ini: 'BOT' });
+	        this.teamsData.push({ id: 8, attack: 1.2, defense: 0.8, colorData: {
+	                mainColor: 0x356B33,
+	                patternColors: [{
+	                    color: 0x356B33,
+	                    tick: 0.33
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.33
+	                }, {
+	                    color: 0x356B33,
+	                    tick: 0.33
+	                }],
+	                buttonColor: 0xD9D9D9,
+	                patternRotation: 0
+	            },
+	            goalkeeperLevel: 0.5, type: 'EASY', players: [], brand: 'chapecoense.png', ini: 'CHA' });
+	        this.teamsData.push({ id: 0, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0x0A0B0C,
+	                patternColors: [{
+	                    color: 0xDA251D,
+	                    tick: 0.1
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.15
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.15
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.15
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.15
+	                }, {
+	                    color: 0xDA251D,
+	                    tick: 0.1
+	                }
+	                // {
+	                //     color:0x0A0B0C,
+	                //     tick:1
+	                // }
+	                ],
+	                buttonColor: 0xDA251D,
+	                patternRotation: 3.14 / 2
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'corinthians.png', ini: 'COR' });
+	        this.teamsData.push({ id: 2, attack: 1, defense: 1, colorData: {
+	                mainColor: 0x00544C,
+	                patternColors: [{
+	                    color: 0x00544C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x00544C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x00544C,
+	                    tick: 0.2
+	                }],
+	                buttonColor: 0xD9D9D9,
+	                patternRotation: 0
+	            },
+	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'coritiba.png', ini: 'CTB' });
+	        this.teamsData.push({ id: 11, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0x004E90,
+	                patternColors: [{
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x004E90,
+	                    tick: 0.6
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }],
+	                buttonColor: 0xD9D9D9,
+	                patternRotation: 0
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'cruzeiro.png', ini: 'CRU' });
+	        this.teamsData.push({ id: 1, attack: 1, defense: 1, colorData: {
+	                mainColor: 0xDA251D,
+	                patternColors: [{
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xDA251D,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xDA251D,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }],
+	                buttonColor: 0x0A0B0C,
+	                patternRotation: 3.14 / 2
+	            },
+	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'flamengo.png', ini: 'FLA' });
+	        this.teamsData.push({ id: 107, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0x7E1D31,
+	                patternColors: [{
+	                    color: 0x7E1D31,
+	                    tick: 0.45
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.1
+	                }, {
+	                    color: 0x00593C,
+	                    tick: 0.45
+	                }],
+	                buttonColor: 0x00593C,
+	                patternRotation: 3.14 / 2
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'fluminense.png', ini: 'FLU' });
+	        this.teamsData.push({ id: 4, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0x0D80BF,
+	                patternColors: [{
+	                    color: 0x0D80BF,
+	                    tick: 0.3
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.1
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.1
+	                }, {
+	                    color: 0x0D80BF,
+	                    tick: 0.3
+	                }],
+	                buttonColor: 0x0A0B0C,
+	                patternRotation: 3.14 / 2
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'gremio.png', ini: 'GRE' });
+	        this.teamsData.push({ id: 3, attack: 1, defense: 1, colorData: {
+	                mainColor: 0xD9D9D9,
+	                patternColors: [{
+	                    color: 0xD9D9D9,
+	                    tick: 0.5
+	                }, {
+	                    color: 0x006338,
+	                    tick: 0.5
+	                }],
+	                buttonColor: 0x006338,
+	                patternRotation: 3.14 / 2
+	            },
+	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'palmeiras.png', ini: 'PAL' });
+	        this.teamsData.push({ id: 124, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0x0A0B0C,
+	                patternColors: [{
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.2
+	                }],
+	                buttonColor: 0xD9D9D9,
+	                patternRotation: 0
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'ponte_preta.png', ini: 'PON' });
+	        this.teamsData.push({ id: 7, attack: 1, defense: 1, colorData: {
+	                mainColor: 0xD9D9D9,
+	                patternColors: [{
+	                    color: 0xD9D9D9,
+	                    tick: 0.166
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.166
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.166
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.166
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.166
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.166
+	                }],
+	                buttonColor: 0x0A0B0C,
+	                patternRotation: 3.14 / 4
+	            },
+	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'santos.png', ini: 'SAN' });
+	        this.teamsData.push({ id: 6, attack: 1, defense: 1, colorData: {
+	                mainColor: 0xDA251D,
+	                patternColors: [{
+	                    color: 0xDA251D,
+	                    tick: 0.4
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.4
+	                }],
+	                buttonColor: 0x0A0B0C,
+	                patternRotation: 0
+	            },
+	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'sao_paulo.png', ini: 'SPA' });
+	        this.teamsData.push({ id: 5, attack: 1, defense: 1, colorData: {
+	                mainColor: 0xDA1921,
+	                patternColors: [{
+	                    color: 0xDA1921,
+	                    tick: 0.2
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.225
+	                }, {
+	                    color: 0xFFD503,
+	                    tick: 0.15
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.225
+	                }, {
+	                    color: 0xDA1921,
+	                    tick: 0.2
+	                }],
+	
+	                buttonColor: 0x0A0B0C,
+	                patternRotation: 3.14 / 4
+	            },
+	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'sport.png', ini: 'SPO' });
+	        this.teamsData.push({ id: 312, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0x0A0B0C,
+	                patternColors: [{
+	                    color: 0x0A0B0C,
+	                    tick: 0.33
+	                }, {
+	                    color: 0xDA251D,
+	                    tick: 0.33
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.33
+	                }],
+	                buttonColor: 0xD9D9D9,
+	                patternRotation: 3.14 / 4
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'vasco.png', ini: 'VAS' });
+	        this.teamsData.push({ id: 314, attack: 1.2, defense: 1.2, colorData: {
+	                mainColor: 0xDB3A28,
+	                patternColors: [{
+	                    color: 0xDB3A28,
+	                    tick: 0.475
+	                }, {
+	                    color: 0xD9D9D9,
+	                    tick: 0.05
+	                }, {
+	                    color: 0x0A0B0C,
+	                    tick: 0.475
+	                }],
+	                buttonColor: 0x0A0B0C,
+	                patternRotation: 3.14 / 2
+	            },
+	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'vitoria.png', ini: 'VIT' });
 	
 	        this.goodShoot = 5, this.perfectShoot = 10;
 	
@@ -38108,12 +38494,12 @@
 	        value: function getKickerData() {
 	            //force 0.75 - 1.5
 	            //curve 0.75 - 1.5
-	            return this.teamsData[this.currentTeamData.teamID].players[this.currentTeamData.playerID];
+	            return this.getMyTeamData().players[this.currentTeamData.playerID];
 	        }
 	    }, {
 	        key: 'getOpponentData',
 	        value: function getOpponentData() {
-	            return this.teamsData[this.opponentID];
+	            return this.getTeamById(this.opponentID);
 	        }
 	    }, {
 	        key: 'getMyTeamData',
@@ -38160,6 +38546,169 @@
 
 /***/ },
 /* 187 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var CookieManager = function () {
+		function CookieManager() {
+			// this.resetCookie();
+			// window.localStorage.clear();
+	
+			_classCallCheck(this, CookieManager);
+		}
+	
+		_createClass(CookieManager, [{
+			key: "createCookie",
+			value: function createCookie(name, value, days) {
+				var sValue = JSON.stringify(value);
+				try {
+					window.localStorage.setItem(name, sValue);
+				} catch (e) {
+					// alert(sValue)
+					//  	alert(e)
+				}
+			}
+		}, {
+			key: "getCookie",
+			value: function getCookie(name) {
+				return JSON.parse(window.localStorage.getItem(name)); //(result === null) ? null : result[1];
+			}
+		}, {
+			key: "storeObject",
+			value: function storeObject(name, value) {
+				window.localStorage.setItem(name, JSON.stringify(value));
+			}
+		}, {
+			key: "resetCookie",
+			value: function resetCookie() {
+				for (var i in window.localStorage) {
+					window.localStorage.removeItem(i);
+				}
+			}
+		}]);
+	
+		return CookieManager;
+	}();
+	
+	exports.default = CookieManager;
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var GlobalGameView = function () {
+	  function GlobalGameView(gameContainer) {
+	    _classCallCheck(this, GlobalGameView);
+	
+	    this.gameContainer = gameContainer;
+	    this.updateGameBackground();
+	    this.updateAllViews();
+	  }
+	
+	  _createClass(GlobalGameView, [{
+	    key: 'updateAllViews',
+	    value: function updateAllViews() {
+	      var teamData = GAME_DATA.getMyTeamData();
+	      console.log(teamData);
+	      this.updateTeam(teamData);
+	      this.updateField(GAME_DATA.getStadium());
+	    }
+	  }, {
+	    key: 'updateTeam',
+	    value: function updateTeam(team) {
+	      this.sky.tint = team.color;
+	    }
+	  }, {
+	    key: 'updateField',
+	    value: function updateField(stadiumData) {
+	      var tex = PIXI.Texture.fromFrame(stadiumData.texture);
+	
+	      _gsap2.default.killTweensOf(this.sky.scale);
+	      _gsap2.default.killTweensOf(this.field.scale);
+	
+	      this.field.texture = tex;
+	      this.sky.scale.y = 0.75;
+	      this.field.scale.y = 0.8;
+	      this.field.scale.x = 1.2;
+	      _gsap2.default.to(this.sky.scale, 0.5, { y: 1, ease: 'easeOutElastic' });
+	      _gsap2.default.to(this.field.scale, 0.5, { x: 1, y: 1, ease: 'easeOutElastic' });
+	    }
+	  }, {
+	    key: 'updateGameBackground',
+	    value: function updateGameBackground() {
+	
+	      this.backgroundContaier = new PIXI.Container();
+	      this.gameContainer.addChild(this.backgroundContaier);
+	
+	      this.background = new PIXI.Graphics();
+	      this.background.beginFill(0xababab);
+	      this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
+	      this.backgroundContaier.addChild(this.background);
+	
+	      var tex = void 0;
+	
+	      tex = PIXI.Texture.fromFrame('torcida.jpg');
+	      this.sky = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
+	      this.backgroundContaier.addChild(this.sky);
+	      this.sky.anchor.set(0.5, 1);
+	      this.sky.tileScale.x = 0.25;
+	      this.sky.tileScale.y = 0.25;
+	      this.sky.x = _config2.default.width / 2;
+	      this.sky.y = 220;
+	
+	      tex = PIXI.Texture.fromFrame('grass1.png');
+	      this.field = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 200); //new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
+	      this.backgroundContaier.addChild(this.field);
+	      this.field.tileScale.x = 0.25 / 2;
+	      this.field.tileScale.y = 0.25 / 2;
+	      this.field.anchor.x = 0.5;
+	      this.field.y = 150;
+	      this.field.x = _config2.default.width / 2;
+	    }
+	  }]);
+	
+	  return GlobalGameView;
+	}();
+	
+	exports.default = GlobalGameView;
+
+/***/ },
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global) {/*!
@@ -44205,7 +44754,7 @@
 							if (global) {
 								_globals[n] = _exports[n] = cl; //provides a way to avoid global namespace pollution. By default, the main classes like TweenLite, Power1, Strong, etc. are added to window unless a GreenSockGlobals is defined. So if you want to have things added to a custom object instead, just do something like window.GreenSockGlobals = {} before loading any GreenSock files. You can even set up an alias like window.GreenSockGlobals = windows.gs = {} so that you can access everything like gs.TweenLite. Also remember that ALL classes are added to the window.com.greensock object (in their respective packages, like com.greensock.easing.Power1, com.greensock.TweenLite, etc.)
 								hasModule = (typeof(module) !== "undefined" && module.exports);
-								if (!hasModule && "function" === "function" && __webpack_require__(188)){ //AMD
+								if (!hasModule && "function" === "function" && __webpack_require__(190)){ //AMD
 									!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function() { return cl; }.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 								} else if (hasModule){ //node
 									if (ns === moduleName) {
@@ -46022,7 +46571,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 188 */
+/* 190 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -46030,113 +46579,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _gsap = __webpack_require__(187);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var GlobalGameView = function () {
-	  function GlobalGameView(gameContainer) {
-	    _classCallCheck(this, GlobalGameView);
-	
-	    this.gameContainer = gameContainer;
-	    this.updateGameBackground();
-	    this.updateAllViews();
-	  }
-	
-	  _createClass(GlobalGameView, [{
-	    key: 'updateAllViews',
-	    value: function updateAllViews() {
-	      var teamData = GAME_DATA.getMyTeamData();
-	      console.log(teamData);
-	      this.updateTeam(teamData);
-	      this.updateField(GAME_DATA.getStadium());
-	    }
-	  }, {
-	    key: 'updateTeam',
-	    value: function updateTeam(team) {
-	      this.sky.tint = team.color;
-	    }
-	  }, {
-	    key: 'updateField',
-	    value: function updateField(stadiumData) {
-	      var tex = PIXI.Texture.fromFrame(stadiumData.texture);
-	
-	      _gsap2.default.killTweensOf(this.sky.scale);
-	      _gsap2.default.killTweensOf(this.field.scale);
-	
-	      this.field.texture = tex;
-	      this.sky.scale.y = 0.75;
-	      this.field.scale.y = 0.8;
-	      this.field.scale.x = 1.2;
-	      _gsap2.default.to(this.sky.scale, 0.5, { y: 1, ease: 'easeOutElastic' });
-	      _gsap2.default.to(this.field.scale, 0.5, { x: 1, y: 1, ease: 'easeOutElastic' });
-	    }
-	  }, {
-	    key: 'updateGameBackground',
-	    value: function updateGameBackground() {
-	
-	      this.backgroundContaier = new PIXI.Container();
-	      this.gameContainer.addChild(this.backgroundContaier);
-	
-	      this.background = new PIXI.Graphics();
-	      this.background.beginFill(0xababab);
-	      this.background.drawRect(0, 0, _config2.default.width, _config2.default.height);
-	      this.backgroundContaier.addChild(this.background);
-	
-	      var tex = void 0;
-	
-	      tex = PIXI.Texture.fromFrame('torcida.jpg');
-	      this.sky = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 100); //new PIXI.Graphics().beginFill(0x27BBE0).drawRect(0,0,config.width, 150);
-	      this.backgroundContaier.addChild(this.sky);
-	      this.sky.anchor.set(0.5, 1);
-	      this.sky.tileScale.x = 0.25;
-	      this.sky.tileScale.y = 0.25;
-	      this.sky.x = _config2.default.width / 2;
-	      this.sky.y = 220;
-	
-	      tex = PIXI.Texture.fromFrame('grass1.png');
-	      this.field = new PIXI.extras.TilingSprite(tex, _config2.default.width + 100, _config2.default.height + 200); //new PIXI.Graphics().beginFill(0x3C8C57).drawRect(0,0,config.width, config.height);
-	      this.backgroundContaier.addChild(this.field);
-	      this.field.tileScale.x = 0.25 / 2;
-	      this.field.tileScale.y = 0.25 / 2;
-	      this.field.anchor.x = 0.5;
-	      this.field.y = 150;
-	      this.field.x = _config2.default.width / 2;
-	    }
-	  }]);
-	
-	  return GlobalGameView;
-	}();
-	
-	exports.default = GlobalGameView;
-
-/***/ },
-/* 190 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46228,7 +46671,7 @@
 	exports.default = ScreenManager;
 
 /***/ },
-/* 191 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46245,11 +46688,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _pixiFilters = __webpack_require__(192);
-	
-	var _pixiFilters2 = _interopRequireDefault(_pixiFilters);
-	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -46314,6 +46753,8 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	// import Filters from 'pixi-filters';
+	
 	
 	var GameScreen = function (_Screen) {
 		_inherits(GameScreen, _Screen);
@@ -46984,21 +47425,6 @@
 	}(_Screen3.default);
 	
 	exports.default = GameScreen;
-
-/***/ },
-/* 192 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var require;var require;/*!
-	 * pixi-filters - v1.0.6
-	 * Compiled Wed Aug 31 2016 08:37:40 GMT-0400 (EDT)
-	 *
-	 * pixi-filters is licensed under the MIT License.
-	 * http://www.opensource.org/licenses/mit-license
-	 */
-	!function(t){if(true)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var e;e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,e.filters=t()}}(function(){return function t(e,r,n){function o(l,u){if(!r[l]){if(!e[l]){var a="function"==typeof require&&require;if(!u&&a)return require(l,!0);if(i)return i(l,!0);var c=new Error("Cannot find module '"+l+"'");throw c.code="MODULE_NOT_FOUND",c}var s=r[l]={exports:{}};e[l][0].call(s.exports,function(t){var r=e[l][1][t];return o(r?r:t)},s,s.exports,t,e,r,n)}return r[l].exports}for(var i="function"==typeof require&&require,l=0;l<n.length;l++)o(n[l]);return o}({1:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform vec4 filterArea;\nuniform float pixelSize;\nuniform sampler2D uSampler;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n    return floor( coord / size ) * size;\n}\n\nvec2 getMod(vec2 coord, vec2 size)\n{\n    return mod( coord , size) / size;\n}\n\nfloat character(float n, vec2 p)\n{\n    p = floor(p*vec2(4.0, -4.0) + 2.5);\n    if (clamp(p.x, 0.0, 4.0) == p.x && clamp(p.y, 0.0, 4.0) == p.y)\n    {\n        if (int(mod(n/exp2(p.x + 5.0*p.y), 2.0)) == 1) return 1.0;\n    }\n    return 0.0;\n}\n\nvoid main()\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    // get the rounded color..\n    vec2 pixCoord = pixelate(coord, vec2(pixelSize));\n    pixCoord = unmapCoord(pixCoord);\n\n    vec4 color = texture2D(uSampler, pixCoord);\n\n    // determine the character to use\n    float gray = (color.r + color.g + color.b) / 3.0;\n\n    float n =  65536.0;             // .\n    if (gray > 0.2) n = 65600.0;    // :\n    if (gray > 0.3) n = 332772.0;   // *\n    if (gray > 0.4) n = 15255086.0; // o\n    if (gray > 0.5) n = 23385164.0; // &\n    if (gray > 0.6) n = 15252014.0; // 8\n    if (gray > 0.7) n = 13199452.0; // @\n    if (gray > 0.8) n = 11512810.0; // #\n\n    // get the mod..\n    vec2 modd = getMod(coord, vec2(pixelSize));\n\n    gl_FragColor = color * character( n, vec2(-1.0) + modd * 2.0);\n\n}"),this.size=8}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.pixelSize},set:function(t){this.uniforms.pixelSize=t}}})},{}],2:[function(t,e,r){function n(){PIXI.Filter.call(this),this.blurXFilter=new o,this.blurYFilter=new i,this.blurYFilter.blendMode=PIXI.BLEND_MODES.SCREEN,this.defaultFilter=new l}var o=PIXI.filters.BlurXFilter,i=PIXI.filters.BlurYFilter,l=PIXI.filters.VoidFilter;n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.defaultFilter.apply(t,e,r),this.blurXFilter.apply(t,e,n),this.blurYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=this.blurYFilter.blur=t}},blurX:{get:function(){return this.blurXFilter.blur},set:function(t){this.blurXFilter.blur=t}},blurY:{get:function(){return this.blurYFilter.blur},set:function(t){this.blurYFilter.blur=t}}})},{}],3:[function(t,e,r){if("undefined"==typeof PIXI)throw new Error("pixi.js is required to be included")},{}],4:[function(t,e,r){function n(t,e,r){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying mediump vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec2 texelSize;\nuniform float matrix[9];\n\nvoid main(void)\n{\n   vec4 c11 = texture2D(uSampler, vTextureCoord - texelSize); // top left\n   vec4 c12 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y - texelSize.y)); // top center\n   vec4 c13 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y - texelSize.y)); // top right\n\n   vec4 c21 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y)); // mid left\n   vec4 c22 = texture2D(uSampler, vTextureCoord); // mid center\n   vec4 c23 = texture2D(uSampler, vec2(vTextureCoord.x + texelSize.x, vTextureCoord.y)); // mid right\n\n   vec4 c31 = texture2D(uSampler, vec2(vTextureCoord.x - texelSize.x, vTextureCoord.y + texelSize.y)); // bottom left\n   vec4 c32 = texture2D(uSampler, vec2(vTextureCoord.x, vTextureCoord.y + texelSize.y)); // bottom center\n   vec4 c33 = texture2D(uSampler, vTextureCoord + texelSize); // bottom right\n\n   gl_FragColor =\n       c11 * matrix[0] + c12 * matrix[1] + c13 * matrix[2] +\n       c21 * matrix[3] + c22 * matrix[4] + c23 * matrix[5] +\n       c31 * matrix[6] + c32 * matrix[7] + c33 * matrix[8];\n\n   gl_FragColor.a = c22.a;\n}\n"),this.matrix=t,this.width=e,this.height=r}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{matrix:{get:function(){return this.uniforms.matrix},set:function(t){this.uniforms.matrix=new Float32Array(t)}},width:{get:function(){return 1/this.uniforms.texelSize[0]},set:function(t){this.uniforms.texelSize[0]=1/t}},height:{get:function(){return 1/this.uniforms.texelSize[1]},set:function(t){this.uniforms.texelSize[1]=1/t}}})},{}],5:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void)\n{\n    float lum = length(texture2D(uSampler, vTextureCoord.xy).rgb);\n\n    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n\n    if (lum < 1.00)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.75)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.50)\n    {\n        if (mod(gl_FragCoord.x + gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n\n    if (lum < 0.3)\n    {\n        if (mod(gl_FragCoord.x - gl_FragCoord.y - 5.0, 10.0) == 0.0)\n        {\n            gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n        }\n    }\n}\n")}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n},{}],6:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\n\nuniform vec4 filterArea;\nuniform sampler2D uSampler;\n\nuniform float angle;\nuniform float scale;\n\nfloat pattern()\n{\n   float s = sin(angle), c = cos(angle);\n   vec2 tex = vTextureCoord * filterArea.xy;\n   vec2 point = vec2(\n       c * tex.x - s * tex.y,\n       s * tex.x + c * tex.y\n   ) * scale;\n   return (sin(point.x) * sin(point.y)) * 4.0;\n}\n\nvoid main()\n{\n   vec4 color = texture2D(uSampler, vTextureCoord);\n   float average = (color.r + color.g + color.b) / 3.0;\n   gl_FragColor = vec4(vec3(average * 10.0 - 5.0 + pattern()), color.a);\n}\n"),this.scale=1,this.angle=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{scale:{get:function(){return this.uniforms.scale},set:function(t){this.uniforms.scale=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],7:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float strength;\nuniform vec4 filterArea;\n\nvoid main(void)\n{\n\tvec2 onePixel = vec2(1.0 / filterArea);\n\n\tvec4 color;\n\n\tcolor.rgb = vec3(0.5);\n\n\tcolor -= texture2D(uSampler, vTextureCoord - onePixel) * strength;\n\tcolor += texture2D(uSampler, vTextureCoord + onePixel) * strength;\n\n\tcolor.rgb = vec3((color.r + color.g + color.b) / 3.0);\n\n\tfloat alpha = texture2D(uSampler, vTextureCoord).a;\n\n\tgl_FragColor = vec4(color.rgb * alpha, alpha);\n}\n"),this.strength=5}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{strength:{get:function(){return this.uniforms.strength},set:function(t){this.uniforms.strength=t}}})},{}],8:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform vec2 size;\nuniform sampler2D uSampler;\n\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 pixelate(vec2 coord, vec2 size)\n{\n\treturn floor( coord / size ) * size;\n}\n\nvoid main(void)\n{\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = pixelate(coord, size);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord);\n}\n"),this.size=[10,10]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{size:{get:function(){return this.uniforms.size},set:function(t){this.uniforms.size.value=t}}})},{}],9:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","precision mediump float;\n#define GLSLIFY 1\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 filterArea;\nuniform vec2 red;\nuniform vec2 green;\nuniform vec2 blue;\n\nvoid main(void)\n{\n   gl_FragColor.r = texture2D(uSampler, vTextureCoord + red/filterArea.xy).r;\n   gl_FragColor.g = texture2D(uSampler, vTextureCoord + green/filterArea.xy).g;\n   gl_FragColor.b = texture2D(uSampler, vTextureCoord + blue/filterArea.xy).b;\n   gl_FragColor.a = texture2D(uSampler, vTextureCoord).a;\n}\n"),this.red=[-10,0],this.green=[0,10],this.blue=[0,0]}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{red:{get:function(){return this.uniforms.red},set:function(t){this.uniforms.red=t}},green:{get:function(){return this.uniforms.green},set:function(t){this.uniforms.green=t}},blue:{get:function(){return this.uniforms.blue.value},set:function(t){this.uniforms.blue.value=t}}})},{}],10:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nuniform vec2 center;\nuniform vec3 params; // 10.0, 0.8, 0.1\nuniform float time;\n\nvoid main()\n{\n    vec2 uv = vTextureCoord;\n    vec2 texCoord = uv;\n\n    float dist = distance(uv, center);\n\n    if ( (dist <= (time + params.z)) && (dist >= (time - params.z)) )\n    {\n        float diff = (dist - time);\n        float powDiff = 1.0 - pow(abs(diff*params.x), params.y);\n\n        float diffTime = diff  * powDiff;\n        vec2 diffUV = normalize(uv - center);\n        texCoord = uv + (diffUV * diffTime);\n    }\n\n    gl_FragColor = texture2D(uSampler, texCoord);\n}\n",{center:{type:"v2",value:{x:.5,y:.5}},params:{type:"v3",value:{x:10,y:.8,z:.1}},time:{type:"1f",value:0}}),this.center=[.5,.5],this.params=[10,.8,.1],this.time=0}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{center:{get:function(){return this.uniforms.center},set:function(t){this.uniforms.center=t}},params:{get:function(){return this.uniforms.params},set:function(t){this.uniforms.params=t}},time:{get:function(){return this.uniforms.time},set:function(t){this.uniforms.time=t}}})},{}],11:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float blur;\nuniform float gradientBlur;\nuniform vec2 start;\nuniform vec2 end;\nuniform vec2 delta;\nuniform vec2 texSize;\n\nfloat random(vec3 scale, float seed)\n{\n    return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);\n}\n\nvoid main(void)\n{\n    vec4 color = vec4(0.0);\n    float total = 0.0;\n\n    float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);\n    vec2 normal = normalize(vec2(start.y - end.y, end.x - start.x));\n    float radius = smoothstep(0.0, 1.0, abs(dot(vTextureCoord * texSize - start, normal)) / gradientBlur) * blur;\n\n    for (float t = -30.0; t <= 30.0; t++)\n    {\n        float percent = (t + offset - 0.5) / 30.0;\n        float weight = 1.0 - abs(percent);\n        vec4 sample = texture2D(uSampler, vTextureCoord + delta / texSize * percent * radius);\n        sample.rgb *= sample.a;\n        color += sample * weight;\n        total += weight;\n    }\n\n    gl_FragColor = color / total;\n    gl_FragColor.rgb /= gl_FragColor.a + 0.00001;\n}\n"),this.uniforms.blur=100,this.uniforms.gradientBlur=600,this.uniforms.start=new PIXI.Point(0,window.innerHeight/2),this.uniforms.end=new PIXI.Point(600,window.innerHeight/2),this.uniforms.delta=new PIXI.Point(30,30),this.uniforms.texSize=new PIXI.Point(window.innerWidth,window.innerHeight),this.updateDelta()}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){this.uniforms.delta.x=0,this.uniforms.delta.y=0},Object.defineProperties(n.prototype,{blur:{get:function(){return this.uniforms.blur},set:function(t){this.uniforms.blur=t}},gradientBlur:{get:function(){return this.uniforms.gradientBlur},set:function(t){this.uniforms.gradientBlur=t}},start:{get:function(){return this.uniforms.start},set:function(t){this.uniforms.start=t,this.updateDelta()}},end:{get:function(){return this.uniforms.end},set:function(t){this.uniforms.end=t,this.updateDelta()}}})},{}],12:[function(t,e,r){function n(){PIXI.Filter.call(this),this.tiltShiftXFilter=new o,this.tiltShiftYFilter=new i}var o=t("./TiltShiftXFilter"),i=t("./TiltShiftYFilter");n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.apply=function(t,e,r){var n=t.getRenderTarget(!0);this.tiltShiftXFilter.apply(t,e,n),this.tiltShiftYFilter.apply(t,n,r),t.returnRenderTarget(n)},Object.defineProperties(n.prototype,{blur:{get:function(){return this.tiltShiftXFilter.blur},set:function(t){this.tiltShiftXFilter.blur=this.tiltShiftYFilter.blur=t}},gradientBlur:{get:function(){return this.tiltShiftXFilter.gradientBlur},set:function(t){this.tiltShiftXFilter.gradientBlur=this.tiltShiftYFilter.gradientBlur=t}},start:{get:function(){return this.tiltShiftXFilter.start},set:function(t){this.tiltShiftXFilter.start=this.tiltShiftYFilter.start=t}},end:{get:function(){return this.tiltShiftXFilter.end},set:function(t){this.tiltShiftXFilter.end=this.tiltShiftYFilter.end=t}}})},{"./TiltShiftXFilter":13,"./TiltShiftYFilter":14}],13:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=t/r,this.uniforms.delta.y=e/r}},{"./TiltShiftAxisFilter":11}],14:[function(t,e,r){function n(){o.call(this)}var o=t("./TiltShiftAxisFilter");n.prototype=Object.create(o.prototype),n.prototype.constructor=n,e.exports=n,n.prototype.updateDelta=function(){var t=this.uniforms.end.x-this.uniforms.start.x,e=this.uniforms.end.y-this.uniforms.start.y,r=Math.sqrt(t*t+e*e);this.uniforms.delta.x=-e/r,this.uniforms.delta.y=t/r}},{"./TiltShiftAxisFilter":11}],15:[function(t,e,r){function n(){PIXI.Filter.call(this,"#define GLSLIFY 1\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n    vTextureCoord = aTextureCoord;\n}","#define GLSLIFY 1\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform float radius;\nuniform float angle;\nuniform vec2 offset;\nuniform vec4 filterArea;\n\nvec2 mapCoord( vec2 coord )\n{\n    coord *= filterArea.xy;\n    coord += filterArea.zw;\n\n    return coord;\n}\n\nvec2 unmapCoord( vec2 coord )\n{\n    coord -= filterArea.zw;\n    coord /= filterArea.xy;\n\n    return coord;\n}\n\nvec2 twist(vec2 coord)\n{\n    coord -= offset;\n\n    float dist = length(coord);\n\n    if (dist < radius)\n    {\n        float ratioDist = (radius - dist) / radius;\n        float angleMod = ratioDist * ratioDist * angle;\n        float s = sin(angleMod);\n        float c = cos(angleMod);\n        coord = vec2(coord.x * c - coord.y * s, coord.x * s + coord.y * c);\n    }\n\n    coord += offset;\n\n    return coord;\n}\n\nvoid main(void)\n{\n\n    vec2 coord = mapCoord(vTextureCoord);\n\n    coord = twist(coord);\n\n    coord = unmapCoord(coord);\n\n    gl_FragColor = texture2D(uSampler, coord );\n\n}\n"),this.radius=200,this.angle=4,this.padding=20}n.prototype=Object.create(PIXI.Filter.prototype),n.prototype.constructor=n,e.exports=n,Object.defineProperties(n.prototype,{offset:{get:function(){return this.uniforms.offset},set:function(t){this.uniforms.offset=t}},radius:{get:function(){return this.uniforms.radius},set:function(t){this.uniforms.radius=t}},angle:{get:function(){return this.uniforms.angle},set:function(t){this.uniforms.angle=t}}})},{}],16:[function(t,e,r){t("./check");var n={AsciiFilter:t("./ascii/AsciiFilter"),BloomFilter:t("./bloom/BloomFilter"),ConvolutionFilter:t("./convolution/ConvolutionFilter"),CrossHatchFilter:t("./crosshatch/CrossHatchFilter"),DotFilter:t("./dot/DotFilter"),EmbossFilter:t("./emboss/EmbossFilter"),PixelateFilter:t("./pixelate/PixelateFilter"),RGBSplitFilter:t("./rgb/RGBSplitFilter"),ShockwaveFilter:t("./shockwave/ShockwaveFilter"),TiltShiftFilter:t("./tiltshift/TiltShiftFilter"),TiltShiftAxisFilter:t("./tiltshift/TiltShiftAxisFilter"),TiltShiftXFilter:t("./tiltshift/TiltShiftXFilter"),TiltShiftYFilter:t("./tiltshift/TiltShiftYFilter"),TwistFilter:t("./twist/TwistFilter")};Object.assign(PIXI.filters,n),"undefined"!=typeof e&&e.exports&&(e.exports=n)},{"./ascii/AsciiFilter":1,"./bloom/BloomFilter":2,"./check":3,"./convolution/ConvolutionFilter":4,"./crosshatch/CrossHatchFilter":5,"./dot/DotFilter":6,"./emboss/EmbossFilter":7,"./pixelate/PixelateFilter":8,"./rgb/RGBSplitFilter":9,"./shockwave/ShockwaveFilter":10,"./tiltshift/TiltShiftAxisFilter":11,"./tiltshift/TiltShiftFilter":12,"./tiltshift/TiltShiftXFilter":13,"./tiltshift/TiltShiftYFilter":14,"./twist/TwistFilter":15}]},{},[16])(16)});
-	//# sourceMappingURL=filters.min.js.map
-
 
 /***/ },
 /* 193 */
@@ -48472,7 +48898,7 @@
 	
 	var _config2 = _interopRequireDefault(_config);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -50507,7 +50933,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -50600,7 +51026,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -50792,7 +51218,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -50807,6 +51233,10 @@
 	var _Screen2 = __webpack_require__(194);
 	
 	var _Screen3 = _interopRequireDefault(_Screen2);
+	
+	var _TeamSelectorPanel = __webpack_require__(210);
+	
+	var _TeamSelectorPanel2 = _interopRequireDefault(_TeamSelectorPanel);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -50825,6 +51255,9 @@
 			_classCallCheck(this, ChooseTeamScreen);
 	
 			var _this = _possibleConstructorReturn(this, (ChooseTeamScreen.__proto__ || Object.getPrototypeOf(ChooseTeamScreen)).call(this, label));
+	
+			_this.bg = new PIXI.Graphics().beginFill(0x356B33).drawRect(0, 0, _config2.default.width, _config2.default.height);
+			_this.addChild(_this.bg);
 	
 			_this.button = new PIXI.Container();
 			_this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
@@ -50847,9 +51280,11 @@
 			_this.addChild(_this.backButton);
 	
 			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
-			_this.addChild(_this.screenLabel);
+			// this.addChild(this.screenLabel)
 	
-			_this.buildTeamSelectionPanel();
+	
+			// this.buildTeamSelectionPanel();
+	
 	
 			_this.teamDataLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
 			//this.addChild(this.teamDataLabel)
@@ -50864,40 +51299,23 @@
 			//this.addChild(this.tempPlayerLabel)
 			_this.tempPlayerLabel.y = 550;
 	
+			_this.teamSelectorPanel = new _TeamSelectorPanel2.default();
+			_this.teamSelectorPanel.build();
+			_this.teamSelectorPanel.position.set(_config2.default.width / 2, _config2.default.height / 2 * 1.2);
+			_this.teamSelectorPanel.confirmTeamPanelCallback = _this.confirmChangeTeam.bind(_this);
+	
+			_this.addChild(_this.teamSelectorPanel);
+	
 			_this.addEvents();
 			return _this;
 		}
 	
 		_createClass(ChooseTeamScreen, [{
-			key: 'buildTeamSelectionPanel',
-			value: function buildTeamSelectionPanel() {
-	
-				this.buttonsPanelContainer = new PIXI.Container();
-				this.addChild(this.buttonsPanelContainer);
-	
-				this.teamButtons = [];
-				for (var i = 0; i < GAME_DATA.teamsData.length; i++) {
-	
-					this.addTeamButton(GAME_DATA.teamsData[i].id);
-				}
-	
-				this.panelBg = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, 300, 300, 10);
-				this.buttonsPanelContainer.addChild(this.panelBg);
-	
-				this.buttonsPanelContainer.mask = this.panelBg;
-	
-				this.buttonsPanelContainer.pivot.set(this.panelBg.width / 2, this.panelBg.height / 2);
-				this.buttonsPanelContainer.position.set(_config2.default.width / 2, _config2.default.height / 2);
-	
-				this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 50);
-				this.buttonsPanelContainer.addChild(this.topImage);
-				this.topImage.visible = false;
-	
-				this.closePopup = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, 300, 300);
-				this.closePopup.alpha = 0;
-				this.closePopup.visible = false;
-				this.closePopup.interactive = true;
-				this.buttonsPanelContainer.addChild(this.closePopup);
+			key: 'confirmChangeTeam',
+			value: function confirmChangeTeam(team) {
+				GAME_DATA.changeTeam(team.id);
+				this.teamSelectorPanel.closePop();
+				this.toMainScreen();
 			}
 		}, {
 			key: 'updateTeamLabel',
@@ -50924,41 +51342,6 @@
 				this.updatePlayerLabel();
 			}
 		}, {
-			key: 'addTeamButton',
-			value: function addTeamButton(id) {
-	
-				var grid = { x: 4, y: 4 };
-				var teamData = GAME_DATA.getTeamById(id);
-	
-				var space = { x: 10, y: 10 };
-				var wdt = (300 - space.x * 6) / grid.x / 2;
-				var hgt = (300 - space.y * 6) / grid.y / 2;
-	
-				var shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
-				// shape.anchor.set(0.5);
-				// shape.scale.set(0.5);
-	
-				var button = new PIXI.Container();
-				button.addChild(shape);
-				button.interactive = true;
-				var xpos = this.teamButtons.length % grid.x | 0;
-				var ypos = Math.floor(this.teamButtons.length / grid.x) | 0;
-	
-				// button.y = ypos * hgt + wdt*2;
-				button.x = space.x + wdt + xpos * (wdt * 2 + space.x);
-				button.y = space.y + hgt + ypos * (hgt * 2 + space.y);
-				button.id = teamData.id;
-				var brand = PIXI.Sprite.fromFrame('seriea/' + teamData.brand);
-				brand.anchor.set(0.5);
-				brand.scale.set(0.5);
-				shape.tint = teamData.color;
-				this.buttonsPanelContainer.addChild(button);
-				button.shape = shape;
-	
-				// button.addChild(brand)
-				this.teamButtons.push(button);
-			}
-		}, {
 			key: 'addPlayerButton',
 			value: function addPlayerButton() {
 	
@@ -50974,37 +51357,6 @@
 				button.shape = shape;
 				// this.addChild(button)
 				//this.playerButtons.push(button)
-			}
-		}, {
-			key: 'closePop',
-			value: function closePop(target) {
-				// this.currentClone.visible = false
-				this.closePopup.visible = false;
-				// this.topImage.visible = false;
-				_gsap2.default.to(this.topImage, 0.2, { alpha: 0 });
-				_gsap2.default.to(this.buttonsPanelContainer, 0.2, { y: _config2.default.height / 2, ease: 'easeOutCubic' });
-				_gsap2.default.to(this.currentClone.scale, 0.2, { x: 1, y: 1 });
-				_gsap2.default.to(this.currentClone, 0.2, { x: this.currentClone.initialPosition.x, y: this.currentClone.initialPosition.y });
-			}
-		}, {
-			key: 'updatePopUp',
-			value: function updatePopUp(target) {
-	
-				this.topImage.visible = true;
-				this.topImage.alpha = 0;
-				// console.log(target.shape, 'shape');
-				this.currentClone = target.shape.clone();
-				this.currentClone.x = target.x;
-				this.currentClone.y = target.y;
-				this.currentClone.initialPosition = { x: target.x, y: target.y };
-				this.closePopup.visible = true;
-				// target.parent.setChildIndex(target, target.parent.children.length - 1)
-				target.parent.addChild(this.currentClone);
-				this.topImage.parent.setChildIndex(this.topImage, this.topImage.parent.children.length - 1);
-				_gsap2.default.to(this.currentClone, 0.2, { x: this.panelBg.width / 2, y: this.panelBg.height / 2 });
-				_gsap2.default.to(this.currentClone.scale, 0.4, { x: 15, y: 15 });
-				_gsap2.default.to(this.topImage, 0.2, { alpha: 1 });
-				_gsap2.default.to(this.buttonsPanelContainer, 0.2, { y: _config2.default.height / 2 - 50 });
 			}
 		}, {
 			key: 'changeTeam',
@@ -51041,7 +51393,7 @@
 		}, {
 			key: 'transitionOut',
 			value: function transitionOut(nextScreen) {
-				this.closePop();
+				// this.closePop();
 				_get(ChooseTeamScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseTeamScreen.prototype), 'transitionOut', this).call(this, nextScreen);
 			}
 		}, {
@@ -51055,27 +51407,28 @@
 			value: function removeEvents() {
 				this.button.off('touchstart').off('mousedown');
 				this.backButton.off('touchstart').off('mousedown');
-				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
-					this.teamButtons[i].off('touchstart').off('mousedown');
-				}
-				for (var i = this.playerButtons.length - 1; i >= 0; i--) {
-					this.playerButtons[i].off('touchstart').off('mousedown');
-				}
+				// for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+				// 	this.teamButtons[i].off('touchstart').off('mousedown');
+				// }
+				// for (var i = this.playerButtons.length - 1; i >= 0; i--) {
+				// 	this.playerButtons[i].off('touchstart').off('mousedown');
+				// }
 			}
 		}, {
 			key: 'addEvents',
 			value: function addEvents() {
 				this.removeEvents();
-				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
-					this.teamButtons[i].on('mousedown', this.changeTeam.bind(this)).on('touchstart', this.changeTeam.bind(this));
-				}
+				// for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+				// 	this.teamButtons[i].on('mousedown', this.changeTeam.bind(this)).on('touchstart', this.changeTeam.bind(this));
+				// }
 	
-				for (var i = this.playerButtons.length - 1; i >= 0; i--) {
-					this.playerButtons[i].on('mousedown', this.changePlayer.bind(this)).on('touchstart', this.changePlayer.bind(this));
-				}
+				// for (var i = this.playerButtons.length - 1; i >= 0; i--) {
+				// 	this.playerButtons[i].on('mousedown', this.changePlayer.bind(this)).on('touchstart', this.changePlayer.bind(this));
+				// }
+	
 	
 				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
-				this.closePopup.on('mousedown', this.closePop.bind(this)).on('touchstart', this.closePop.bind(this));
+				//this.closePopup.on('mousedown', this.closePop.bind(this)).on('touchstart', this.closePop.bind(this));
 				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
 			}
 		}]);
@@ -51097,13 +51450,278 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TeamSelectorPanel = function (_PIXI$Container) {
+		_inherits(TeamSelectorPanel, _PIXI$Container);
+	
+		function TeamSelectorPanel() {
+			_classCallCheck(this, TeamSelectorPanel);
+	
+			var _this = _possibleConstructorReturn(this, (TeamSelectorPanel.__proto__ || Object.getPrototypeOf(TeamSelectorPanel)).call(this));
+	
+			_this.panelContainer = new PIXI.Container();
+			_this.addChild(_this.panelContainer);
+	
+			_this.teamContainer = new PIXI.Container();
+			_this.panelContainer.addChild(_this.teamContainer);
+	
+			return _this;
+		}
+	
+		_createClass(TeamSelectorPanel, [{
+			key: 'build',
+			value: function build() {
+				var w = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 300;
+				var h = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
+	
+				this.teamPanelSize = { w: w, h: h };
+				this.grid = { x: 4, y: 5 };
+	
+				this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, this.teamPanelSize.w, 50);
+				this.teamContainer.addChild(this.topImage);
+				this.teamButtons = [];
+				for (var i = 0; i < GAME_DATA.teamsData.length; i++) {
+					this.addTeamButton(GAME_DATA.teamsData[i].id);
+				}
+	
+				this.panelBg = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, this.teamPanelSize.w, this.teamPanelSize.h, 10);
+				this.panelContainer.addChild(this.panelBg);
+	
+				this.panelContainer.mask = this.panelBg;
+	
+				this.panelContainer.pivot.set(this.teamPanelSize.w / 2, this.teamPanelSize.h / 2);
+				// this.teamContainer.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
+				//this.panelContainer.position.set(config.width/2, config.height/2)
+	
+	
+				this.closePopup = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, this.teamPanelSize.w, this.teamPanelSize.h);
+				this.closePopup.alpha = 0;
+				this.closePopup.visible = false;
+				this.closePopup.interactive = true;
+				this.panelContainer.addChild(this.closePopup);
+	
+				this.addEvents();
+	
+				this.openTeamPanelCallback = function (e) {};
+				this.confirmTeamPanelCallback = function (e) {};
+				this.cancelTeamPanelCallback = function (e) {};
+	
+				//TEAM CONTAINER
+	
+				this.teamBrand = PIXI.Sprite.fromFrame('seriea/flamengo.png');
+				this.teamContainer.addChild(this.teamBrand);
+				this.teamBrand.scale.set(this.teamPanelSize.w / this.teamBrand.width * 0.4);
+				this.teamBrand.x = this.teamPanelSize.w / 2 - this.teamBrand.width / 2;
+				this.teamBrand.y = 60;
+	
+				this.teamConfirmButton = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, this.teamPanelSize.w - 40, 60, 10);
+				this.teamContainer.addChild(this.teamConfirmButton);
+	
+				this.teamConfirmButton.x = this.teamPanelSize.w / 2 - this.teamConfirmButton.width / 2;
+				this.teamConfirmButton.y = this.teamPanelSize.h - this.teamConfirmButton.height - 20;
+	
+				this.teamConfirmButton.interactive = true;
+				this.teamConfirmButton.buttonMode = true;
+				this.teamConfirmButton.on('mousedown', this.onConfirmTeam.bind(this)).on('touchstart', this.onConfirmTeam.bind(this));
+	
+				this.teamContainer.visible = false;
+			}
+		}, {
+			key: 'onConfirmTeam',
+			value: function onConfirmTeam(e) {
+				if (this.currentSelectedTeam) {
+					this.confirmTeamPanelCallback(this.currentSelectedTeam);
+					// this.closePop();
+				} else {
+					console.log('erro bizarro');
+				}
+			}
+		}, {
+			key: 'updateTeamContent',
+			value: function updateTeamContent(team) {
+				this.teamBrand.texture = PIXI.Texture.fromFrame('seriea/' + team.brand);
+				this.teamConfirmButton.tint = team.colorData.buttonColor;
+	
+				this.currentSelectedTeam = team;
+			}
+		}, {
+			key: 'changeTeamCallback',
+			value: function changeTeamCallback(e) {
+				var target = e.target || e.data.target;
+				this.updateTeamContent(GAME_DATA.getTeamById(target.id));
+				this.updatePopUp(target);
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+					this.teamButtons[i].off('touchstart').off('mousedown');
+				}
+				// for (var i = this.playerButtons.length - 1; i >= 0; i--) {
+				// 	this.playerButtons[i].off('touchstart').off('mousedown');
+				// }
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.removeEvents();
+				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+					this.teamButtons[i].on('mousedown', this.changeTeamCallback.bind(this)).on('touchstart', this.changeTeamCallback.bind(this));
+				}
+	
+				// for (var i = this.playerButtons.length - 1; i >= 0; i--) {
+				// 	this.playerButtons[i].on('mousedown', this.changePlayer.bind(this)).on('touchstart', this.changePlayer.bind(this));
+				// }
+				this.closePopup.on('mousedown', this.closePop.bind(this)).on('touchstart', this.closePop.bind(this));
+			}
+		}, {
+			key: 'addTeamButton',
+			value: function addTeamButton(id) {
+	
+				var teamData = GAME_DATA.getTeamById(id);
+	
+				var space = { x: 10, y: 10 };
+				var wdt = (this.teamPanelSize.w - space.x * 6) / this.grid.x / 2;
+				var hgt = (this.teamPanelSize.h - space.y * 6) / this.grid.y / 2;
+	
+				var shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
+	
+				var mask = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
+				// shape.anchor.set(0.5);
+				// shape.scale.set(0.5);
+	
+				var button = new PIXI.Container();
+				button.addChild(shape);
+				button.addChild(mask);
+				button.interactive = true;
+				button.buttonMode = true;
+				var xpos = this.teamButtons.length % this.grid.x | 0;
+				var ypos = Math.floor(this.teamButtons.length / this.grid.x) | 0;
+	
+				// button.y = ypos * hgt + wdt*2;
+				button.x = space.x + wdt + xpos * (wdt * 2 + space.x);
+				button.y = space.y + hgt + ypos * (hgt * 2 + space.y);
+				button.id = teamData.id;
+				var brand = PIXI.Sprite.fromFrame('seriea/' + teamData.brand);
+				brand.anchor.set(0.5);
+				brand.scale.set(0.5);
+				shape.tint = teamData.colorData.mainColor;
+				var roundPattern = this.getRoundPattern(teamData.colorData.patternColors);
+	
+				roundPattern.rotation = teamData.colorData.patternRotation;
+				roundPattern.scale.set(wdt * 2 / roundPattern.width);
+				button.addChild(roundPattern);
+				roundPattern.mask = mask;
+				this.panelContainer.addChild(button);
+				button.shape = shape;
+	
+				// button.addChild(brand)
+				this.teamButtons.push(button);
+			}
+		}, {
+			key: 'getRoundPattern',
+			value: function getRoundPattern(colorData) {
+				var container = new PIXI.Container();
+				var size = 100;
+				var width = size; //size / colorData.length;
+				for (var i = 0; i < colorData.length; i++) {
+					var square = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, width * colorData[i].tick, size);
+					square.tint = colorData[i].color;
+					square.x = container.width;
+					container.addChild(square);
+				}
+				container.pivot.set(size / 2);
+				return container;
+			}
+		}, {
+			key: 'hideTeamContainer',
+			value: function hideTeamContainer() {
+				this.teamContainer.visible = false;
+			}
+		}, {
+			key: 'closePop',
+			value: function closePop(target) {
+				// this.currentClone.visible = false
+				this.closePopup.visible = false;
+				// this.topImage.visible = false;
+				_gsap2.default.to(this.teamContainer, 0.2, { alpha: 0 });
+				_gsap2.default.to(this.panelContainer, 0.2, { y: 0, ease: 'easeOutCubic', onComplete: this.hideTeamContainer, onCompleteScope: this });
+				if (this.currentClone) {
+					_gsap2.default.to(this.currentClone, 0.2, { delay: 0.2, alpha: 0 });
+					_gsap2.default.to(this.currentClone.scale, 0.2, { x: 1, y: 1 });
+					_gsap2.default.to(this.currentClone, 0.2, { x: this.currentClone.initialPosition.x, y: this.currentClone.initialPosition.y });
+				}
+			}
+		}, {
+			key: 'updatePopUp',
+			value: function updatePopUp(target) {
+	
+				this.teamContainer.visible = true;
+				this.teamContainer.alpha = 0;
+				// console.log(target.shape, 'shape');
+				if (this.currentClone && this.currentClone.parent) {
+					this.currentClone.parent.removeChild(this.currentClone);
+				}
+				this.currentClone = target.shape.clone();
+				this.currentClone.x = target.x;
+				this.currentClone.y = target.y;
+				this.currentClone.initialPosition = { x: target.x, y: target.y };
+				this.closePopup.visible = true;
+				// target.parent.setChildIndex(target, target.parent.children.length - 1)
+				target.parent.addChild(this.currentClone);
+				this.teamContainer.parent.setChildIndex(this.teamContainer, this.teamContainer.parent.children.length - 1);
+				_gsap2.default.to(this.currentClone, 0.2, { x: this.panelBg.width / 2, y: this.panelBg.height / 2 });
+				_gsap2.default.to(this.currentClone.scale, 0.4, { x: 15, y: 15 });
+				_gsap2.default.to(this.teamContainer, 0.2, { alpha: 1, delay: 0.1 });
+				_gsap2.default.to(this.panelContainer, 0.2, { y: -50 });
+			}
+		}]);
+	
+		return TeamSelectorPanel;
+	}(PIXI.Container);
+	
+	exports.default = TeamSelectorPanel;
+
+/***/ },
+/* 211 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 	
 	var _pixi = __webpack_require__(1);
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -51264,7 +51882,7 @@
 	exports.default = ChooseFieldScreen;
 
 /***/ },
-/* 211 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51281,7 +51899,7 @@
 	
 	var PIXI = _interopRequireWildcard(_pixi);
 	
-	var _gsap = __webpack_require__(187);
+	var _gsap = __webpack_require__(189);
 	
 	var _gsap2 = _interopRequireDefault(_gsap);
 	
@@ -51399,7 +52017,230 @@
 	exports.default = GameOverScreen;
 
 /***/ },
-/* 212 */
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	var _utils = __webpack_require__(193);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _Screen2 = __webpack_require__(194);
+	
+	var _Screen3 = _interopRequireDefault(_Screen2);
+	
+	var _TeamSelectorPanel = __webpack_require__(210);
+	
+	var _TeamSelectorPanel2 = _interopRequireDefault(_TeamSelectorPanel);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var ChooseMatchScreen = function (_Screen) {
+		_inherits(ChooseMatchScreen, _Screen);
+	
+		function ChooseMatchScreen(label) {
+			_classCallCheck(this, ChooseMatchScreen);
+	
+			// alert(label)
+	
+			var _this = _possibleConstructorReturn(this, (ChooseMatchScreen.__proto__ || Object.getPrototypeOf(ChooseMatchScreen)).call(this, label));
+	
+			_this.button = new PIXI.Container();
+			_this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
+			_this.button.addChild(_this.shape);
+			// this.outgameUIContainer.addChild(this.button)
+			_this.button.x = _config2.default.width / 2;
+			_this.button.y = _config2.default.height / 2;
+			_this.button.interactive = true;
+			// this.addChild(this.button)
+	
+	
+			var shape = PIXI.Sprite.fromFrame('big-button-up.png');
+			shape.anchor.set(0.5);
+			_this.backButton = new PIXI.Container();
+			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+			_this.backButton.addChild(shape);
+	
+			_this.backButton.interactive = true;
+			_this.addChild(_this.backButton);
+	
+			shape = PIXI.Sprite.fromFrame('big-button-up.png');
+			shape.anchor.set(0.5);
+			_this.playButton = new PIXI.Container();
+			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
+			_this.playButton.addChild(shape);
+	
+			_this.playButton.interactive = true;
+			// this.addChild(this.playButton)
+	
+	
+			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
+			_this.addChild(_this.screenLabel);
+	
+			_this.teamButtons = [];
+			// this.addButton(0);
+			// this.addButton(1);
+			// this.addButton(2);
+			// this.addButton(3);
+			// this.addButton(4);
+	
+	
+			_this.teamSelectorPanel = new _TeamSelectorPanel2.default();
+			_this.teamSelectorPanel.build();
+			_this.teamSelectorPanel.position.set(_config2.default.width / 2, _config2.default.height / 2 * 1.2);
+			_this.teamSelectorPanel.confirmTeamPanelCallback = _this.confirmChangeTeam.bind(_this);
+	
+			_this.addChild(_this.teamSelectorPanel);
+	
+			_this.teamDataLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
+			_this.addChild(_this.teamDataLabel);
+			_this.teamDataLabel.y = 350;
+			_this.addEvents();
+			return _this;
+		}
+	
+		_createClass(ChooseMatchScreen, [{
+			key: 'confirmChangeTeam',
+			value: function confirmChangeTeam(team) {
+				GAME_DATA.changeOpponent(team.id);
+				this.teamSelectorPanel.closePop();
+				this.startGame();
+			}
+		}, {
+			key: 'updateTeamLabel',
+			value: function updateTeamLabel() {
+				var teamData = GAME_DATA.getOpponentData();
+	
+				this.teamDataLabel.text = 'ATTACK: ' + teamData.attack * 100 + ' - DEFENSE: ' + teamData.defense * 100 + '\nGOALKEEPER LEVEL: ' + teamData.goalkeeperLevel * 100 + '\nTEAM LEVEL: ' + teamData.type;
+			}
+		}, {
+			key: 'build',
+			value: function build() {
+				_get(ChooseMatchScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseMatchScreen.prototype), 'build', this).call(this);
+	
+				this.backButton.x = 50;
+				this.backButton.y = 50;
+	
+				this.playButton.x = _config2.default.width / 2;
+				this.playButton.y = 500;
+	
+				this.updateTeamLabel();
+			}
+		}, {
+			key: 'addButton',
+			value: function addButton(id) {
+	
+				var teamData = GAME_DATA.getTeamById(id);
+				var shape = PIXI.Sprite.fromFrame('big-button-up.png');
+				shape.anchor.set(0.5);
+				shape.scale.set(0.5);
+				var button = new PIXI.Container();
+				button.addChild(shape);
+				button.interactive = true;
+				button.y = 300;
+				button.x = 50 + this.teamButtons.length * 80;
+				button.id = teamData.id;
+				var brand = PIXI.Sprite.fromFrame('seriea/' + teamData.brand);
+				brand.anchor.set(0.5);
+				brand.scale.set(0.5);
+				this.addChild(button);
+				button.addChild(brand);
+				this.teamButtons.push(button);
+			}
+		}, {
+			key: 'changeTeam',
+			value: function changeTeam(e) {
+				var target = e.target || e.data.target;
+				GAME_DATA.changeOpponent(target.id);
+				this.updateTeamLabel();
+			}
+		}, {
+			key: 'destroy',
+			value: function destroy() {}
+		}, {
+			key: 'startGame',
+			value: function startGame() {
+				this.screenManager.change('GameScreen');
+			}
+		}, {
+			key: 'toMainScreen',
+			value: function toMainScreen() {
+				console.log('to start');
+				this.screenManager.change('StartScreen');
+			}
+		}, {
+			key: 'update',
+			value: function update(delta) {}
+		}, {
+			key: 'transitionOut',
+			value: function transitionOut(nextScreen) {
+				_get(ChooseMatchScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseMatchScreen.prototype), 'transitionOut', this).call(this, nextScreen);
+			}
+		}, {
+			key: 'transitionIn',
+			value: function transitionIn() {
+	
+				_get(ChooseMatchScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseMatchScreen.prototype), 'transitionIn', this).call(this);
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				this.button.off('touchstart').off('mousedown');
+				this.backButton.off('touchstart').off('mousedown');
+				this.playButton.off('touchstart').off('mousedown');
+				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+					this.teamButtons[i].off('touchstart').off('mousedown');
+				}
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.removeEvents();
+				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+					this.teamButtons[i].on('mousedown', this.changeTeam.bind(this)).on('touchstart', this.changeTeam.bind(this));
+				}
+				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
+				this.playButton.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+			}
+		}]);
+	
+		return ChooseMatchScreen;
+	}(_Screen3.default);
+	
+	exports.default = ChooseMatchScreen;
+
+/***/ },
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51422,7 +52263,7 @@
 	
 	var _utils2 = _interopRequireDefault(_utils);
 	
-	var _Ball = __webpack_require__(213);
+	var _Ball = __webpack_require__(215);
 	
 	var _Ball2 = _interopRequireDefault(_Ball);
 	
@@ -51489,7 +52330,7 @@
 	exports.default = Pool;
 
 /***/ },
-/* 213 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -51947,266 +52788,6 @@
 	}(PIXI.Container);
 	
 	exports.default = Ball;
-
-/***/ },
-/* 214 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-	
-	var _pixi = __webpack_require__(1);
-	
-	var PIXI = _interopRequireWildcard(_pixi);
-	
-	var _gsap = __webpack_require__(187);
-	
-	var _gsap2 = _interopRequireDefault(_gsap);
-	
-	var _config = __webpack_require__(184);
-	
-	var _config2 = _interopRequireDefault(_config);
-	
-	var _utils = __webpack_require__(193);
-	
-	var _utils2 = _interopRequireDefault(_utils);
-	
-	var _Screen2 = __webpack_require__(194);
-	
-	var _Screen3 = _interopRequireDefault(_Screen2);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-	
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var ChooseMatchScreen = function (_Screen) {
-		_inherits(ChooseMatchScreen, _Screen);
-	
-		function ChooseMatchScreen(label) {
-			_classCallCheck(this, ChooseMatchScreen);
-	
-			// alert(label)
-	
-			var _this = _possibleConstructorReturn(this, (ChooseMatchScreen.__proto__ || Object.getPrototypeOf(ChooseMatchScreen)).call(this, label));
-	
-			_this.button = new PIXI.Container();
-			_this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
-			_this.button.addChild(_this.shape);
-			// this.outgameUIContainer.addChild(this.button)
-			_this.button.x = _config2.default.width / 2;
-			_this.button.y = _config2.default.height / 2;
-			_this.button.interactive = true;
-			// this.addChild(this.button)
-	
-	
-			var shape = PIXI.Sprite.fromFrame('big-button-up.png');
-			shape.anchor.set(0.5);
-			_this.backButton = new PIXI.Container();
-			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
-			_this.backButton.addChild(shape);
-	
-			_this.backButton.interactive = true;
-			_this.addChild(_this.backButton);
-	
-			shape = PIXI.Sprite.fromFrame('big-button-up.png');
-			shape.anchor.set(0.5);
-			_this.playButton = new PIXI.Container();
-			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
-			_this.playButton.addChild(shape);
-	
-			_this.playButton.interactive = true;
-			_this.addChild(_this.playButton);
-	
-			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
-			_this.addChild(_this.screenLabel);
-	
-			_this.teamButtons = [];
-			_this.addButton(0);
-			_this.addButton(1);
-			_this.addButton(2);
-			_this.addButton(3);
-			_this.addButton(4);
-	
-			_this.teamDataLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
-			_this.addChild(_this.teamDataLabel);
-			_this.teamDataLabel.y = 350;
-			_this.addEvents();
-			return _this;
-		}
-	
-		_createClass(ChooseMatchScreen, [{
-			key: 'updateTeamLabel',
-			value: function updateTeamLabel() {
-				var teamData = GAME_DATA.getOpponentData();
-	
-				this.teamDataLabel.text = 'ATTACK: ' + teamData.attack * 100 + ' - DEFENSE: ' + teamData.defense * 100 + '\nGOALKEEPER LEVEL: ' + teamData.goalkeeperLevel * 100 + '\nTEAM LEVEL: ' + teamData.type;
-			}
-		}, {
-			key: 'build',
-			value: function build() {
-				_get(ChooseMatchScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseMatchScreen.prototype), 'build', this).call(this);
-	
-				this.backButton.x = 50;
-				this.backButton.y = 50;
-	
-				this.playButton.x = _config2.default.width / 2;
-				this.playButton.y = 500;
-	
-				this.updateTeamLabel();
-			}
-		}, {
-			key: 'addButton',
-			value: function addButton(id) {
-	
-				var teamData = GAME_DATA.getTeamById(id);
-				var shape = PIXI.Sprite.fromFrame('big-button-up.png');
-				shape.anchor.set(0.5);
-				shape.scale.set(0.5);
-				var button = new PIXI.Container();
-				button.addChild(shape);
-				button.interactive = true;
-				button.y = 300;
-				button.x = 50 + this.teamButtons.length * 80;
-				button.id = teamData.id;
-				var brand = PIXI.Sprite.fromFrame('seriea/' + teamData.brand);
-				brand.anchor.set(0.5);
-				brand.scale.set(0.5);
-				this.addChild(button);
-				button.addChild(brand);
-				this.teamButtons.push(button);
-			}
-		}, {
-			key: 'changeTeam',
-			value: function changeTeam(e) {
-				var target = e.target || e.data.target;
-				GAME_DATA.changeOpponent(target.id);
-				this.updateTeamLabel();
-			}
-		}, {
-			key: 'destroy',
-			value: function destroy() {}
-		}, {
-			key: 'startGame',
-			value: function startGame() {
-				this.screenManager.change('GameScreen');
-			}
-		}, {
-			key: 'toMainScreen',
-			value: function toMainScreen() {
-				console.log('to start');
-				this.screenManager.change('StartScreen');
-			}
-		}, {
-			key: 'update',
-			value: function update(delta) {}
-		}, {
-			key: 'transitionOut',
-			value: function transitionOut(nextScreen) {
-				_get(ChooseMatchScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseMatchScreen.prototype), 'transitionOut', this).call(this, nextScreen);
-			}
-		}, {
-			key: 'transitionIn',
-			value: function transitionIn() {
-	
-				_get(ChooseMatchScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseMatchScreen.prototype), 'transitionIn', this).call(this);
-			}
-		}, {
-			key: 'removeEvents',
-			value: function removeEvents() {
-				this.button.off('touchstart').off('mousedown');
-				this.backButton.off('touchstart').off('mousedown');
-				this.playButton.off('touchstart').off('mousedown');
-				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
-					this.teamButtons[i].off('touchstart').off('mousedown');
-				}
-			}
-		}, {
-			key: 'addEvents',
-			value: function addEvents() {
-				this.removeEvents();
-				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
-					this.teamButtons[i].on('mousedown', this.changeTeam.bind(this)).on('touchstart', this.changeTeam.bind(this));
-				}
-				this.button.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
-				this.backButton.on('mousedown', this.toMainScreen.bind(this)).on('touchstart', this.toMainScreen.bind(this));
-				this.playButton.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
-			}
-		}]);
-	
-		return ChooseMatchScreen;
-	}(_Screen3.default);
-	
-	exports.default = ChooseMatchScreen;
-
-/***/ },
-/* 215 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var CookieManager = function () {
-		function CookieManager() {
-			_classCallCheck(this, CookieManager);
-	
-			this.resetCookie();
-			window.localStorage.clear();
-		}
-	
-		_createClass(CookieManager, [{
-			key: "createCookie",
-			value: function createCookie(name, value, days) {
-				var sValue = JSON.stringify(value);
-				try {
-					window.localStorage.setItem(name, sValue);
-				} catch (e) {
-					// alert(sValue)
-					//  	alert(e)
-				}
-			}
-		}, {
-			key: "getCookie",
-			value: function getCookie(name) {
-				return JSON.parse(window.localStorage.getItem(name)); //(result === null) ? null : result[1];
-			}
-		}, {
-			key: "storeObject",
-			value: function storeObject(name, value) {
-				window.localStorage.setItem(name, JSON.stringify(value));
-			}
-		}, {
-			key: "resetCookie",
-			value: function resetCookie() {
-				for (var i in window.localStorage) {
-					window.localStorage.removeItem(i);
-				}
-			}
-		}]);
-	
-		return CookieManager;
-	}();
-	
-	exports.default = CookieManager;
 
 /***/ }
 /******/ ]);

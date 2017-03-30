@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import Filters from 'pixi-filters';
+// import Filters from 'pixi-filters';
 import TweenLite from 'gsap';
 import config  from '../../config';
 import utils  from '../../utils';

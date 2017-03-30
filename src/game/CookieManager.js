@@ -1,7 +1,7 @@
 export default class CookieManager{
 	constructor(){
-		this.resetCookie();
-		window.localStorage.clear();
+		// this.resetCookie();
+		// window.localStorage.clear();
 	}
 
 	createCookie(name,value,days) {
@@ -9,7 +9,7 @@ export default class CookieManager{
 		try {
 	  	window.localStorage.setItem(name,sValue)
 	  }catch(e) {
-		// alert(sValue)
+		 // alert(sValue)
 	 //  	alert(e)
 	  }
 	}
