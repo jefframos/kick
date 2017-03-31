@@ -4,13 +4,14 @@ import config  from '../../config';
 import utils  from '../../utils';
 import Screen from '../../screenManager/Screen'
 import TeamSelectorPanel from '../../game/ui/TeamSelectorPanel'
+import TeamInfoPanel from '../../game/ui/TeamInfoPanel'
 
 export default class ChooseTeamScreen extends Screen{
 	constructor(label){
 		super(label);
 
-		this.bg = new PIXI.Graphics().beginFill(0x356B33).drawRect(0,0,config.width, config.height)
-		this.addChild(this.bg)
+		// this.bg = new PIXI.Graphics().beginFill(0x356B33).drawRect(0,0,config.width, config.height)
+		// this.addChild(this.bg)
 
 		this.button = new PIXI.Container();
         this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
@@ -35,8 +36,8 @@ export default class ChooseTeamScreen extends Screen{
 
 
         
-        this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
-        // this.addChild(this.screenLabel)
+        this.screenLabel = new PIXI.Text(this.label,{font : '32px robotoblack', fill : 0xFFFFFF, align : 'right'});
+        this.addChild(this.screenLabel)
 
 
         // this.buildTeamSelectionPanel();
@@ -57,19 +58,33 @@ export default class ChooseTeamScreen extends Screen{
 		this.tempPlayerLabel.y = 550;
 
 
+		this.teamInfoPanel = new TeamInfoPanel();
+		this.teamInfoPanel.build()
+		this.teamInfoPanel.position.set(config.width/2, config.height/2 * 1.2)
+		this.teamInfoPanel.confirmTeamPanelCallback = this.showTeamSelector.bind(this);
+
 		this.teamSelectorPanel = new TeamSelectorPanel();
 		this.teamSelectorPanel.build()
 		this.teamSelectorPanel.position.set(config.width/2, config.height/2 * 1.2)
 		this.teamSelectorPanel.confirmTeamPanelCallback = this.confirmChangeTeam.bind(this);
 
+		this.addChild(this.teamInfoPanel)
+		this.teamInfoPanel.hide();
 		this.addChild(this.teamSelectorPanel)
+		this.teamSelectorPanel.hide();
 
         this.addEvents();
+	}
+	showTeamSelector(){
+		this.teamInfoPanel.hide();
+		this.teamSelectorPanel.show();
 	}
 	confirmChangeTeam(team){
 		GAME_DATA.changeTeam(team.id);
 		this.teamSelectorPanel.closePop();
-		this.toMainScreen();
+		this.teamInfoPanel.show(0);
+		this.teamSelectorPanel.hide();
+		// this.toMainScreen();
 	}
 	updateTeamLabel(){
 		let teamData = GAME_DATA.getMyTeamData();
@@ -147,6 +162,8 @@ export default class ChooseTeamScreen extends Screen{
 	transitionIn(){
 
 		super.transitionIn();
+		this.teamInfoPanel.show();
+		this.teamSelectorPanel.hide();
 
 	}
 

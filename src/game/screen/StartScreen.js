@@ -46,7 +46,7 @@ export default class StartScreen extends Screen{
         this.fieldButton.interactive = true;
         this.addChild(this.fieldButton)
 
-        this.screenLabel = new PIXI.Text(this.label,{font : '32px mario', fill : 0x000000, align : 'right'});
+        this.screenLabel = new PIXI.Text(this.label,{font : '32px robotoblack', fill : 0xFFFFFF, align : 'right'});
         this.addChild(this.screenLabel)
 
         this.addEvents();
@@ -74,9 +74,10 @@ export default class StartScreen extends Screen{
 
 	startGame(){
 
-		TweenLite.to(this.fieldButton.scale, 0.3, {delay:0, x:0, y:0, ease:'easeInBack'});
-		TweenLite.to(this.startButton.scale, 0.3, {delay:0.05, x:0, y:0, ease:'easeInBack'});
-		TweenLite.to(this.teamButton.scale, 0.3, {delay:0.1, x:0, y:0, ease:'easeInBack', onComplete:function(){
+		TweenLite.to(this.fieldButton.scale, 0.3, {delay:0, x:0, y:0 });//ease:'easeInBack'});
+		TweenLite.to(this.startButton.scale, 0.3, {delay:0.05, x:0, y:0});//ease:'easeInBack'});
+		TweenLite.to(this.teamButton.scale, 0.3, {delay:0.1, x:0, y:0, //ease:'easeInBack', 
+			onComplete:function(){
 			this.screenManager.change('ChooseMatchScreen');
 			// this.screenManager.change('GameScreen');
 		}, onCompleteScope:this})
@@ -84,19 +85,21 @@ export default class StartScreen extends Screen{
 	}
 
 	toTeamSelection(){
-		TweenLite.to(this.fieldButton, 0.4, {delay:0, x:-config.width / 2 - 120, ease:'easeInBack'});
-		TweenLite.to(this.startButton, 0.4, {delay:0.1, x:-config.width / 2,ease:'easeInBack'});
-		TweenLite.to(this.teamButton, 0.4, {delay:0.2, x:-config.width / 2 + 120, ease:'easeInBack', onComplete:function(){
+		TweenLite.to(this.fieldButton, 0.4, {delay:0, x:-config.width / 2 - 120});//ease:'easeInBack'});
+		TweenLite.to(this.startButton, 0.4, {delay:0.1, x:-config.width / 2});//ease:'easeInBack'});
+		TweenLite.to(this.teamButton, 0.4, {delay:0.2, x:-config.width / 2 + 120, //ease:'easeInBack', 
+			onComplete:function(){
 			this.screenManager.change('ChooseTeamScreen');
 		}, onCompleteScope:this})
 	}
 
 	toFieldSlection(){
-		TweenLite.to(this.fieldButton, 0.4, {delay:0.2, x:config.width + config.width / 2 - 120, ease:'easeInBack', onComplete:function(){
+		TweenLite.to(this.fieldButton, 0.4, {delay:0.2, x:config.width + config.width / 2 - 120, //ease:'easeInBack', 
+			onComplete:function(){
 			this.screenManager.change('ChooseFieldScreen');
 		}, onCompleteScope:this});
-		TweenLite.to(this.startButton, 0.4, {delay:0.1, x:config.width + config.width / 2,ease:'easeInBack'});
-		TweenLite.to(this.teamButton, 0.4, {delay:0, x:config.width + config.width / 2 + 120, ease:'easeInBack'})
+		TweenLite.to(this.startButton, 0.4, {delay:0.1, x:config.width + config.width / 2});//ease:'easeInBack'});
+		TweenLite.to(this.teamButton, 0.4, {delay:0, x:config.width + config.width / 2 + 120})//ease:'easeInBack'})
 	}
 	destroy(){
 
@@ -119,9 +122,9 @@ export default class StartScreen extends Screen{
 		this.fieldButton.scale.set(0)
 		this.startButton.scale.set(0)
 		this.teamButton.scale.set(0)
-		TweenLite.to(this.fieldButton.scale, 0.8, {delay:0.2, x:1, y:1, ease:'easeOutElastic'});
-		TweenLite.to(this.startButton.scale, 0.8, {delay:0.3, x:1, y:1, ease:'easeOutElastic'});
-		TweenLite.to(this.teamButton.scale, 0.8, {delay:0.4, x:1, y:1, ease:'easeOutElastic'});
+		TweenLite.to(this.fieldButton.scale, 0.2, {delay:0.2, x:1, y:1});//, ease:'easeOutElastic'});
+		TweenLite.to(this.startButton.scale, 0.2, {delay:0.3, x:1, y:1});//, ease:'easeOutElastic'});
+		TweenLite.to(this.teamButton.scale, 0.2, {delay:0.4, x:1, y:1});//, ease:'easeOutElastic'});
 
 
 	}

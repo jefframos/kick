@@ -4,7 +4,7 @@
         <key>fileFormatVersion</key>
         <int>4</int>
         <key>texturePackerVersion</key>
-        <string>4.3.1</string>
+        <string>4.4.0</string>
         <key>fileName</key>
         <string>C:/Projects/kick/WIP/ui/uipack.tps</string>
         <key>autoSDSettings</key>
@@ -150,11 +150,11 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../../assets/images/game.json</filename>
+                <filename>../../assets/images/game-{n}.json</filename>
             </struct>
         </map>
         <key>multiPack</key>
-        <false/>
+        <true/>
         <key>forceIdenticalLayout</key>
         <false/>
         <key>outputFormat</key>
@@ -172,6 +172,8 @@
         <false/>
         <key>prependSmartFolderName</key>
         <false/>
+        <key>autodetectAnimations</key>
+        <true/>
         <key>globalSpriteSettings</key>
         <struct type="SpriteSettings">
             <key>scale</key>
@@ -224,6 +226,7 @@
                 <false/>
             </struct>
             <key type="filename">big-button-over.png</key>
+            <key type="filename">big-button-up - Copy.png</key>
             <key type="filename">big-button-up.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -264,7 +267,9 @@
                 <false/>
             </struct>
             <key type="filename">grass1.png</key>
+            <key type="filename">grass12.png</key>
             <key type="filename">grass2.png</key>
+            <key type="filename">grass22.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -394,26 +399,26 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">seriea/104776.png</key>
-            <key type="filename">seriea/107206.png</key>
-            <key type="filename">seriea/107208.png</key>
-            <key type="filename">seriea/301151.png</key>
-            <key type="filename">seriea/301304.png</key>
-            <key type="filename">seriea/335.png</key>
-            <key type="filename">seriea/337.png</key>
-            <key type="filename">seriea/338.png</key>
-            <key type="filename">seriea/339.png</key>
-            <key type="filename">seriea/340.png</key>
+            <key type="filename">seriea/atletico_goianiense.png</key>
             <key type="filename">seriea/atletico_mineiro.png</key>
+            <key type="filename">seriea/atletico_paranaense.png</key>
+            <key type="filename">seriea/avai.png</key>
             <key type="filename">seriea/bahia.png</key>
             <key type="filename">seriea/botafogo.png</key>
+            <key type="filename">seriea/chapecoense.png</key>
             <key type="filename">seriea/corinthians.png</key>
+            <key type="filename">seriea/coritiba.png</key>
             <key type="filename">seriea/cruzeiro.png</key>
             <key type="filename">seriea/flamengo.png</key>
             <key type="filename">seriea/fluminense.png</key>
             <key type="filename">seriea/gremio.png</key>
             <key type="filename">seriea/palmeiras.png</key>
             <key type="filename">seriea/ponte_preta.png</key>
+            <key type="filename">seriea/santos.png</key>
+            <key type="filename">seriea/sao_paulo.png</key>
+            <key type="filename">seriea/sport.png</key>
+            <key type="filename">seriea/vasco.png</key>
+            <key type="filename">seriea/vitoria.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>

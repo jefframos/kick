@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import TweenLite from 'gsap';
 import config  from '../../config';
-export default class TeamSelectorPanel extends PIXI.Container{
+export default class TeamInfoPanel extends PIXI.Container{
 	constructor(){
 		super();
 		this.panelContainer = new PIXI.Container();
@@ -15,25 +15,21 @@ export default class TeamSelectorPanel extends PIXI.Container{
 		this.teamPanelSize = {w:w, h:h}
 		this.grid = {x:4, y:5}
 
-		this.backgroundImage = new PIXI.Graphics().beginFill(0x30333C).drawRect(0,0,this.teamPanelSize.w, this.teamPanelSize.h)
-        this.panelContainer.addChild(this.backgroundImage)
-		
 		this.teamButtons = [];
-		 for (var i = 0; i < GAME_DATA.teamsData.length; i++) {		 	
-		 	this.addTeamButton(GAME_DATA.teamsData[i].id);
-		 }
+		 // for (var i = 0; i < GAME_DATA.teamsData.length; i++) {		 	
+		 // 	this.addTeamButton(GAME_DATA.teamsData[i].id);
+		 // }
 
         this.panelMask = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0,0,this.teamPanelSize.w, this.teamPanelSize.h, GRAPHICS_DATA.roundedCorner)
         this.panelContainer.addChild(this.panelMask)
-        this.panelMask.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
-        // this.teamContainer.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
-		this.panelMask.position.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
 
         this.panelContainer.mask = this.panelMask;
 
         this.panelContainer.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
+
+        this.panelMask.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
         // this.teamContainer.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
-		//this.panelContainer.position.set(config.width/2, config.height/2)
+		this.panelMask.position.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
 
 		
 
@@ -51,8 +47,8 @@ export default class TeamSelectorPanel extends PIXI.Container{
 
 
 		//TEAM CONTAINER
-		// this.panelBackgroundShape = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0,0,this.teamPanelSize.w, this.teamPanelSize.h)
-		// this.teamContainer.addChild(this.panelBackgroundShape)
+		this.panelBackgroundShape = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0,0,this.teamPanelSize.w, this.teamPanelSize.h)
+		this.teamContainer.addChild(this.panelBackgroundShape)
 
 		this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0,0,this.teamPanelSize.w, 50)
 		this.teamContainer.addChild(this.topImage)
@@ -74,14 +70,29 @@ export default class TeamSelectorPanel extends PIXI.Container{
 		this.teamConfirmButtonContainer.x = this.teamPanelSize.w / 2 - this.teamConfirmButtonContainer.width / 2
 		this.teamConfirmButtonContainer.y = this.teamPanelSize.h - this.teamConfirmButtonContainer.height - 20
 		
-		this.buttonLabel = new PIXI.Text('changeTeam',{font : '32px robotoregular', fill : 0xFFFFFF, align : 'right'});
+		this.buttonLabel = new PIXI.Text('CHANGE',{font : '32px robotoregular', fill : 0xFFFFFF, align : 'right'});
         this.teamConfirmButtonContainer.addChild(this.buttonLabel)
 
 		this.teamConfirmButtonContainer.interactive = true;
 		this.teamConfirmButtonContainer.buttonMode = true;
 		this.teamConfirmButtonContainer.on('mousedown', this.onConfirmTeam.bind(this)).on('touchstart', this.onConfirmTeam.bind(this));
 
-		this.teamContainer.visible = false;
+		// this.teamContainer.visible = false;
+		// this.hide();
+	}
+
+	hide(){
+		this.panelMask.scale.set(0);
+		this.y = config.height/2 * 1.2;
+		// TweenLite.to(this, 0.35, {y:config.height/2})
+	}
+	show(timeScale = 1){
+		this.updateTeamContent(GAME_DATA.getMyTeamData())
+		this.panelMask.scale.set(0);
+		TweenLite.to(this.panelMask.scale, 0.2*timeScale, {y:1})
+		TweenLite.to(this.panelMask.scale, 0.35*timeScale, {x:1})
+		TweenLite.to(this, 0.35*timeScale, {y:config.height/2})
+
 	}
 
 	onConfirmTeam(e){
@@ -95,8 +106,8 @@ export default class TeamSelectorPanel extends PIXI.Container{
 	updateTeamContent(team){
 		this.teamBrand.texture = PIXI.Texture.fromFrame('seriea/'+team.brand)
 		this.teamConfirmButton.tint = team.colorData.buttonColor;
+		this.panelBackgroundShape.tint = team.colorData.mainColor;
 		this.buttonLabel.tint = team.colorData.contrastColor;
-		this.buttonLabel.text = team.ini;
 		this.buttonLabel.x = this.teamConfirmButtonContainer.width / 2 - this.buttonLabel.width / 2
 		this.buttonLabel.y = this.teamConfirmButtonContainer.height / 2 - this.buttonLabel.height / 2
 		this.currentSelectedTeam = team;
@@ -126,20 +137,7 @@ export default class TeamSelectorPanel extends PIXI.Container{
 		this.closePopup.on('mousedown', this.closePop.bind(this)).on('touchstart', this.closePop.bind(this));
 	}
 
-	hide(){
-		this.panelMask.scale.set(0);
-		this.y = config.height/2 * 1.2;
-		// TweenLite.to(this, 0.35, {y:config.height/2})
-	}
-	show(){
-		this.updateTeamContent(GAME_DATA.getMyTeamData())
-		this.panelMask.scale.set(0);
-		TweenLite.to(this.panelMask.scale, 0.2, {y:1})
-		TweenLite.to(this.panelMask.scale, 0.35, {x:1})
-		TweenLite.to(this, 0.35, {y:config.height/2})
 
-	}
-	
 	addTeamButton(id){
 
 		
@@ -149,25 +147,22 @@ export default class TeamSelectorPanel extends PIXI.Container{
 		let wdt = (this.teamPanelSize.w - space.x * 6) / this.grid.x / 2;
 		let hgt = (this.teamPanelSize.h - space.y * 6) / this.grid.y / 2;
 
-		let shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0,0,wdt-10)//PIXI.Sprite.fromFrame('big-button-up.png');
+		let shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0,0,wdt)//PIXI.Sprite.fromFrame('big-button-up.png');
 		
-		let back = new PIXI.Graphics().beginFill(0x3E4349).drawCircle(0,0,wdt)//PIXI.Sprite.fromFrame('big-button-up.png');
-		
-		let mask = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0,0,wdt-10)//PIXI.Sprite.fromFrame('big-button-up.png');
+		let mask = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0,0,wdt)//PIXI.Sprite.fromFrame('big-button-up.png');
 		// shape.anchor.set(0.5);
 		// shape.scale.set(0.5);
 
 		let button = new PIXI.Container();
-        button.addChild(back);
-        button.addChild(shape);
-        button.addChild(mask);    
+        button.addChild(shape)        
+        button.addChild(mask)        
         button.interactive = true;
         button.buttonMode = true;
         let xpos = (this.teamButtons.length % this.grid.x) | 0
         let ypos = Math.floor(this.teamButtons.length / this.grid.x) | 0
 
         // button.y = ypos * hgt + wdt*2;
-        button.x = space.x + wdt + (xpos * (wdt * 2 + space.x)) + space.x/2;
+        button.x = space.x + wdt + (xpos * (wdt * 2 + space.x));
         button.y = space.y + hgt + (ypos * (hgt * 2 + space.y));
         button.id = teamData.id;
         let brand = PIXI.Sprite.fromFrame('seriea/'+teamData.brand);
@@ -177,7 +172,7 @@ export default class TeamSelectorPanel extends PIXI.Container{
         let roundPattern = this.getRoundPattern(teamData.colorData.patternColors);
 
         roundPattern.rotation = teamData.colorData.patternRotation;
-        roundPattern.scale.set((wdt - 10) * 2 / roundPattern.width)
+        roundPattern.scale.set(wdt * 2 / roundPattern.width)
         button.addChild(roundPattern)
         roundPattern.mask = mask;
         this.panelContainer.addChild(button)
@@ -234,7 +229,7 @@ export default class TeamSelectorPanel extends PIXI.Container{
 		TweenLite.to(this.currentClone,0.2,{x:this.panelMask.width / 2, y:this.panelMask.height / 2})
 		TweenLite.to(this.currentClone.scale,0.4,{x:15, y:15})
 		TweenLite.to(this.teamContainer,0.2,{alpha:1, delay:0.1})
-		// TweenLite.to(this.panelContainer,0.2,{y:- 50})
+		TweenLite.to(this.panelContainer,0.2,{y:- 50})
 	}
 
 }

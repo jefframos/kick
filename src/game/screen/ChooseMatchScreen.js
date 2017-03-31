@@ -58,10 +58,11 @@ export default class ChooseMatchScreen extends Screen{
 		this.teamSelectorPanel.confirmTeamPanelCallback = this.confirmChangeTeam.bind(this);
 
 		this.addChild(this.teamSelectorPanel)
+		this.teamSelectorPanel.hide();
 
 
         this.teamDataLabel = new PIXI.Text('',{font : '20px', fill : 0x000000, align : 'right'});
-		this.addChild(this.teamDataLabel)
+		// this.addChild(this.teamDataLabel)
 		this.teamDataLabel.y = 350;
         this.addEvents();
 	}
@@ -140,6 +141,8 @@ export default class ChooseMatchScreen extends Screen{
 	transitionIn(){
 
 		super.transitionIn();
+
+		this.teamSelectorPanel.show();
 
 	}
 

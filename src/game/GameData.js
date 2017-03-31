@@ -14,529 +14,551 @@ export default class GameData{
     	this.fieldsTextures.push({texture:'grass1.png', extraBalls: 2})
     	this.fieldsTextures.push({texture:'grass2.png', extraBalls: 3})
 
+        
+
         this.teamsData = [];
         this.teamsData.push({id:100, attack:1.2, defense:1.2, colorData:
         {
-            mainColor:0xDA251D,
+            mainColor:COLORS_CONST.red600,
             patternColors:
                 [
                     {
-                        color:0xDA251D,
+                        color:COLORS_CONST.red600,
                         tick:0.45
                     },
                     {
-                        color:0xD9D9D9,
+                        color:COLORS_CONST.grey50,
                         tick:0.1
                     },
                     {
-                        color:0x0A0B0C,
+                        color:COLORS_CONST.grey900,
                         tick:0.45
                     }
                 ],
                 patternRotation:0,
-                buttonColor:0x0A0B0C            
+                buttonColor:COLORS_CONST.grey900,
+                contrastColor:COLORS_CONST.grey50            
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'atletico_goianiense.png', ini:'ATG'})
         this.teamsData.push({id:50, attack:1.2, defense:1.2, colorData:
         {
-            mainColor:0x0A0B0C,
+            mainColor:COLORS_CONST.grey900,
             patternColors:[
                 
                     {
-                        color:0xD9D9D9,
+                        color:COLORS_CONST.grey50,
                         tick:0.1
                     },
                     {
-                        color:0x0A0B0C,
+                        color:COLORS_CONST.grey900,
                         tick:0.35
                     },
                     {
-                        color:0xD9D9D9,
+                        color:COLORS_CONST.grey50,
                         tick:0.1
                     },
                     {
-                        color:0x0A0B0C,
+                        color:COLORS_CONST.grey900,
                         tick:0.35
                     },
                     {
-                        color:0xD9D9D9,
+                        color:COLORS_CONST.grey50,
                         tick:0.1
                     }
                 
             ],
-            buttonColor:0xD9D9D9,
+            buttonColor:COLORS_CONST.grey50,
+            contrastColor:COLORS_CONST.grey900,
             patternRotation:0
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'atletico_mineiro.png', ini:'ATM'})
         this.teamsData.push({id:450, attack:1.2, defense:1.2, colorData:
         {
-            mainColor:0xDC351B,
+            mainColor:COLORS_CONST.red800,
             patternColors:[
                 {
-                    color:0xDC351B,
+                    color:COLORS_CONST.red800,
                     tick:0.2
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 },
                 {
-                    color:0xDC351B,
+                    color:COLORS_CONST.red800,
                     tick:0.2
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 },
                 {
-                    color:0xDC351B,
+                    color:COLORS_CONST.red800,
                     tick:0.2
                 }
             ],
-            buttonColor:0x0A0B0C,
+            buttonColor:COLORS_CONST.grey900,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:0
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'atletico_paranaense.png', ini:'ATP'})
         this.teamsData.push({id:10, attack:0.5, defense:0.5, colorData:
         {
-            mainColor:0x005E98,
+            mainColor:COLORS_CONST.blue500,
             patternColors:[                
                 {
-                    color:0x005E98,
+                    color:COLORS_CONST.blue500,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0x005E98,
+                    color:COLORS_CONST.blue500,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0x005E98,
+                    color:COLORS_CONST.blue500,
                     tick:0.2
                 }
             ],
-            buttonColor:0xD9D9D9,
+            buttonColor:COLORS_CONST.grey50,
+            contrastColor:COLORS_CONST.blue900,
             patternRotation:0
         }
         , goalkeeperLevel:0.5, type:'VERY EASY', players:[], brand:'avai.png', ini:'AVA'})
         this.teamsData.push({id:9, attack:1.5, defense:0.5, colorData:
         {
-            mainColor:0x007CC3,
+            mainColor:COLORS_CONST.blue400,
              patternColors:[                
                 {
-                    color:0x007CC3,
+                    color:COLORS_CONST.blue400,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0xDA251D,
+                    color:COLORS_CONST.red600,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0x007CC3,
+                    color:COLORS_CONST.blue400,
                     tick:0.2
                 }
             ],
-            buttonColor:0xDA251D,
+            buttonColor:COLORS_CONST.red600,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:3.14 / 2
         }
         , goalkeeperLevel:0.75, type:'EASY', players:[], brand:'bahia.png', ini:'BAH'})   
         this.teamsData.push({id:460, attack:1.2, defense:1.2, colorData:
         {
-            mainColor:0x0A0B0C,
+            mainColor:COLORS_CONST.grey900,
             patternColors:[
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.33
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.33
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.33
                 },
             ],
-            buttonColor:0xD9D9D9,
+            buttonColor:COLORS_CONST.grey50,
+            contrastColor:COLORS_CONST.grey900,
             patternRotation:3.14 / 2
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'botafogo.png', ini:'BOT'})
         this.teamsData.push({id:8, attack:1.2, defense:0.8, colorData:
         {
-            mainColor:0x356B33,
+            mainColor:COLORS_CONST.light_green800,
             patternColors:[
                 {
-                    color:0x356B33,
+                    color:COLORS_CONST.light_green800,
                     tick:0.33
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.33
                 },
                 {
-                    color:0x356B33,
+                    color:COLORS_CONST.light_green800,
                     tick:0.33
                 },
             ],
-            buttonColor:0xD9D9D9,
+            buttonColor:COLORS_CONST.grey50,
+            contrastColor:COLORS_CONST.light_green900,
             patternRotation:0
         }
         , goalkeeperLevel:0.5, type:'EASY', players:[], brand:'chapecoense.png', ini:'CHA'})
         this.teamsData.push({id:0, attack:1.2, defense:1.2, colorData:
         {
-            mainColor:0x0A0B0C,
+            mainColor:COLORS_CONST.grey900,
             patternColors:[
             {
-                    color:0xDA251D,
+                    color:COLORS_CONST.red600,
                     tick:0.1
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.15
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.15
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.15
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.15
                 },
                 {
-                    color:0xDA251D,
+                    color:COLORS_CONST.red600,
                     tick:0.1
                 }
                 // {
-                //     color:0x0A0B0C,
+                //     color:COLORS_CONST.grey900,
                 //     tick:1
                 // }
             ],
-            buttonColor:0xDA251D,
+            buttonColor:COLORS_CONST.red600,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:3.14/2
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'corinthians.png', ini:'COR'})
         this.teamsData.push({id:2, attack:1, defense:1, colorData:
         {
-            mainColor:0x00544C,
+            mainColor:COLORS_CONST.green800,
             patternColors:[
             {
-                    color:0x00544C,
+                    color:COLORS_CONST.green800,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0x00544C,
+                    color:COLORS_CONST.green800,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0x00544C,
+                    color:COLORS_CONST.green800,
                     tick:0.2
                 }     
             ],
-            buttonColor:0xD9D9D9,
+            buttonColor:COLORS_CONST.grey50,
+            contrastColor:COLORS_CONST.green900,
             patternRotation:0
         }
         , goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'coritiba.png', ini:'CTB'})
         this.teamsData.push({id:11, attack:1.2, defense:1.2, colorData:
         {
-            mainColor:0x004E90,
+            mainColor:COLORS_CONST.blue900,
             patternColors:[               
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0x004E90,
+                    color:COLORS_CONST.blue900,
                     tick:0.6
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 }             
             ],
-            buttonColor:0xD9D9D9,
+            buttonColor:COLORS_CONST.grey50,
+            contrastColor:COLORS_CONST.blue900,
             patternRotation:0
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'cruzeiro.png', ini:'CRU'})
         this.teamsData.push({id:1, attack:1, defense:1, colorData:
         {
-            mainColor:0xDA251D,
+            mainColor:COLORS_CONST.red600,
             patternColors:[
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 },
                 {
-                    color:0xDA251D,
+                    color:COLORS_CONST.red600,
                     tick:0.2
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 },
                 {
-                    color:0xDA251D,
+                    color:COLORS_CONST.red600,
                     tick:0.2
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 }
                
             ],
-            buttonColor:0x0A0B0C,
+            buttonColor:COLORS_CONST.grey900,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:3.14 / 2
         }
         , goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'flamengo.png', ini:'FLA'})
         this.teamsData.push({id:107, attack:1.2, defense:1.2, colorData:
         {
-            mainColor:0x7E1D31,
+            mainColor:COLORS_CONST.pink900,
             patternColors:[
             {
-                    color:0x7E1D31,
+                    color:COLORS_CONST.pink900,
                     tick:0.45
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.1
                 },
                 {
-                    color:0x00593C,
+                    color:COLORS_CONST.green900,
                     tick:0.45
                 }                
             ],
-            buttonColor:0x00593C,
+            buttonColor:COLORS_CONST.green900,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:3.14/2
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'fluminense.png', ini:'FLU'})
         this.teamsData.push({id:4, attack:1.2, defense:1.2, colorData:
         {
-            mainColor:0x0D80BF,
+            mainColor:COLORS_CONST.blue500,
             patternColors:[
             {
-                    color:0x0D80BF,
+                    color:COLORS_CONST.blue500,
                     tick:0.3
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.1
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.1
                 },
                 {
-                    color:0x0D80BF,
+                    color:COLORS_CONST.blue500,
                     tick:0.3
                 }
             ],
-            buttonColor:0x0A0B0C,
+            buttonColor:COLORS_CONST.grey900,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:3.14/2
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'gremio.png', ini:'GRE'})
         this.teamsData.push({id:3, attack:1, defense:1, colorData:
         {
-            mainColor:0xD9D9D9,
+            mainColor:COLORS_CONST.green600,
             patternColors:[
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.5
                 },
                 {
-                    color:0x006338,
+                    color:COLORS_CONST.green600,
                     tick:0.5
                 }
             ],
-            buttonColor:0x006338,
+            buttonColor:COLORS_CONST.grey50,
+            contrastColor:COLORS_CONST.green900,
             patternRotation:3.14/2
         }
         , goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'palmeiras.png', ini:'PAL'})
         this.teamsData.push({id:124, attack:1.2, defense:1.2, colorData:
             {
-                mainColor:0x0A0B0C,
+                mainColor:COLORS_CONST.grey900,
             patternColors:[
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.2
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.2
                 }
             ],
-            buttonColor:0xD9D9D9,
+            buttonColor:COLORS_CONST.grey50,
+            contrastColor:COLORS_CONST.grey900,
             patternRotation:0
         }
         , goalkeeperLevel:1, type:'HARD', players:[], brand:'ponte_preta.png', ini:'PON'})
         this.teamsData.push({id:7, attack:1, defense:1, colorData:
             {
-                mainColor:0xD9D9D9,
+                mainColor:COLORS_CONST.grey50,
             patternColors:[                
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.166
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.166
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.166
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.166
                 },
                 {
-                    color:0xD9D9D9,
+                    color:COLORS_CONST.grey50,
                     tick:0.166
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.166
                 }
             ],
-            buttonColor:0x0A0B0C,
+            buttonColor:COLORS_CONST.grey900,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:3.14/4
         }
         , goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'santos.png', ini:'SAN'})
         this.teamsData.push({id:6, attack:1, defense:1, colorData:
             {
-                mainColor:0xDA251D,
+                mainColor:COLORS_CONST.red600,
             patternColors:[
                 {
-                        color:0xDA251D,
+                        color:COLORS_CONST.red600,
                         tick:0.4
                     },
                     {
-                        color:0xD9D9D9,
+                        color:COLORS_CONST.grey50,
                         tick:0.2
                     },
                     {
-                        color:0x0A0B0C,
+                        color:COLORS_CONST.grey900,
                         tick:0.4
                     }
             ],
-            buttonColor:0x0A0B0C,
+            buttonColor:COLORS_CONST.grey900,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:0
         }
         , goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'sao_paulo.png', ini:'SPA'})
         this.teamsData.push({id:5, attack:1, defense:1, colorData:
             {
-                mainColor:0xDA1921,
+                mainColor:COLORS_CONST.red800,
                 patternColors:[
                 {
-                    color:0xDA1921,
+                    color:COLORS_CONST.red800,
                     tick:0.2
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.225
                 },
                 {
-                    color:0xFFD503,
+                    color:COLORS_CONST.yellow600,
                     tick:0.15
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.225
                 },
                 {
-                    color:0xDA1921,
+                    color:COLORS_CONST.red800,
                     tick:0.2
                 }
             ],
            
-            buttonColor:0x0A0B0C,
+            buttonColor:COLORS_CONST.grey900,
+            contrastColor:COLORS_CONST.grey50,
             patternRotation:3.14 / 4
         }
         , goalkeeperLevel:0.8, type:'NORMAL', players:[], brand:'sport.png', ini:'SPO'})
         this.teamsData.push({id:312, attack:1.2, defense:1.2, colorData:
             {
-                mainColor:0x0A0B0C,
+                mainColor:COLORS_CONST.grey900,
             patternColors:[
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.33
                 },
                 {
-                    color:0xDA251D,
+                    color:COLORS_CONST.grey50,
                     tick:0.33
                 },
                 {
-                    color:0x0A0B0C,
+                    color:COLORS_CONST.grey900,
                     tick:0.33
                 }
         ],
-        buttonColor:0xD9D9D9,
+        buttonColor:COLORS_CONST.grey50,
+        contrastColor:COLORS_CONST.grey900,
         patternRotation:3.14 / 4
     }
     , goalkeeperLevel:1, type:'HARD', players:[], brand:'vasco.png', ini:'VAS'})
         this.teamsData.push({id:314, attack:1.2, defense:1.2, colorData:
             {
-                mainColor:0xDB3A28,
+                mainColor:COLORS_CONST.red900,
             patternColors:[
             {
-                color:0xDB3A28,
+                color:COLORS_CONST.red900,
                 tick:0.475
             },
             {
-                color:0xD9D9D9,
+                color:COLORS_CONST.grey50,
                 tick:0.05
             },
             {
-                color:0x0A0B0C,
+                color:COLORS_CONST.grey900,
                 tick:0.475
             }
         ],
-        buttonColor:0x0A0B0C,
+        buttonColor:COLORS_CONST.grey900,
+        contrastColor:COLORS_CONST.grey50,
         patternRotation:3.14/2
     }
     , goalkeeperLevel:1, type:'HARD', players:[], brand:'vitoria.png', ini:'VIT'})

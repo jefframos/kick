@@ -16,11 +16,16 @@ export default class LoadScreen extends Screen{
 
 		// this.screenManager.change('GameScreen')
 
+		let test = new PIXI.Text(this.label,{font : '32px robotoblack', fill : 0xFFFFFF, align : 'right'});
+		test = new PIXI.Text(this.label,{font : '32px robotoregular', fill : 0xFFFFFF, align : 'right'});
+        this.addChild(test)
+        test.visible = false;
+
 		this.startLoad();
 	}
 
 	toGame(){
-		this.screenLabel = new PIXI.Text(this.label,{font : '46px mario', fill : 0xFFFFFF, align : 'right'});  
+		//this.screenLabel = new PIXI.Text(this.label,{font : '46px robotoblack', fill : 0xFFFFFF, align : 'right'});  
 		// this.screenManager.change('ChooseTeamScreen')
 		this.screenManager.change('StartScreen')
 		// this.screenManager.change('GameScreen')

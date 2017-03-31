@@ -37766,13 +37766,56 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
+	window.GRAPHICS_DATA = {
+		roundedCorner: 15
+	};
+	window.COLORS_CONST = {
+		red400: 0xEF5350,
+		red500: 0xF44336,
+		red600: 0xE53935,
+		red800: 0xC62828,
+		red900: 0xB71C1C,
+	
+		blue400: 0x42A5F5,
+		blue500: 0x2196F3,
+		blue600: 0x1E88E5,
+		blue900: 0x0D47A1,
+	
+		grey50: 0xFAFAFA,
+		grey100: 0xF5F5F5,
+		grey500: 0x9E9E9E,
+		grey600: 0x757575,
+		grey400: 0xBDBDBD,
+		grey900: 0x212121,
+	
+		yellow600: 0xFDD835,
+	
+		amber600: 0xFFB300,
+	
+		pink900: 0x880E4F,
+	
+		green500: 0x4CAF50,
+		green600: 0x43A047,
+		green700: 0x388E3C,
+		green800: 0x2E7D32,
+		green900: 0x1B5E20,
+	
+		light_green500: 0x8BC34A,
+		light_green600: 0x7CB342,
+		light_green700: 0x689F38,
+		light_green800: 0x558B2F,
+		light_green900: 0x33691E
+	};
+	
 	window.COOKIE_MANAGER = new _CookieManager2.default();
 	window.GAME_DATA = new _GameData2.default();
 	
 	window.POOL = new _Pool2.default();
 	
-	// window.console.warn= function(){}
-	// window.console.groupCollapsed = function(teste){return teste}//('hided warnings')
+	window.console.warn = function () {};
+	window.console.groupCollapsed = function (teste) {
+		return teste;
+	}; //('hided warnings')
 	
 	PIXI.loader
 	// .add('./assets/map.json')
@@ -37785,7 +37828,9 @@
 	// .add('./assets/images/onion.png')
 	// .add('./assets/images/goal.png')
 	// .add('./assets/images/ui.json')
-	.add('./assets/fonts/mario-webfont.woff').add('./assets/fonts/mario-webfont.woff2').add('./assets/fonts/stylesheet.css').add('./assets/fonts/specimen_files/specimen_stylesheet.css').load(configGame);
+	.add('./assets/fonts/stylesheet.css')
+	// .add('./assets/fonts/specimen_files/specimen_stylesheet.css')
+	.load(configGame);
 	
 	function configGame() {
 	
@@ -38035,400 +38080,420 @@
 	
 	        this.teamsData = [];
 	        this.teamsData.push({ id: 100, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0xDA251D,
+	                mainColor: COLORS_CONST.red600,
 	                patternColors: [{
-	                    color: 0xDA251D,
+	                    color: COLORS_CONST.red600,
 	                    tick: 0.45
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.1
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.45
 	                }],
 	                patternRotation: 0,
-	                buttonColor: 0x0A0B0C
+	                buttonColor: COLORS_CONST.grey900,
+	                contrastColor: COLORS_CONST.grey50
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'atletico_goianiense.png', ini: 'ATG' });
 	        this.teamsData.push({ id: 50, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0x0A0B0C,
+	                mainColor: COLORS_CONST.grey900,
 	                patternColors: [{
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.1
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.35
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.1
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.35
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.1
 	                }],
-	                buttonColor: 0xD9D9D9,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.grey900,
 	                patternRotation: 0
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'atletico_mineiro.png', ini: 'ATM' });
 	        this.teamsData.push({ id: 450, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0xDC351B,
+	                mainColor: COLORS_CONST.red800,
 	                patternColors: [{
-	                    color: 0xDC351B,
+	                    color: COLORS_CONST.red800,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xDC351B,
+	                    color: COLORS_CONST.red800,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xDC351B,
+	                    color: COLORS_CONST.red800,
 	                    tick: 0.2
 	                }],
-	                buttonColor: 0x0A0B0C,
+	                buttonColor: COLORS_CONST.grey900,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 0
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'atletico_paranaense.png', ini: 'ATP' });
 	        this.teamsData.push({ id: 10, attack: 0.5, defense: 0.5, colorData: {
-	                mainColor: 0x005E98,
+	                mainColor: COLORS_CONST.blue500,
 	                patternColors: [{
-	                    color: 0x005E98,
+	                    color: COLORS_CONST.blue500,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x005E98,
+	                    color: COLORS_CONST.blue500,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x005E98,
+	                    color: COLORS_CONST.blue500,
 	                    tick: 0.2
 	                }],
-	                buttonColor: 0xD9D9D9,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.blue900,
 	                patternRotation: 0
 	            },
 	            goalkeeperLevel: 0.5, type: 'VERY EASY', players: [], brand: 'avai.png', ini: 'AVA' });
 	        this.teamsData.push({ id: 9, attack: 1.5, defense: 0.5, colorData: {
-	                mainColor: 0x007CC3,
+	                mainColor: COLORS_CONST.blue400,
 	                patternColors: [{
-	                    color: 0x007CC3,
+	                    color: COLORS_CONST.blue400,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xDA251D,
+	                    color: COLORS_CONST.red600,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x007CC3,
+	                    color: COLORS_CONST.blue400,
 	                    tick: 0.2
 	                }],
-	                buttonColor: 0xDA251D,
+	                buttonColor: COLORS_CONST.red600,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 3.14 / 2
 	            },
 	            goalkeeperLevel: 0.75, type: 'EASY', players: [], brand: 'bahia.png', ini: 'BAH' });
 	        this.teamsData.push({ id: 460, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0x0A0B0C,
+	                mainColor: COLORS_CONST.grey900,
 	                patternColors: [{
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.33
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.33
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.33
 	                }],
-	                buttonColor: 0xD9D9D9,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.grey900,
 	                patternRotation: 3.14 / 2
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'botafogo.png', ini: 'BOT' });
 	        this.teamsData.push({ id: 8, attack: 1.2, defense: 0.8, colorData: {
-	                mainColor: 0x356B33,
+	                mainColor: COLORS_CONST.light_green800,
 	                patternColors: [{
-	                    color: 0x356B33,
+	                    color: COLORS_CONST.light_green800,
 	                    tick: 0.33
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.33
 	                }, {
-	                    color: 0x356B33,
+	                    color: COLORS_CONST.light_green800,
 	                    tick: 0.33
 	                }],
-	                buttonColor: 0xD9D9D9,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.light_green900,
 	                patternRotation: 0
 	            },
 	            goalkeeperLevel: 0.5, type: 'EASY', players: [], brand: 'chapecoense.png', ini: 'CHA' });
 	        this.teamsData.push({ id: 0, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0x0A0B0C,
+	                mainColor: COLORS_CONST.grey900,
 	                patternColors: [{
-	                    color: 0xDA251D,
+	                    color: COLORS_CONST.red600,
 	                    tick: 0.1
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.15
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.15
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.15
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.15
 	                }, {
-	                    color: 0xDA251D,
+	                    color: COLORS_CONST.red600,
 	                    tick: 0.1
 	                }
 	                // {
-	                //     color:0x0A0B0C,
+	                //     color:COLORS_CONST.grey900,
 	                //     tick:1
 	                // }
 	                ],
-	                buttonColor: 0xDA251D,
+	                buttonColor: COLORS_CONST.red600,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 3.14 / 2
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'corinthians.png', ini: 'COR' });
 	        this.teamsData.push({ id: 2, attack: 1, defense: 1, colorData: {
-	                mainColor: 0x00544C,
+	                mainColor: COLORS_CONST.green800,
 	                patternColors: [{
-	                    color: 0x00544C,
+	                    color: COLORS_CONST.green800,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x00544C,
+	                    color: COLORS_CONST.green800,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x00544C,
+	                    color: COLORS_CONST.green800,
 	                    tick: 0.2
 	                }],
-	                buttonColor: 0xD9D9D9,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.green900,
 	                patternRotation: 0
 	            },
 	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'coritiba.png', ini: 'CTB' });
 	        this.teamsData.push({ id: 11, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0x004E90,
+	                mainColor: COLORS_CONST.blue900,
 	                patternColors: [{
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x004E90,
+	                    color: COLORS_CONST.blue900,
 	                    tick: 0.6
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }],
-	                buttonColor: 0xD9D9D9,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.blue900,
 	                patternRotation: 0
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'cruzeiro.png', ini: 'CRU' });
 	        this.teamsData.push({ id: 1, attack: 1, defense: 1, colorData: {
-	                mainColor: 0xDA251D,
+	                mainColor: COLORS_CONST.red600,
 	                patternColors: [{
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xDA251D,
+	                    color: COLORS_CONST.red600,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xDA251D,
+	                    color: COLORS_CONST.red600,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }],
-	                buttonColor: 0x0A0B0C,
+	                buttonColor: COLORS_CONST.grey900,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 3.14 / 2
 	            },
 	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'flamengo.png', ini: 'FLA' });
 	        this.teamsData.push({ id: 107, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0x7E1D31,
+	                mainColor: COLORS_CONST.pink900,
 	                patternColors: [{
-	                    color: 0x7E1D31,
+	                    color: COLORS_CONST.pink900,
 	                    tick: 0.45
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.1
 	                }, {
-	                    color: 0x00593C,
+	                    color: COLORS_CONST.green900,
 	                    tick: 0.45
 	                }],
-	                buttonColor: 0x00593C,
+	                buttonColor: COLORS_CONST.green900,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 3.14 / 2
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'fluminense.png', ini: 'FLU' });
 	        this.teamsData.push({ id: 4, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0x0D80BF,
+	                mainColor: COLORS_CONST.blue500,
 	                patternColors: [{
-	                    color: 0x0D80BF,
+	                    color: COLORS_CONST.blue500,
 	                    tick: 0.3
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.1
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.1
 	                }, {
-	                    color: 0x0D80BF,
+	                    color: COLORS_CONST.blue500,
 	                    tick: 0.3
 	                }],
-	                buttonColor: 0x0A0B0C,
+	                buttonColor: COLORS_CONST.grey900,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 3.14 / 2
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'gremio.png', ini: 'GRE' });
 	        this.teamsData.push({ id: 3, attack: 1, defense: 1, colorData: {
-	                mainColor: 0xD9D9D9,
+	                mainColor: COLORS_CONST.green600,
 	                patternColors: [{
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.5
 	                }, {
-	                    color: 0x006338,
+	                    color: COLORS_CONST.green600,
 	                    tick: 0.5
 	                }],
-	                buttonColor: 0x006338,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.green900,
 	                patternRotation: 3.14 / 2
 	            },
 	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'palmeiras.png', ini: 'PAL' });
 	        this.teamsData.push({ id: 124, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0x0A0B0C,
+	                mainColor: COLORS_CONST.grey900,
 	                patternColors: [{
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.2
 	                }],
-	                buttonColor: 0xD9D9D9,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.grey900,
 	                patternRotation: 0
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'ponte_preta.png', ini: 'PON' });
 	        this.teamsData.push({ id: 7, attack: 1, defense: 1, colorData: {
-	                mainColor: 0xD9D9D9,
+	                mainColor: COLORS_CONST.grey50,
 	                patternColors: [{
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.166
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.166
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.166
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.166
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.166
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.166
 	                }],
-	                buttonColor: 0x0A0B0C,
+	                buttonColor: COLORS_CONST.grey900,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 3.14 / 4
 	            },
 	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'santos.png', ini: 'SAN' });
 	        this.teamsData.push({ id: 6, attack: 1, defense: 1, colorData: {
-	                mainColor: 0xDA251D,
+	                mainColor: COLORS_CONST.red600,
 	                patternColors: [{
-	                    color: 0xDA251D,
+	                    color: COLORS_CONST.red600,
 	                    tick: 0.4
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.4
 	                }],
-	                buttonColor: 0x0A0B0C,
+	                buttonColor: COLORS_CONST.grey900,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 0
 	            },
 	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'sao_paulo.png', ini: 'SPA' });
 	        this.teamsData.push({ id: 5, attack: 1, defense: 1, colorData: {
-	                mainColor: 0xDA1921,
+	                mainColor: COLORS_CONST.red800,
 	                patternColors: [{
-	                    color: 0xDA1921,
+	                    color: COLORS_CONST.red800,
 	                    tick: 0.2
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.225
 	                }, {
-	                    color: 0xFFD503,
+	                    color: COLORS_CONST.yellow600,
 	                    tick: 0.15
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.225
 	                }, {
-	                    color: 0xDA1921,
+	                    color: COLORS_CONST.red800,
 	                    tick: 0.2
 	                }],
 	
-	                buttonColor: 0x0A0B0C,
+	                buttonColor: COLORS_CONST.grey900,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 3.14 / 4
 	            },
 	            goalkeeperLevel: 0.8, type: 'NORMAL', players: [], brand: 'sport.png', ini: 'SPO' });
 	        this.teamsData.push({ id: 312, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0x0A0B0C,
+	                mainColor: COLORS_CONST.grey900,
 	                patternColors: [{
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.33
 	                }, {
-	                    color: 0xDA251D,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.33
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.33
 	                }],
-	                buttonColor: 0xD9D9D9,
+	                buttonColor: COLORS_CONST.grey50,
+	                contrastColor: COLORS_CONST.grey900,
 	                patternRotation: 3.14 / 4
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'vasco.png', ini: 'VAS' });
 	        this.teamsData.push({ id: 314, attack: 1.2, defense: 1.2, colorData: {
-	                mainColor: 0xDB3A28,
+	                mainColor: COLORS_CONST.red900,
 	                patternColors: [{
-	                    color: 0xDB3A28,
+	                    color: COLORS_CONST.red900,
 	                    tick: 0.475
 	                }, {
-	                    color: 0xD9D9D9,
+	                    color: COLORS_CONST.grey50,
 	                    tick: 0.05
 	                }, {
-	                    color: 0x0A0B0C,
+	                    color: COLORS_CONST.grey900,
 	                    tick: 0.475
 	                }],
-	                buttonColor: 0x0A0B0C,
+	                buttonColor: COLORS_CONST.grey900,
+	                contrastColor: COLORS_CONST.grey50,
 	                patternRotation: 3.14 / 2
 	            },
 	            goalkeeperLevel: 1, type: 'HARD', players: [], brand: 'vitoria.png', ini: 'VIT' });
@@ -50977,12 +51042,17 @@
 	
 				// this.screenManager.change('GameScreen')
 	
+				var test = new PIXI.Text(this.label, { font: '32px robotoblack', fill: 0xFFFFFF, align: 'right' });
+				test = new PIXI.Text(this.label, { font: '32px robotoregular', fill: 0xFFFFFF, align: 'right' });
+				this.addChild(test);
+				test.visible = false;
+	
 				this.startLoad();
 			}
 		}, {
 			key: 'toGame',
 			value: function toGame() {
-				this.screenLabel = new PIXI.Text(this.label, { font: '46px mario', fill: 0xFFFFFF, align: 'right' });
+				//this.screenLabel = new PIXI.Text(this.label,{font : '46px robotoblack', fill : 0xFFFFFF, align : 'right'});  
 				// this.screenManager.change('ChooseTeamScreen')
 				this.screenManager.change('StartScreen');
 				// this.screenManager.change('GameScreen')
@@ -51093,7 +51163,7 @@
 			_this.fieldButton.interactive = true;
 			_this.addChild(_this.fieldButton);
 	
-			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
+			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px robotoblack', fill: 0xFFFFFF, align: 'right' });
 			_this.addChild(_this.screenLabel);
 	
 			_this.addEvents();
@@ -51126,9 +51196,10 @@
 			key: 'startGame',
 			value: function startGame() {
 	
-				_gsap2.default.to(this.fieldButton.scale, 0.3, { delay: 0, x: 0, y: 0, ease: 'easeInBack' });
-				_gsap2.default.to(this.startButton.scale, 0.3, { delay: 0.05, x: 0, y: 0, ease: 'easeInBack' });
-				_gsap2.default.to(this.teamButton.scale, 0.3, { delay: 0.1, x: 0, y: 0, ease: 'easeInBack', onComplete: function onComplete() {
+				_gsap2.default.to(this.fieldButton.scale, 0.3, { delay: 0, x: 0, y: 0 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.startButton.scale, 0.3, { delay: 0.05, x: 0, y: 0 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.teamButton.scale, 0.3, { delay: 0.1, x: 0, y: 0, //ease:'easeInBack', 
+					onComplete: function onComplete() {
 						this.screenManager.change('ChooseMatchScreen');
 						// this.screenManager.change('GameScreen');
 					}, onCompleteScope: this });
@@ -51136,20 +51207,22 @@
 		}, {
 			key: 'toTeamSelection',
 			value: function toTeamSelection() {
-				_gsap2.default.to(this.fieldButton, 0.4, { delay: 0, x: -_config2.default.width / 2 - 120, ease: 'easeInBack' });
-				_gsap2.default.to(this.startButton, 0.4, { delay: 0.1, x: -_config2.default.width / 2, ease: 'easeInBack' });
-				_gsap2.default.to(this.teamButton, 0.4, { delay: 0.2, x: -_config2.default.width / 2 + 120, ease: 'easeInBack', onComplete: function onComplete() {
+				_gsap2.default.to(this.fieldButton, 0.4, { delay: 0, x: -_config2.default.width / 2 - 120 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.startButton, 0.4, { delay: 0.1, x: -_config2.default.width / 2 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.teamButton, 0.4, { delay: 0.2, x: -_config2.default.width / 2 + 120, //ease:'easeInBack', 
+					onComplete: function onComplete() {
 						this.screenManager.change('ChooseTeamScreen');
 					}, onCompleteScope: this });
 			}
 		}, {
 			key: 'toFieldSlection',
 			value: function toFieldSlection() {
-				_gsap2.default.to(this.fieldButton, 0.4, { delay: 0.2, x: _config2.default.width + _config2.default.width / 2 - 120, ease: 'easeInBack', onComplete: function onComplete() {
+				_gsap2.default.to(this.fieldButton, 0.4, { delay: 0.2, x: _config2.default.width + _config2.default.width / 2 - 120, //ease:'easeInBack', 
+					onComplete: function onComplete() {
 						this.screenManager.change('ChooseFieldScreen');
 					}, onCompleteScope: this });
-				_gsap2.default.to(this.startButton, 0.4, { delay: 0.1, x: _config2.default.width + _config2.default.width / 2, ease: 'easeInBack' });
-				_gsap2.default.to(this.teamButton, 0.4, { delay: 0, x: _config2.default.width + _config2.default.width / 2 + 120, ease: 'easeInBack' });
+				_gsap2.default.to(this.startButton, 0.4, { delay: 0.1, x: _config2.default.width + _config2.default.width / 2 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.teamButton, 0.4, { delay: 0, x: _config2.default.width + _config2.default.width / 2 + 120 }); //ease:'easeInBack'})
 			}
 		}, {
 			key: 'destroy',
@@ -51174,9 +51247,10 @@
 				this.fieldButton.scale.set(0);
 				this.startButton.scale.set(0);
 				this.teamButton.scale.set(0);
-				_gsap2.default.to(this.fieldButton.scale, 0.8, { delay: 0.2, x: 1, y: 1, ease: 'easeOutElastic' });
-				_gsap2.default.to(this.startButton.scale, 0.8, { delay: 0.3, x: 1, y: 1, ease: 'easeOutElastic' });
-				_gsap2.default.to(this.teamButton.scale, 0.8, { delay: 0.4, x: 1, y: 1, ease: 'easeOutElastic' });
+				_gsap2.default.to(this.fieldButton.scale, 0.2, { delay: 0.2, x: 1, y: 1 }); //, ease:'easeOutElastic'});
+				_gsap2.default.to(this.startButton.scale, 0.2, { delay: 0.3, x: 1, y: 1 }); //, ease:'easeOutElastic'});
+				_gsap2.default.to(this.teamButton.scale, 0.2, { delay: 0.4, x: 1, y: 1 }); //, ease:'easeOutElastic'});
+	
 			}
 		}, {
 			key: 'removeEvents',
@@ -51238,6 +51312,10 @@
 	
 	var _TeamSelectorPanel2 = _interopRequireDefault(_TeamSelectorPanel);
 	
+	var _TeamInfoPanel = __webpack_require__(216);
+	
+	var _TeamInfoPanel2 = _interopRequireDefault(_TeamInfoPanel);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -51254,10 +51332,10 @@
 		function ChooseTeamScreen(label) {
 			_classCallCheck(this, ChooseTeamScreen);
 	
-			var _this = _possibleConstructorReturn(this, (ChooseTeamScreen.__proto__ || Object.getPrototypeOf(ChooseTeamScreen)).call(this, label));
+			// this.bg = new PIXI.Graphics().beginFill(0x356B33).drawRect(0,0,config.width, config.height)
+			// this.addChild(this.bg)
 	
-			_this.bg = new PIXI.Graphics().beginFill(0x356B33).drawRect(0, 0, _config2.default.width, _config2.default.height);
-			_this.addChild(_this.bg);
+			var _this = _possibleConstructorReturn(this, (ChooseTeamScreen.__proto__ || Object.getPrototypeOf(ChooseTeamScreen)).call(this, label));
 	
 			_this.button = new PIXI.Container();
 			_this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0, 0, 80);
@@ -51279,9 +51357,8 @@
 			_this.backButton.interactive = true;
 			_this.addChild(_this.backButton);
 	
-			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px mario', fill: 0x000000, align: 'right' });
-			// this.addChild(this.screenLabel)
-	
+			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px robotoblack', fill: 0xFFFFFF, align: 'right' });
+			_this.addChild(_this.screenLabel);
 	
 			// this.buildTeamSelectionPanel();
 	
@@ -51299,23 +51376,39 @@
 			//this.addChild(this.tempPlayerLabel)
 			_this.tempPlayerLabel.y = 550;
 	
+			_this.teamInfoPanel = new _TeamInfoPanel2.default();
+			_this.teamInfoPanel.build();
+			_this.teamInfoPanel.position.set(_config2.default.width / 2, _config2.default.height / 2 * 1.2);
+			_this.teamInfoPanel.confirmTeamPanelCallback = _this.showTeamSelector.bind(_this);
+	
 			_this.teamSelectorPanel = new _TeamSelectorPanel2.default();
 			_this.teamSelectorPanel.build();
 			_this.teamSelectorPanel.position.set(_config2.default.width / 2, _config2.default.height / 2 * 1.2);
 			_this.teamSelectorPanel.confirmTeamPanelCallback = _this.confirmChangeTeam.bind(_this);
 	
+			_this.addChild(_this.teamInfoPanel);
+			_this.teamInfoPanel.hide();
 			_this.addChild(_this.teamSelectorPanel);
+			_this.teamSelectorPanel.hide();
 	
 			_this.addEvents();
 			return _this;
 		}
 	
 		_createClass(ChooseTeamScreen, [{
+			key: 'showTeamSelector',
+			value: function showTeamSelector() {
+				this.teamInfoPanel.hide();
+				this.teamSelectorPanel.show();
+			}
+		}, {
 			key: 'confirmChangeTeam',
 			value: function confirmChangeTeam(team) {
 				GAME_DATA.changeTeam(team.id);
 				this.teamSelectorPanel.closePop();
-				this.toMainScreen();
+				this.teamInfoPanel.show(0);
+				this.teamSelectorPanel.hide();
+				// this.toMainScreen();
 			}
 		}, {
 			key: 'updateTeamLabel',
@@ -51401,6 +51494,8 @@
 			value: function transitionIn() {
 	
 				_get(ChooseTeamScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseTeamScreen.prototype), 'transitionIn', this).call(this);
+				this.teamInfoPanel.show();
+				this.teamSelectorPanel.hide();
 			}
 		}, {
 			key: 'removeEvents',
@@ -51498,17 +51593,21 @@
 				this.teamPanelSize = { w: w, h: h };
 				this.grid = { x: 4, y: 5 };
 	
-				this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, this.teamPanelSize.w, 50);
-				this.teamContainer.addChild(this.topImage);
+				this.backgroundImage = new PIXI.Graphics().beginFill(0x30333C).drawRect(0, 0, this.teamPanelSize.w, this.teamPanelSize.h);
+				this.panelContainer.addChild(this.backgroundImage);
+	
 				this.teamButtons = [];
 				for (var i = 0; i < GAME_DATA.teamsData.length; i++) {
 					this.addTeamButton(GAME_DATA.teamsData[i].id);
 				}
 	
-				this.panelBg = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, this.teamPanelSize.w, this.teamPanelSize.h, 10);
-				this.panelContainer.addChild(this.panelBg);
+				this.panelMask = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, this.teamPanelSize.w, this.teamPanelSize.h, GRAPHICS_DATA.roundedCorner);
+				this.panelContainer.addChild(this.panelMask);
+				this.panelMask.pivot.set(this.teamPanelSize.w / 2, this.teamPanelSize.h / 2);
+				// this.teamContainer.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
+				this.panelMask.position.set(this.teamPanelSize.w / 2, this.teamPanelSize.h / 2);
 	
-				this.panelContainer.mask = this.panelBg;
+				this.panelContainer.mask = this.panelMask;
 	
 				this.panelContainer.pivot.set(this.teamPanelSize.w / 2, this.teamPanelSize.h / 2);
 				// this.teamContainer.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
@@ -51528,6 +51627,11 @@
 				this.cancelTeamPanelCallback = function (e) {};
 	
 				//TEAM CONTAINER
+				// this.panelBackgroundShape = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0,0,this.teamPanelSize.w, this.teamPanelSize.h)
+				// this.teamContainer.addChild(this.panelBackgroundShape)
+	
+				this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, this.teamPanelSize.w, 50);
+				this.teamContainer.addChild(this.topImage);
 	
 				this.teamBrand = PIXI.Sprite.fromFrame('seriea/flamengo.png');
 				this.teamContainer.addChild(this.teamBrand);
@@ -51535,15 +51639,21 @@
 				this.teamBrand.x = this.teamPanelSize.w / 2 - this.teamBrand.width / 2;
 				this.teamBrand.y = 60;
 	
-				this.teamConfirmButton = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, this.teamPanelSize.w - 40, 60, 10);
-				this.teamContainer.addChild(this.teamConfirmButton);
+				this.teamConfirmButtonContainer = new PIXI.Container();
 	
-				this.teamConfirmButton.x = this.teamPanelSize.w / 2 - this.teamConfirmButton.width / 2;
-				this.teamConfirmButton.y = this.teamPanelSize.h - this.teamConfirmButton.height - 20;
+				this.teamConfirmButton = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, this.teamPanelSize.w - 40, 60, GRAPHICS_DATA.roundedCorner);
+				this.teamConfirmButtonContainer.addChild(this.teamConfirmButton);
+				this.teamContainer.addChild(this.teamConfirmButtonContainer);
 	
-				this.teamConfirmButton.interactive = true;
-				this.teamConfirmButton.buttonMode = true;
-				this.teamConfirmButton.on('mousedown', this.onConfirmTeam.bind(this)).on('touchstart', this.onConfirmTeam.bind(this));
+				this.teamConfirmButtonContainer.x = this.teamPanelSize.w / 2 - this.teamConfirmButtonContainer.width / 2;
+				this.teamConfirmButtonContainer.y = this.teamPanelSize.h - this.teamConfirmButtonContainer.height - 20;
+	
+				this.buttonLabel = new PIXI.Text('changeTeam', { font: '32px robotoregular', fill: 0xFFFFFF, align: 'right' });
+				this.teamConfirmButtonContainer.addChild(this.buttonLabel);
+	
+				this.teamConfirmButtonContainer.interactive = true;
+				this.teamConfirmButtonContainer.buttonMode = true;
+				this.teamConfirmButtonContainer.on('mousedown', this.onConfirmTeam.bind(this)).on('touchstart', this.onConfirmTeam.bind(this));
 	
 				this.teamContainer.visible = false;
 			}
@@ -51562,7 +51672,10 @@
 			value: function updateTeamContent(team) {
 				this.teamBrand.texture = PIXI.Texture.fromFrame('seriea/' + team.brand);
 				this.teamConfirmButton.tint = team.colorData.buttonColor;
-	
+				this.buttonLabel.tint = team.colorData.contrastColor;
+				this.buttonLabel.text = team.ini;
+				this.buttonLabel.x = this.teamConfirmButtonContainer.width / 2 - this.buttonLabel.width / 2;
+				this.buttonLabel.y = this.teamConfirmButtonContainer.height / 2 - this.buttonLabel.height / 2;
 				this.currentSelectedTeam = team;
 			}
 		}, {
@@ -51596,6 +51709,22 @@
 				this.closePopup.on('mousedown', this.closePop.bind(this)).on('touchstart', this.closePop.bind(this));
 			}
 		}, {
+			key: 'hide',
+			value: function hide() {
+				this.panelMask.scale.set(0);
+				this.y = _config2.default.height / 2 * 1.2;
+				// TweenLite.to(this, 0.35, {y:config.height/2})
+			}
+		}, {
+			key: 'show',
+			value: function show() {
+				this.updateTeamContent(GAME_DATA.getMyTeamData());
+				this.panelMask.scale.set(0);
+				_gsap2.default.to(this.panelMask.scale, 0.2, { y: 1 });
+				_gsap2.default.to(this.panelMask.scale, 0.35, { x: 1 });
+				_gsap2.default.to(this, 0.35, { y: _config2.default.height / 2 });
+			}
+		}, {
 			key: 'addTeamButton',
 			value: function addTeamButton(id) {
 	
@@ -51605,13 +51734,16 @@
 				var wdt = (this.teamPanelSize.w - space.x * 6) / this.grid.x / 2;
 				var hgt = (this.teamPanelSize.h - space.y * 6) / this.grid.y / 2;
 	
-				var shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
+				var shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt - 10); //PIXI.Sprite.fromFrame('big-button-up.png');
 	
-				var mask = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
+				var back = new PIXI.Graphics().beginFill(0x3E4349).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
+	
+				var mask = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt - 10); //PIXI.Sprite.fromFrame('big-button-up.png');
 				// shape.anchor.set(0.5);
 				// shape.scale.set(0.5);
 	
 				var button = new PIXI.Container();
+				button.addChild(back);
 				button.addChild(shape);
 				button.addChild(mask);
 				button.interactive = true;
@@ -51620,7 +51752,7 @@
 				var ypos = Math.floor(this.teamButtons.length / this.grid.x) | 0;
 	
 				// button.y = ypos * hgt + wdt*2;
-				button.x = space.x + wdt + xpos * (wdt * 2 + space.x);
+				button.x = space.x + wdt + xpos * (wdt * 2 + space.x) + space.x / 2;
 				button.y = space.y + hgt + ypos * (hgt * 2 + space.y);
 				button.id = teamData.id;
 				var brand = PIXI.Sprite.fromFrame('seriea/' + teamData.brand);
@@ -51630,7 +51762,7 @@
 				var roundPattern = this.getRoundPattern(teamData.colorData.patternColors);
 	
 				roundPattern.rotation = teamData.colorData.patternRotation;
-				roundPattern.scale.set(wdt * 2 / roundPattern.width);
+				roundPattern.scale.set((wdt - 10) * 2 / roundPattern.width);
 				button.addChild(roundPattern);
 				roundPattern.mask = mask;
 				this.panelContainer.addChild(button);
@@ -51691,10 +51823,10 @@
 				// target.parent.setChildIndex(target, target.parent.children.length - 1)
 				target.parent.addChild(this.currentClone);
 				this.teamContainer.parent.setChildIndex(this.teamContainer, this.teamContainer.parent.children.length - 1);
-				_gsap2.default.to(this.currentClone, 0.2, { x: this.panelBg.width / 2, y: this.panelBg.height / 2 });
+				_gsap2.default.to(this.currentClone, 0.2, { x: this.panelMask.width / 2, y: this.panelMask.height / 2 });
 				_gsap2.default.to(this.currentClone.scale, 0.4, { x: 15, y: 15 });
 				_gsap2.default.to(this.teamContainer, 0.2, { alpha: 1, delay: 0.1 });
-				_gsap2.default.to(this.panelContainer, 0.2, { y: -50 });
+				// TweenLite.to(this.panelContainer,0.2,{y:- 50})
 			}
 		}]);
 	
@@ -52120,9 +52252,10 @@
 			_this.teamSelectorPanel.confirmTeamPanelCallback = _this.confirmChangeTeam.bind(_this);
 	
 			_this.addChild(_this.teamSelectorPanel);
+			_this.teamSelectorPanel.hide();
 	
 			_this.teamDataLabel = new PIXI.Text('', { font: '20px', fill: 0x000000, align: 'right' });
-			_this.addChild(_this.teamDataLabel);
+			// this.addChild(this.teamDataLabel)
 			_this.teamDataLabel.y = 350;
 			_this.addEvents();
 			return _this;
@@ -52210,6 +52343,8 @@
 			value: function transitionIn() {
 	
 				_get(ChooseMatchScreen.prototype.__proto__ || Object.getPrototypeOf(ChooseMatchScreen.prototype), 'transitionIn', this).call(this);
+	
+				this.teamSelectorPanel.show();
 			}
 		}, {
 			key: 'removeEvents',
@@ -52788,6 +52923,303 @@
 	}(PIXI.Container);
 	
 	exports.default = Ball;
+
+/***/ },
+/* 216 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _pixi = __webpack_require__(1);
+	
+	var PIXI = _interopRequireWildcard(_pixi);
+	
+	var _gsap = __webpack_require__(189);
+	
+	var _gsap2 = _interopRequireDefault(_gsap);
+	
+	var _config = __webpack_require__(184);
+	
+	var _config2 = _interopRequireDefault(_config);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var TeamInfoPanel = function (_PIXI$Container) {
+		_inherits(TeamInfoPanel, _PIXI$Container);
+	
+		function TeamInfoPanel() {
+			_classCallCheck(this, TeamInfoPanel);
+	
+			var _this = _possibleConstructorReturn(this, (TeamInfoPanel.__proto__ || Object.getPrototypeOf(TeamInfoPanel)).call(this));
+	
+			_this.panelContainer = new PIXI.Container();
+			_this.addChild(_this.panelContainer);
+	
+			_this.teamContainer = new PIXI.Container();
+			_this.panelContainer.addChild(_this.teamContainer);
+	
+			return _this;
+		}
+	
+		_createClass(TeamInfoPanel, [{
+			key: 'build',
+			value: function build() {
+				var w = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 300;
+				var h = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
+	
+				this.teamPanelSize = { w: w, h: h };
+				this.grid = { x: 4, y: 5 };
+	
+				this.teamButtons = [];
+				// for (var i = 0; i < GAME_DATA.teamsData.length; i++) {		 	
+				// 	this.addTeamButton(GAME_DATA.teamsData[i].id);
+				// }
+	
+				this.panelMask = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, this.teamPanelSize.w, this.teamPanelSize.h, GRAPHICS_DATA.roundedCorner);
+				this.panelContainer.addChild(this.panelMask);
+	
+				this.panelContainer.mask = this.panelMask;
+	
+				this.panelContainer.pivot.set(this.teamPanelSize.w / 2, this.teamPanelSize.h / 2);
+	
+				this.panelMask.pivot.set(this.teamPanelSize.w / 2, this.teamPanelSize.h / 2);
+				// this.teamContainer.pivot.set(this.teamPanelSize.w/2, this.teamPanelSize.h/2)
+				this.panelMask.position.set(this.teamPanelSize.w / 2, this.teamPanelSize.h / 2);
+	
+				this.closePopup = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, this.teamPanelSize.w, this.teamPanelSize.h);
+				this.closePopup.alpha = 0;
+				this.closePopup.visible = false;
+				this.closePopup.interactive = true;
+				this.panelContainer.addChild(this.closePopup);
+	
+				this.addEvents();
+	
+				this.openTeamPanelCallback = function (e) {};
+				this.confirmTeamPanelCallback = function (e) {};
+				this.cancelTeamPanelCallback = function (e) {};
+	
+				//TEAM CONTAINER
+				this.panelBackgroundShape = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, this.teamPanelSize.w, this.teamPanelSize.h);
+				this.teamContainer.addChild(this.panelBackgroundShape);
+	
+				this.topImage = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, this.teamPanelSize.w, 50);
+				this.teamContainer.addChild(this.topImage);
+	
+				this.teamBrand = PIXI.Sprite.fromFrame('seriea/flamengo.png');
+				this.teamContainer.addChild(this.teamBrand);
+				this.teamBrand.scale.set(this.teamPanelSize.w / this.teamBrand.width * 0.4);
+				this.teamBrand.x = this.teamPanelSize.w / 2 - this.teamBrand.width / 2;
+				this.teamBrand.y = 60;
+	
+				this.teamConfirmButtonContainer = new PIXI.Container();
+	
+				this.teamConfirmButton = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, this.teamPanelSize.w - 40, 60, GRAPHICS_DATA.roundedCorner);
+				this.teamConfirmButtonContainer.addChild(this.teamConfirmButton);
+				this.teamContainer.addChild(this.teamConfirmButtonContainer);
+	
+				this.teamConfirmButtonContainer.x = this.teamPanelSize.w / 2 - this.teamConfirmButtonContainer.width / 2;
+				this.teamConfirmButtonContainer.y = this.teamPanelSize.h - this.teamConfirmButtonContainer.height - 20;
+	
+				this.buttonLabel = new PIXI.Text('CHANGE', { font: '32px robotoregular', fill: 0xFFFFFF, align: 'right' });
+				this.teamConfirmButtonContainer.addChild(this.buttonLabel);
+	
+				this.teamConfirmButtonContainer.interactive = true;
+				this.teamConfirmButtonContainer.buttonMode = true;
+				this.teamConfirmButtonContainer.on('mousedown', this.onConfirmTeam.bind(this)).on('touchstart', this.onConfirmTeam.bind(this));
+	
+				// this.teamContainer.visible = false;
+				// this.hide();
+			}
+		}, {
+			key: 'hide',
+			value: function hide() {
+				this.panelMask.scale.set(0);
+				this.y = _config2.default.height / 2 * 1.2;
+				// TweenLite.to(this, 0.35, {y:config.height/2})
+			}
+		}, {
+			key: 'show',
+			value: function show() {
+				var timeScale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+	
+				this.updateTeamContent(GAME_DATA.getMyTeamData());
+				this.panelMask.scale.set(0);
+				_gsap2.default.to(this.panelMask.scale, 0.2 * timeScale, { y: 1 });
+				_gsap2.default.to(this.panelMask.scale, 0.35 * timeScale, { x: 1 });
+				_gsap2.default.to(this, 0.35 * timeScale, { y: _config2.default.height / 2 });
+			}
+		}, {
+			key: 'onConfirmTeam',
+			value: function onConfirmTeam(e) {
+				if (this.currentSelectedTeam) {
+					this.confirmTeamPanelCallback(this.currentSelectedTeam);
+					// this.closePop();
+				} else {
+					console.log('erro bizarro');
+				}
+			}
+		}, {
+			key: 'updateTeamContent',
+			value: function updateTeamContent(team) {
+				this.teamBrand.texture = PIXI.Texture.fromFrame('seriea/' + team.brand);
+				this.teamConfirmButton.tint = team.colorData.buttonColor;
+				this.panelBackgroundShape.tint = team.colorData.mainColor;
+				this.buttonLabel.tint = team.colorData.contrastColor;
+				this.buttonLabel.x = this.teamConfirmButtonContainer.width / 2 - this.buttonLabel.width / 2;
+				this.buttonLabel.y = this.teamConfirmButtonContainer.height / 2 - this.buttonLabel.height / 2;
+				this.currentSelectedTeam = team;
+			}
+		}, {
+			key: 'changeTeamCallback',
+			value: function changeTeamCallback(e) {
+				var target = e.target || e.data.target;
+				this.updateTeamContent(GAME_DATA.getTeamById(target.id));
+				this.updatePopUp(target);
+			}
+		}, {
+			key: 'removeEvents',
+			value: function removeEvents() {
+				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+					this.teamButtons[i].off('touchstart').off('mousedown');
+				}
+				// for (var i = this.playerButtons.length - 1; i >= 0; i--) {
+				// 	this.playerButtons[i].off('touchstart').off('mousedown');
+				// }
+			}
+		}, {
+			key: 'addEvents',
+			value: function addEvents() {
+				this.removeEvents();
+				for (var i = this.teamButtons.length - 1; i >= 0; i--) {
+					this.teamButtons[i].on('mousedown', this.changeTeamCallback.bind(this)).on('touchstart', this.changeTeamCallback.bind(this));
+				}
+	
+				// for (var i = this.playerButtons.length - 1; i >= 0; i--) {
+				// 	this.playerButtons[i].on('mousedown', this.changePlayer.bind(this)).on('touchstart', this.changePlayer.bind(this));
+				// }
+				this.closePopup.on('mousedown', this.closePop.bind(this)).on('touchstart', this.closePop.bind(this));
+			}
+		}, {
+			key: 'addTeamButton',
+			value: function addTeamButton(id) {
+	
+				var teamData = GAME_DATA.getTeamById(id);
+	
+				var space = { x: 10, y: 10 };
+				var wdt = (this.teamPanelSize.w - space.x * 6) / this.grid.x / 2;
+				var hgt = (this.teamPanelSize.h - space.y * 6) / this.grid.y / 2;
+	
+				var shape = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
+	
+				var mask = new PIXI.Graphics().beginFill(0xFFFFFF).drawCircle(0, 0, wdt); //PIXI.Sprite.fromFrame('big-button-up.png');
+				// shape.anchor.set(0.5);
+				// shape.scale.set(0.5);
+	
+				var button = new PIXI.Container();
+				button.addChild(shape);
+				button.addChild(mask);
+				button.interactive = true;
+				button.buttonMode = true;
+				var xpos = this.teamButtons.length % this.grid.x | 0;
+				var ypos = Math.floor(this.teamButtons.length / this.grid.x) | 0;
+	
+				// button.y = ypos * hgt + wdt*2;
+				button.x = space.x + wdt + xpos * (wdt * 2 + space.x);
+				button.y = space.y + hgt + ypos * (hgt * 2 + space.y);
+				button.id = teamData.id;
+				var brand = PIXI.Sprite.fromFrame('seriea/' + teamData.brand);
+				brand.anchor.set(0.5);
+				brand.scale.set(0.5);
+				shape.tint = teamData.colorData.mainColor;
+				var roundPattern = this.getRoundPattern(teamData.colorData.patternColors);
+	
+				roundPattern.rotation = teamData.colorData.patternRotation;
+				roundPattern.scale.set(wdt * 2 / roundPattern.width);
+				button.addChild(roundPattern);
+				roundPattern.mask = mask;
+				this.panelContainer.addChild(button);
+				button.shape = shape;
+	
+				// button.addChild(brand)
+				this.teamButtons.push(button);
+			}
+		}, {
+			key: 'getRoundPattern',
+			value: function getRoundPattern(colorData) {
+				var container = new PIXI.Container();
+				var size = 100;
+				var width = size; //size / colorData.length;
+				for (var i = 0; i < colorData.length; i++) {
+					var square = new PIXI.Graphics().beginFill(0xFFFFFF).drawRect(0, 0, width * colorData[i].tick, size);
+					square.tint = colorData[i].color;
+					square.x = container.width;
+					container.addChild(square);
+				}
+				container.pivot.set(size / 2);
+				return container;
+			}
+		}, {
+			key: 'hideTeamContainer',
+			value: function hideTeamContainer() {
+				this.teamContainer.visible = false;
+			}
+		}, {
+			key: 'closePop',
+			value: function closePop(target) {
+				// this.currentClone.visible = false
+				this.closePopup.visible = false;
+				// this.topImage.visible = false;
+				_gsap2.default.to(this.teamContainer, 0.2, { alpha: 0 });
+				_gsap2.default.to(this.panelContainer, 0.2, { y: 0, ease: 'easeOutCubic', onComplete: this.hideTeamContainer, onCompleteScope: this });
+				if (this.currentClone) {
+					_gsap2.default.to(this.currentClone, 0.2, { delay: 0.2, alpha: 0 });
+					_gsap2.default.to(this.currentClone.scale, 0.2, { x: 1, y: 1 });
+					_gsap2.default.to(this.currentClone, 0.2, { x: this.currentClone.initialPosition.x, y: this.currentClone.initialPosition.y });
+				}
+			}
+		}, {
+			key: 'updatePopUp',
+			value: function updatePopUp(target) {
+	
+				this.teamContainer.visible = true;
+				this.teamContainer.alpha = 0;
+				// console.log(target.shape, 'shape');
+				if (this.currentClone && this.currentClone.parent) {
+					this.currentClone.parent.removeChild(this.currentClone);
+				}
+				this.currentClone = target.shape.clone();
+				this.currentClone.x = target.x;
+				this.currentClone.y = target.y;
+				this.currentClone.initialPosition = { x: target.x, y: target.y };
+				this.closePopup.visible = true;
+				// target.parent.setChildIndex(target, target.parent.children.length - 1)
+				target.parent.addChild(this.currentClone);
+				this.teamContainer.parent.setChildIndex(this.teamContainer, this.teamContainer.parent.children.length - 1);
+				_gsap2.default.to(this.currentClone, 0.2, { x: this.panelMask.width / 2, y: this.panelMask.height / 2 });
+				_gsap2.default.to(this.currentClone.scale, 0.4, { x: 15, y: 15 });
+				_gsap2.default.to(this.teamContainer, 0.2, { alpha: 1, delay: 0.1 });
+				_gsap2.default.to(this.panelContainer, 0.2, { y: -50 });
+			}
+		}]);
+	
+		return TeamInfoPanel;
+	}(PIXI.Container);
+	
+	exports.default = TeamInfoPanel;
 
 /***/ }
 /******/ ]);
