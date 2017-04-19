@@ -11,7 +11,7 @@
 },
 "barreira.png":
 {
-	"frame": {"x":1231,"y":791,"w":228,"h":400},
+	"frame": {"x":413,"y":1200,"w":228,"h":400},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":228,"h":400},
@@ -20,7 +20,7 @@
 },
 "big-button-over.png":
 {
-	"frame": {"x":248,"y":4,"w":107,"h":90},
+	"frame": {"x":132,"y":4,"w":107,"h":90},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":107,"h":90},
@@ -29,7 +29,7 @@
 },
 "big-button-up - Copy.png":
 {
-	"frame": {"x":132,"y":4,"w":107,"h":90},
+	"frame": {"x":248,"y":4,"w":107,"h":90},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":107,"h":90},
@@ -45,27 +45,18 @@
 	"sourceSize": {"w":92,"h":92},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"darwin-win.png":
+"colorado.png":
 {
-	"frame": {"x":529,"y":1300,"w":423,"h":500},
+	"frame": {"x":1364,"y":791,"w":533,"h":400},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":423,"h":500},
-	"sourceSize": {"w":423,"h":500},
-	"pivot": {"x":0.5,"y":0.5}
-},
-"finn-win.png":
-{
-	"frame": {"x":4,"y":1300,"w":314,"h":500},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":314,"h":500},
-	"sourceSize": {"w":314,"h":500},
+	"spriteSourceSize": {"x":0,"y":0,"w":533,"h":400},
+	"sourceSize": {"w":533,"h":400},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "grass1.png":
 {
-	"frame": {"x":413,"y":791,"w":400,"h":400},
+	"frame": {"x":4,"y":1200,"w":400,"h":400},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":400,"h":400},
@@ -74,7 +65,7 @@
 },
 "grass2.png":
 {
-	"frame": {"x":822,"y":791,"w":400,"h":400},
+	"frame": {"x":546,"y":791,"w":400,"h":400},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":400,"h":400},
@@ -83,7 +74,7 @@
 },
 "grass12.png":
 {
-	"frame": {"x":4,"y":791,"w":400,"h":400},
+	"frame": {"x":955,"y":791,"w":400,"h":400},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":400,"h":400},
@@ -92,25 +83,25 @@
 },
 "grass22.png":
 {
-	"frame": {"x":1451,"y":382,"w":400,"h":400},
+	"frame": {"x":1335,"y":382,"w":400,"h":400},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":400,"h":400},
 	"sourceSize": {"w":400,"h":400},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"grizz-bear-win.png":
+"gremista.png":
 {
-	"frame": {"x":1146,"y":382,"w":296,"h":391},
+	"frame": {"x":4,"y":791,"w":533,"h":400},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":296,"h":391},
-	"sourceSize": {"w":296,"h":391},
+	"spriteSourceSize": {"x":0,"y":0,"w":533,"h":400},
+	"sourceSize": {"w":533,"h":400},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "jake-win.png":
 {
-	"frame": {"x":1221,"y":1300,"w":500,"h":521},
+	"frame": {"x":1217,"y":1200,"w":500,"h":521},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":500,"h":521},
@@ -119,25 +110,16 @@
 },
 "marceline-win.png":
 {
-	"frame": {"x":1468,"y":791,"w":298,"h":500},
+	"frame": {"x":910,"y":1200,"w":298,"h":500},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":298,"h":500},
 	"sourceSize": {"w":298,"h":500},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"moredecai-win.png":
-{
-	"frame": {"x":327,"y":1300,"w":193,"h":500},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":193,"h":500},
-	"sourceSize": {"w":193,"h":500},
-	"pivot": {"x":0.5,"y":0.5}
-},
 "onion.png":
 {
-	"frame": {"x":837,"y":382,"w":300,"h":300},
+	"frame": {"x":1026,"y":382,"w":300,"h":300},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":300,"h":300},
@@ -164,7 +146,7 @@
 },
 "rigby-win.png":
 {
-	"frame": {"x":961,"y":1300,"w":251,"h":500},
+	"frame": {"x":650,"y":1200,"w":251,"h":500},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":251,"h":500},
@@ -173,7 +155,7 @@
 },
 "ringDisplaceMap.jpg":
 {
-	"frame": {"x":571,"y":382,"w":257,"h":256},
+	"frame": {"x":760,"y":382,"w":257,"h":256},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":257,"h":256},
@@ -182,7 +164,7 @@
 },
 "seriea/atletico_goianiense.png":
 {
-	"frame": {"x":4,"y":193,"w":180,"h":180},
+	"frame": {"x":193,"y":193,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -200,7 +182,7 @@
 },
 "seriea/atletico_paranaense.png":
 {
-	"frame": {"x":1319,"y":4,"w":180,"h":180},
+	"frame": {"x":1508,"y":4,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -209,7 +191,7 @@
 },
 "seriea/avai.png":
 {
-	"frame": {"x":382,"y":193,"w":180,"h":180},
+	"frame": {"x":1319,"y":4,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -218,7 +200,7 @@
 },
 "seriea/bahia.png":
 {
-	"frame": {"x":760,"y":193,"w":180,"h":180},
+	"frame": {"x":571,"y":193,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -227,7 +209,7 @@
 },
 "seriea/botafogo.png":
 {
-	"frame": {"x":382,"y":382,"w":180,"h":180},
+	"frame": {"x":760,"y":193,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -236,7 +218,7 @@
 },
 "seriea/chapecoense.png":
 {
-	"frame": {"x":949,"y":193,"w":180,"h":180},
+	"frame": {"x":382,"y":382,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -245,7 +227,7 @@
 },
 "seriea/corinthians.png":
 {
-	"frame": {"x":571,"y":193,"w":180,"h":180},
+	"frame": {"x":1516,"y":193,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -272,7 +254,7 @@
 },
 "seriea/flamengo.png":
 {
-	"frame": {"x":193,"y":382,"w":180,"h":180},
+	"frame": {"x":949,"y":193,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -281,7 +263,7 @@
 },
 "seriea/fluminense.png":
 {
-	"frame": {"x":1705,"y":193,"w":180,"h":180},
+	"frame": {"x":193,"y":382,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -290,23 +272,14 @@
 },
 "seriea/gremio.png":
 {
-	"frame": {"x":4,"y":382,"w":180,"h":180},
+	"frame": {"x":571,"y":382,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
 	"sourceSize": {"w":180,"h":180},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"seriea/palmeiras.png":
-{
-	"frame": {"x":1508,"y":4,"w":180,"h":180},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
-	"sourceSize": {"w":180,"h":180},
-	"pivot": {"x":0.5,"y":0.5}
-},
-"seriea/ponte_preta.png":
+"seriea/inter.png":
 {
 	"frame": {"x":563,"y":4,"w":180,"h":180},
 	"rotated": false,
@@ -315,7 +288,7 @@
 	"sourceSize": {"w":180,"h":180},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"seriea/santos.png":
+"seriea/palmeiras.png":
 {
 	"frame": {"x":752,"y":4,"w":180,"h":180},
 	"rotated": false,
@@ -324,7 +297,7 @@
 	"sourceSize": {"w":180,"h":180},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"seriea/sao_paulo.png":
+"seriea/ponte_preta.png":
 {
 	"frame": {"x":1130,"y":4,"w":180,"h":180},
 	"rotated": false,
@@ -333,16 +306,7 @@
 	"sourceSize": {"w":180,"h":180},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"seriea/sport.png":
-{
-	"frame": {"x":1516,"y":193,"w":180,"h":180},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
-	"sourceSize": {"w":180,"h":180},
-	"pivot": {"x":0.5,"y":0.5}
-},
-"seriea/vasco.png":
+"seriea/santos.png":
 {
 	"frame": {"x":941,"y":4,"w":180,"h":180},
 	"rotated": false,
@@ -351,9 +315,36 @@
 	"sourceSize": {"w":180,"h":180},
 	"pivot": {"x":0.5,"y":0.5}
 },
+"seriea/sao_paulo.png":
+{
+	"frame": {"x":4,"y":382,"w":180,"h":180},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
+	"sourceSize": {"w":180,"h":180},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"seriea/sport.png":
+{
+	"frame": {"x":382,"y":193,"w":180,"h":180},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
+	"sourceSize": {"w":180,"h":180},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"seriea/vasco.png":
+{
+	"frame": {"x":1705,"y":193,"w":180,"h":180},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
+	"sourceSize": {"w":180,"h":180},
+	"pivot": {"x":0.5,"y":0.5}
+},
 "seriea/vitoria.png":
 {
-	"frame": {"x":193,"y":193,"w":180,"h":180},
+	"frame": {"x":4,"y":193,"w":180,"h":180},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":180,"h":180},
@@ -365,8 +356,8 @@
 	"version": "1.0",
 	"image": "game-0.png",
 	"format": "RGBA8888",
-	"size": {"w":1889,"h":1825},
+	"size": {"w":1901,"h":1725},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:b10d674290cbd4f8a6e9b67c110dfc9c:be221e77ac064da06589dc1f1eb256f8:f7031ad0edba38445f3f7cafed277efa$"
+	"smartupdate": "$TexturePacker:SmartUpdate:e177beb377376e3a3495a8840c91dba0:2cc28668f2660f3ea0ced639e399f60c:38199ca19f82add9c84e07ddaa08f6e1$"
 }
 }
