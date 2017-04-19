@@ -240,29 +240,17 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">darwin-win.png</key>
+            <key type="filename">colorado.png</key>
+            <key type="filename">gremista.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
                 <key>scale9Enabled</key>
                 <false/>
                 <key>scale9Borders</key>
-                <rect>106,125,212,250</rect>
+                <rect>133,100,267,200</rect>
                 <key>scale9Paddings</key>
-                <rect>106,125,212,250</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">finn-win.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>79,125,157,250</rect>
-                <key>scale9Paddings</key>
-                <rect>79,125,157,250</rect>
+                <rect>133,100,267,200</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -279,19 +267,6 @@
                 <rect>100,100,200,200</rect>
                 <key>scale9Paddings</key>
                 <rect>100,100,200,200</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">grizz-bear-win.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>74,98,148,196</rect>
-                <key>scale9Paddings</key>
-                <rect>74,98,148,196</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -318,19 +293,6 @@
                 <rect>75,125,149,250</rect>
                 <key>scale9Paddings</key>
                 <rect>75,125,149,250</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">moredecai-win.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>48,125,97,250</rect>
-                <key>scale9Paddings</key>
-                <rect>48,125,97,250</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -412,6 +374,7 @@
             <key type="filename">seriea/flamengo.png</key>
             <key type="filename">seriea/fluminense.png</key>
             <key type="filename">seriea/gremio.png</key>
+            <key type="filename">seriea/inter.png</key>
             <key type="filename">seriea/palmeiras.png</key>
             <key type="filename">seriea/ponte_preta.png</key>
             <key type="filename">seriea/santos.png</key>
@@ -428,19 +391,6 @@
                 <rect>45,45,90,90</rect>
                 <key>scale9Paddings</key>
                 <rect>45,45,90,90</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">torcida.jpg</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>165,270,330,540</rect>
-                <key>scale9Paddings</key>
-                <rect>165,270,330,540</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
