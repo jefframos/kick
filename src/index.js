@@ -54,8 +54,12 @@ window.COLORS_CONST = {
             light_green900:0x33691E,
         }
 
+
+
 window.COOKIE_MANAGER = new CookieManager();
 window.GAME_DATA = new GameData();
+
+
 
 window.POOL = new Pool();
 
@@ -87,6 +91,8 @@ function configGame(){
 	//create screen manager
 	let screenManager = new ScreenManager();
 	window.GAME_VIEW = new GlobalGameView(screenManager);
+
+	window.GAME_DATA.changeTeam(0)
 	//add screens
 	let gameScreen = new GameScreen('GameScreen');
 	let loadScreen = new LoadScreen('LoadScreen');
@@ -111,4 +117,6 @@ function configGame(){
 	// screenManager.filters = [this.pixelate]
 
 	game.start();
+
+
 }

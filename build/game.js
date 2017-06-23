@@ -37839,6 +37839,8 @@
 		//create screen manager
 		var screenManager = new _ScreenManager2.default();
 		window.GAME_VIEW = new _GlobalGameView2.default(screenManager);
+	
+		window.GAME_DATA.changeTeam(0);
 		//add screens
 		var gameScreen = new _GameScreen2.default('GameScreen');
 		var loadScreen = new _LoadScreen2.default('LoadScreen');
