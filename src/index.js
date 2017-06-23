@@ -7,7 +7,7 @@ import GlobalGameView from './game/GlobalGameView';
 import ScreenManager from './screenManager/ScreenManager';
 import GameScreen from './game/screen/GameScreen';
 import LoadScreen from './game/screen/LoadScreen';
-import ATLStartScreen from './game/screen/ATLStartScreen';
+import StartScreen from './game/screen/StartScreen';
 import ChooseTeamScreen from './game/screen/ChooseTeamScreen';
 import ChooseFieldScreen from './game/screen/ChooseFieldScreen';
 import GameOverScreen from './game/screen/GameOverScreen';
@@ -90,7 +90,7 @@ function configGame(){
 	//add screens
 	let gameScreen = new GameScreen('GameScreen');
 	let loadScreen = new LoadScreen('LoadScreen');
-	let startScreen = new ATLStartScreen('StartScreen');
+	let startScreen = new StartScreen('StartScreen');
 	let chooseTeamScreen = new ChooseTeamScreen('ChooseTeamScreen');
 	let chooseFieldScreen = new ChooseFieldScreen('ChooseFieldScreen');
 	let gameOverScreen = new GameOverScreen('GameOverScreen');

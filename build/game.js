@@ -37740,9 +37740,9 @@
 	
 	var _LoadScreen2 = _interopRequireDefault(_LoadScreen);
 	
-	var _ATLStartScreen = __webpack_require__(217);
+	var _StartScreen = __webpack_require__(217);
 	
-	var _ATLStartScreen2 = _interopRequireDefault(_ATLStartScreen);
+	var _StartScreen2 = _interopRequireDefault(_StartScreen);
 	
 	var _ChooseTeamScreen = __webpack_require__(209);
 	
@@ -37842,7 +37842,7 @@
 		//add screens
 		var gameScreen = new _GameScreen2.default('GameScreen');
 		var loadScreen = new _LoadScreen2.default('LoadScreen');
-		var startScreen = new _ATLStartScreen2.default('StartScreen');
+		var startScreen = new _StartScreen2.default('StartScreen');
 		var chooseTeamScreen = new _ChooseTeamScreen2.default('ChooseTeamScreen');
 		var chooseFieldScreen = new _ChooseFieldScreen2.default('ChooseFieldScreen');
 		var gameOverScreen = new _GameOverScreen2.default('GameOverScreen');
@@ -52699,22 +52699,22 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var ATLStartScreen = function (_Screen) {
-		_inherits(ATLStartScreen, _Screen);
+	var StartScreen = function (_Screen) {
+		_inherits(StartScreen, _Screen);
 	
-		function ATLStartScreen(label) {
-			_classCallCheck(this, ATLStartScreen);
+		function StartScreen(label) {
+			_classCallCheck(this, StartScreen);
 	
-			var _this = _possibleConstructorReturn(this, (ATLStartScreen.__proto__ || Object.getPrototypeOf(ATLStartScreen)).call(this, label));
+			var _this = _possibleConstructorReturn(this, (StartScreen.__proto__ || Object.getPrototypeOf(StartScreen)).call(this, label));
 	
 			var shape = PIXI.Sprite.fromFrame('big-button-up.png');
 			shape.anchor.set(0.5);
-			_this.startButton = _this.getRoundedButton(); //new PIXI.Container();
+			_this.startButton = new PIXI.Container();
 			//this.shape = new PIXI.Graphics().beginFill(0).drawCircle(0,0,80);
-			// this.startButton.addChild(shape)
-			_this.startButton.label.text = 'Jogar';
+			_this.startButton.addChild(shape);
 	
-			_this.addChild(_this.startButton.container);
+			_this.startButton.interactive = true;
+			_this.addChild(_this.startButton);
 	
 			shape = PIXI.Sprite.fromFrame('big-button-up.png');
 			shape.anchor.set(0.5);
@@ -52738,59 +52738,17 @@
 			_this.fieldButton.addChild(shape);
 	
 			_this.fieldButton.interactive = true;
-			// this.addChild(this.fieldButton)
+			_this.addChild(_this.fieldButton);
 	
-			_this.screenLabel = new PIXI.Text('ATL GRENAL\nLOGO AQUI', { font: '32px robotoblack', fill: 0xFFFFFF, align: 'center' });
+			_this.screenLabel = new PIXI.Text(_this.label, { font: '32px robotoblack', fill: 0xFFFFFF, align: 'right' });
 			_this.addChild(_this.screenLabel);
 	
-			_this.screenLabel.x = _config2.default.width / 2 - _this.screenLabel.width / 2;
-			_this.screenLabel.y = 60;
-	
 			_this.addEvents();
-	
-			_this.playerContainer = new PIXI.Container();
-	
-			_this.playerImage = PIXI.Sprite.fromFrame('gremista.png');
-			_this.playerImage.anchor.set(0.5);
-			_this.playerImage.scale.set(0.75);
-	
-			_this.playerContainer.addChild(_this.playerImage);
-			_this.playerContainer.x = _config2.default.width / 2;
-			_this.playerContainer.y = _config2.default.height / 2;
-	
-			_this.playerLabel = new PIXI.Text('Duda Garbe', { font: '24px robotoblack', fill: 0xFFFFFF, align: 'center' });
-			_this.playerContainer.addChild(_this.playerLabel);
-			_this.playerLabel.x = -_this.playerLabel.width / 2;
-			_this.playerLabel.y = -_this.playerLabel.height / 2 - _this.playerContainer.height / 2;
-	
-			_this.addChild(_this.playerContainer);
 	
 			return _this;
 		}
 	
-		_createClass(ATLStartScreen, [{
-			key: 'getRoundedButton',
-			value: function getRoundedButton() {
-				var size = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { w: 150, h: 60 };
-	
-				var teamConfirmButtonContainer = new PIXI.Container();
-				var teamConfirmButton = new PIXI.Graphics().beginFill(0xFFFFFF).drawRoundedRect(0, 0, size.w, size.h, GRAPHICS_DATA.roundedCorner);
-				teamConfirmButtonContainer.addChild(teamConfirmButton);
-				// this.teamContainer.addChild(teamConfirmButtonContainer)
-	
-				teamConfirmButtonContainer.x = size.w / 2 - teamConfirmButtonContainer.width / 2;
-				teamConfirmButtonContainer.y = size.h - teamConfirmButtonContainer.height - 20;
-	
-				var buttonLabel = new PIXI.Text('CHANGE', { font: '32px robotoregular', fill: 0x000000, align: 'right' });
-				teamConfirmButtonContainer.addChild(buttonLabel);
-	
-				teamConfirmButtonContainer.interactive = true;
-				teamConfirmButtonContainer.buttonMode = true;
-				teamConfirmButtonContainer.pivot.set(teamConfirmButtonContainer.width / 2, teamConfirmButtonContainer.height / 2);
-				//teamConfirmButtonContainer.on('mousedown', this.onConfirmTeam.bind(this)).on('touchstart', this.onConfirmTeam.bind(this));
-				return { container: teamConfirmButtonContainer, label: buttonLabel, color: teamConfirmButton };
-			}
-		}, {
+		_createClass(StartScreen, [{
 			key: 'updateTeamButton',
 			value: function updateTeamButton() {
 				this.currentTeamData = GAME_DATA.getMyTeamData();
@@ -52799,10 +52757,10 @@
 		}, {
 			key: 'build',
 			value: function build() {
-				_get(ATLStartScreen.prototype.__proto__ || Object.getPrototypeOf(ATLStartScreen.prototype), 'build', this).call(this);
+				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'build', this).call(this);
 	
-				this.startButton.container.x = _config2.default.width / 2;
-				this.startButton.container.y = _config2.default.height - 120;
+				this.startButton.x = _config2.default.width / 2;
+				this.startButton.y = _config2.default.height / 2;
 				this.teamButton.x = _config2.default.width - 50;
 				this.teamButton.y = 50;
 				this.fieldButton.x = _config2.default.width / 2 - 120;
@@ -52815,36 +52773,33 @@
 			key: 'startGame',
 			value: function startGame() {
 	
-				// TweenLite.to(this.fieldButton.scale, 0.3, {delay:0, x:0, y:0 });//ease:'easeInBack'});
-				// TweenLite.to(this.startButton.scale, 0.3, {delay:0.05, x:0, y:0});//ease:'easeInBack'});
-				// TweenLite.to(this.teamButton.scale, 0.3, {delay:0.1, x:0, y:0, //ease:'easeInBack', 
-				// 	onComplete:function(){
-				// 	//this.screenManager.change('ChooseMatchScreen');
-	
-				GAME_DATA.getOther();
-	
-				this.screenManager.change('GameScreen');
-				// }, onCompleteScope:this})
+				_gsap2.default.to(this.fieldButton.scale, 0.3, { delay: 0, x: 0, y: 0 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.startButton.scale, 0.3, { delay: 0.05, x: 0, y: 0 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.teamButton.scale, 0.3, { delay: 0.1, x: 0, y: 0, //ease:'easeInBack', 
+					onComplete: function onComplete() {
+						this.screenManager.change('ChooseMatchScreen');
+						// this.screenManager.change('GameScreen');
+					}, onCompleteScope: this });
 			}
 		}, {
 			key: 'toTeamSelection',
 			value: function toTeamSelection() {
-				// TweenLite.to(this.fieldButton, 0.4, {delay:0, x:-config.width / 2 - 120});//ease:'easeInBack'});
-				// TweenLite.to(this.startButton, 0.4, {delay:0.1, x:-config.width / 2});//ease:'easeInBack'});
-				// TweenLite.to(this.teamButton, 0.4, {delay:0.2, x:-config.width / 2 + 120, //ease:'easeInBack', 
-				// 	onComplete:function(){
-				// 	//this.screenManager.change('ChooseTeamScreen');
-				// }, onCompleteScope:this})
+				_gsap2.default.to(this.fieldButton, 0.4, { delay: 0, x: -_config2.default.width / 2 - 120 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.startButton, 0.4, { delay: 0.1, x: -_config2.default.width / 2 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.teamButton, 0.4, { delay: 0.2, x: -_config2.default.width / 2 + 120, //ease:'easeInBack', 
+					onComplete: function onComplete() {
+						this.screenManager.change('ChooseTeamScreen');
+					}, onCompleteScope: this });
 			}
 		}, {
 			key: 'toFieldSlection',
 			value: function toFieldSlection() {
-				// TweenLite.to(this.fieldButton, 0.4, {delay:0.2, x:config.width + config.width / 2 - 120, //ease:'easeInBack', 
-				// 	onComplete:function(){
-				// 	//this.screenManager.change('ChooseFieldScreen');
-				// }, onCompleteScope:this});
-				// TweenLite.to(this.startButton, 0.4, {delay:0.1, x:config.width + config.width / 2});//ease:'easeInBack'});
-				// TweenLite.to(this.teamButton, 0.4, {delay:0, x:config.width + config.width / 2 + 120})//ease:'easeInBack'})
+				_gsap2.default.to(this.fieldButton, 0.4, { delay: 0.2, x: _config2.default.width + _config2.default.width / 2 - 120, //ease:'easeInBack', 
+					onComplete: function onComplete() {
+						this.screenManager.change('ChooseFieldScreen');
+					}, onCompleteScope: this });
+				_gsap2.default.to(this.startButton, 0.4, { delay: 0.1, x: _config2.default.width + _config2.default.width / 2 }); //ease:'easeInBack'});
+				_gsap2.default.to(this.teamButton, 0.4, { delay: 0, x: _config2.default.width + _config2.default.width / 2 + 120 }); //ease:'easeInBack'})
 			}
 		}, {
 			key: 'destroy',
@@ -52855,31 +52810,29 @@
 		}, {
 			key: 'transitionOut',
 			value: function transitionOut(nextScreen) {
-				_get(ATLStartScreen.prototype.__proto__ || Object.getPrototypeOf(ATLStartScreen.prototype), 'transitionOut', this).call(this, nextScreen);
+				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'transitionOut', this).call(this, nextScreen);
 			}
 		}, {
 			key: 'transitionIn',
 			value: function transitionIn() {
 	
-				_get(ATLStartScreen.prototype.__proto__ || Object.getPrototypeOf(ATLStartScreen.prototype), 'transitionIn', this).call(this);
-	
+				_get(StartScreen.prototype.__proto__ || Object.getPrototypeOf(StartScreen.prototype), 'transitionIn', this).call(this);
 				this.updateTeamButton();
-				return;
 	
 				console.log('TRANSITION IN');
 	
 				this.fieldButton.scale.set(0);
-				this.startButton.container.scale.set(0);
+				this.startButton.scale.set(0);
 				this.teamButton.scale.set(0);
 				_gsap2.default.to(this.fieldButton.scale, 0.2, { delay: 0.2, x: 1, y: 1 }); //, ease:'easeOutElastic'});
-				_gsap2.default.to(this.startButton.container.scale, 0.2, { delay: 0.3, x: 1, y: 1 }); //, ease:'easeOutElastic'});
+				_gsap2.default.to(this.startButton.scale, 0.2, { delay: 0.3, x: 1, y: 1 }); //, ease:'easeOutElastic'});
 				_gsap2.default.to(this.teamButton.scale, 0.2, { delay: 0.4, x: 1, y: 1 }); //, ease:'easeOutElastic'});
 	
 			}
 		}, {
 			key: 'removeEvents',
 			value: function removeEvents() {
-				this.startButton.container.off('touchstart').off('mousedown');
+				this.startButton.off('touchstart').off('mousedown');
 				this.fieldButton.off('touchstart').off('mousedown');
 				this.teamButton.off('touchstart').off('mousedown');
 			}
@@ -52887,16 +52840,16 @@
 			key: 'addEvents',
 			value: function addEvents() {
 				this.removeEvents();
-				this.startButton.container.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
+				this.startButton.on('mousedown', this.startGame.bind(this)).on('touchstart', this.startGame.bind(this));
 				this.teamButton.on('mousedown', this.toTeamSelection.bind(this)).on('touchstart', this.toTeamSelection.bind(this));
 				this.fieldButton.on('mousedown', this.toFieldSlection.bind(this)).on('touchstart', this.toFieldSlection.bind(this));
 			}
 		}]);
 	
-		return ATLStartScreen;
+		return StartScreen;
 	}(_Screen3.default);
 	
-	exports.default = ATLStartScreen;
+	exports.default = StartScreen;
 
 /***/ }
 /******/ ]);
