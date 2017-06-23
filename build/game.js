@@ -52726,7 +52726,8 @@
 			_this.addChild(_this.teamButton);
 	
 			_this.currentTeamData = GAME_DATA.getMyTeamData();
-			_this.brandTeamSprite = PIXI.Sprite.fromFrame('seriea/' + _this.currentTeamData.brand);
+			// this.brandTeamSprite = PIXI.Sprite.fromFrame('seriea/'+this.currentTeamData.brand);
+			_this.brandTeamSprite = PIXI.Sprite.fromFrame('seriea/gremio.png');
 			_this.brandTeamSprite.anchor.set(0.5);
 			_this.brandTeamSprite.scale.set(0.5);
 			_this.teamButton.addChild(_this.brandTeamSprite);

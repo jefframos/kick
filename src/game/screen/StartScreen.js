@@ -31,7 +31,8 @@ export default class StartScreen extends Screen{
 
 
         this.currentTeamData = GAME_DATA.getMyTeamData();
-        this.brandTeamSprite = PIXI.Sprite.fromFrame('seriea/'+this.currentTeamData.brand);
+        // this.brandTeamSprite = PIXI.Sprite.fromFrame('seriea/'+this.currentTeamData.brand);
+        this.brandTeamSprite = PIXI.Sprite.fromFrame('seriea/gremio.png');
 		this.brandTeamSprite.anchor.set(0.5);
 		this.brandTeamSprite.scale.set(0.5);
 		this.teamButton.addChild(this.brandTeamSprite)
