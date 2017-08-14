@@ -112,7 +112,7 @@ function configGame(){
 	screenManager.addScreen(gameOverScreen);
 	screenManager.addScreen(chooseMatchScreen);
 	//change to init screen
-	screenManager.forceChange('LoadScreen');
+	screenManager.forceChange('GameScreen');
 
 	// screenManager.filters = [this.pixelate]
 

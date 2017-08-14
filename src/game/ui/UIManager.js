@@ -36,6 +36,7 @@ export default class UIManager extends PIXI.Container {
 
 
 		this.scoreBarContainer = new PIXI.Container();
+		this.scoreBarContainer.alpha = 0;
 		this.goalBarBack = new PIXI.Graphics().beginFill(0x000).drawRect(0,0,15, 300);
 		//backgroundIngameUI.alpha = 0;
 		this.scoreBarContainer.addChild(this.goalBarBack)

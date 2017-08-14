@@ -124,7 +124,7 @@ export default class GameScreen extends Screen{
         this.backButton.x = 30;
         this.backButton.y = 30;
         this.backButton.interactive = true;
-        this.outgameUIContainer.addChild(this.backButton)
+        //this.outgameUIContainer.addChild(this.backButton)
 
 		this.addEvents();
 

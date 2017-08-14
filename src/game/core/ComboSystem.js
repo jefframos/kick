@@ -27,44 +27,50 @@ export default class ComboSystem{
 		}else{
 			this.game.uiManager.showCenterFeedback('good');
 			this.chain ++;
-			this.addGoalPoints(0.2);
+			// this.addGoalPoints(0.2);
+			this.addGoalPoints(1);
 		}
 	}
 	removeGoalPoints(pts){
-		this.goalMarker -= pts * this.opponentData.attack / this.myTeamData.defense
+		this.goalMarker = 0;
+		// this.goalMarker -= pts * this.opponentData.attack / this.myTeamData.defense
 		this.updateBars();
 	}
 	addGoalPoints(pts){
-		this.goalMarker += pts * this.myTeamData.attack / this.opponentData.defense
+		this.goalMarker = 1;
+		// this.goalMarker += pts * this.myTeamData.attack / this.opponentData.defense
 		this.updateBars();
 	}
 	addGoodShoot(){
 		this.game.uiManager.showCenterFeedback('very good');
 		this.chain += 3;
-		this.addGoalPoints(0.75);
+		// this.addGoalPoints(0.75);
+		this.addGoalPoints(1);
 
 		
 	}
 	addPerfectShoot(){
 		this.game.uiManager.showCenterFeedback('perfect');
 		this.chain += 10;
-		this.addGoalPoints(1);
+		// this.addGoalPoints(1);
+		this.addGoalPoints(3);
 	}
 	missGoal(){
 		this.game.uiManager.showCenterFeedback('miss');
 		this.chain = 0;
-		this.removeGoalPoints(0.2);
+		this.removeGoalPoints(1);
+		// this.removeGoalPoints(0.2);
 
 	}
 	updateBars(){
 
-		this.goalMarker = Math.max(this.goalMarker, 0)
-		this.goalMarker = Math.min(this.goalMarker, 1)
-		this.goalMarker = parseFloat(parseFloat(this.goalMarker).toFixed(2));
-		this.game.uiManager.updateGoalBar(this.placar, this.goalMarker);
+		//this.goalMarker = Math.max(this.goalMarker, 0)
+		//this.goalMarker = Math.min(this.goalMarker, 1)
+		//this.goalMarker = parseFloat(parseFloat(this.goalMarker).toFixed(2));
+		//this.game.uiManager.updateGoalBar(this.placar, this.goalMarker);
 		if(this.goalMarker >= 1){
 			console.log('REAL GOAL');
-			this.goalMarker = Math.max(this.goalMarker - 1 + 0.4, 0.4);
+			//this.goalMarker = Math.max(this.goalMarker - 1 + 0.4, 0.4);
 			this.placar.me ++
 			this.game.uiManager.showCenterFeedback('ta dentro', 1);
 			this.game.shake(2, 4, 0.8)
@@ -73,7 +79,7 @@ export default class ComboSystem{
 		}
 		else if(this.goalMarker <= 0){
 			console.log('TOMOU GOAL');
-			this.goalMarker = 0.6
+			//this.goalMarker = 0.6
 			this.placar.opponent ++
 			this.game.uiManager.showCenterFeedback('se fudeu', 1);
 			this.game.uiManager.updateGoalBar(this.placar, this.goalMarker, 0.5);

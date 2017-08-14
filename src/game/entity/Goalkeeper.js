@@ -49,7 +49,7 @@ export default class Goalkeeper extends PIXI.Container {
         this.maxFrame = 17;
         let tempBodyParts = this.animations.buildParts();
         for (var i = tempBodyParts.length - 1; i >= 0; i--) {
-            this.addBodyPart(tempBodyParts[i]);
+            this.addBodyPart(tempBodyParts[i], i);
         }
 
         this.shape = new PIXI.Graphics();
@@ -173,12 +173,12 @@ export default class Goalkeeper extends PIXI.Container {
 
        
     }
-    addBodyPart(partStructure){
+    addBodyPart(partStructure, id){
         // console.log(partStructure);
         let part = new PIXI.Graphics();
         part.beginFill(0xFFFFFF);
         part.drawCircle(0,0,partStructure.radius);
-        part.tint = 0xFFaaFF;
+        part.tint = 300 * id;
         this.container.addChild(part);
         part.y = partStructure.y
         part.x = partStructure.x
@@ -250,7 +250,7 @@ export default class Goalkeeper extends PIXI.Container {
 
         // console.log(this.velocity);
        // console.log(this.velocity.x);
-        this.frame += delta * 3;
+        this.frame += delta * 2.5;
         if(this.frame > this.maxFrame+1){
             this.frame = 1;
         }
